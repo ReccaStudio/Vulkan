@@ -161,7 +161,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "3D textures";
+		windowTitle = "3D textures";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
 		camera.setRotation(glm::vec3(0.0f, 15.0f, 0.0f));

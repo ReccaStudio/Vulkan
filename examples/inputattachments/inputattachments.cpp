@@ -71,7 +71,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Input attachments";
+		windowTitle = "Input attachments";
 		camera.type = Camera::CameraType::firstperson;
 		camera.movementSpeed = 2.5f;
 		camera.setPosition(glm::vec3(1.65f, 1.75f, -6.15f));

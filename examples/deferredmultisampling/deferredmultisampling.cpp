@@ -85,7 +85,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Multi sampled deferred shading";
+		windowTitle = "Multi sampled deferred shading";
 		camera.type = Camera::CameraType::firstperson;
 		camera.movementSpeed = 5.0f;
 #ifndef __ANDROID__

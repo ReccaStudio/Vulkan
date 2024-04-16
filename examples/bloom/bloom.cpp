@@ -94,7 +94,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Bloom (offscreen rendering)";
+		windowTitle = "Bloom (offscreen rendering)";
 		timerSpeed *= 0.5f;
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -10.25f));

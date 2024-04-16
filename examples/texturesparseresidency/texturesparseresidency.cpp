@@ -148,7 +148,7 @@ void VirtualTexture::destroy()
 */
 VulkanExample::VulkanExample() : VulkanExampleBase()
 {
-	title = "Sparse texture residency";
+	windowTitle = "Sparse texture residency";
 	std::cout.imbue(std::locale(""));
 	camera.type = Camera::CameraType::lookat;
 	camera.setPosition(glm::vec3(0.0f, 0.0f, -12.0f));

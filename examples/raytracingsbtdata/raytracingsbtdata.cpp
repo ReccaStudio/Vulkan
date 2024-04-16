@@ -81,7 +81,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Ray tracing SBT data";
+		windowTitle = "Ray tracing SBT data";
 		settings.overlay = false;
 		camera.type = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);

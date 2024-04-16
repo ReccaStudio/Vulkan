@@ -65,7 +65,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Shader objects (VK_EXT_shader_object)";
+		windowTitle = "Shader objects (VK_EXT_shader_object)";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -10.5f));
 		camera.setRotation(glm::vec3(-25.0f, 15.0f, 0.0f));

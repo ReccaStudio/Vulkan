@@ -88,7 +88,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Dynamic uniform buffers";
+		windowTitle = "Dynamic uniform buffers";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
 		camera.setRotation(glm::vec3(0.0f));

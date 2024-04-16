@@ -96,7 +96,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Projected shadow mapping";
+		windowTitle = "Projected shadow mapping";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -12.5f));
 		camera.setRotation(glm::vec3(-25.0f, -390.0f, 0.0f));

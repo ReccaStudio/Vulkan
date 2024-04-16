@@ -42,7 +42,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Push constants";
+		windowTitle = "Push constants";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
 		camera.setRotation(glm::vec3(0.0, 0.0f, 0.0f));

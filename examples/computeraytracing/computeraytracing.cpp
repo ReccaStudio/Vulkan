@@ -76,7 +76,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Compute shader ray tracing";
+		windowTitle = "Compute shader ray tracing";
 		timerSpeed *= 0.25f;
 
 		camera.type = Camera::CameraType::lookat;

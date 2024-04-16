@@ -382,7 +382,7 @@ public:
 		// Debug window
 		ImGui::SetWindowPos(ImVec2(20 * example->uiOverlay.scale, 20 * example->uiOverlay.scale), ImGuiSetCond_FirstUseEver);
         ImGui::SetWindowSize(ImVec2(300 * example->uiOverlay.scale, 300 * example->uiOverlay.scale), ImGuiSetCond_Always);
-		ImGui::TextUnformatted(example->title.c_str());
+		ImGui::TextUnformatted(example->windowTitle.c_str());
 		ImGui::TextUnformatted(device->properties.deviceName);
 		
 		//SRS - Display Vulkan API version and device driver information if available (otherwise blank)
@@ -561,7 +561,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Vulkan Example - ImGui";
+		windowTitle = "Vulkan Example - ImGui";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.8f));
 		camera.setRotation(glm::vec3(4.5f, -380.0f, 0.0f));

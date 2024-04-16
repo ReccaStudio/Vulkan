@@ -213,8 +213,8 @@ public:
 
 	Camera camera;
 
-	std::string title = "Vulkan Example";
-	std::string name = "vulkanExample";
+	std::string windowTitle = "Vulkan Example";
+	std::string appName = "vulkanExample";
 	uint32_t apiVersion = VK_API_VERSION_1_0;
 
 	/** @brief Default depth stencil attachment used by the default render pass */
@@ -285,7 +285,7 @@ public:
 	VulkanExampleBase();
 	virtual ~VulkanExampleBase();
 	/** @brief Setup the vulkan instance, enable required extensions and connect to the physical device (GPU) */
-	bool initVulkan();
+	bool initVulkanSetting();
 
 #if defined(_WIN32)
 	void setupConsole(std::string title);
@@ -309,11 +309,11 @@ public:
 	void initWaylandConnection();
 	void setSize(int width, int height);
 	static void registryGlobalCb(void *data, struct wl_registry *registry,
-			uint32_t name, const char *interface, uint32_t version);
-	void registryGlobal(struct wl_registry *registry, uint32_t name,
+			uint32_t appName, const char *interface, uint32_t version);
+	void registryGlobal(struct wl_registry *registry, uint32_t appName,
 			const char *interface, uint32_t version);
 	static void registryGlobalRemoveCb(void *data, struct wl_registry *registry,
-			uint32_t name);
+			uint32_t appName);
 	static void seatCapabilitiesCb(void *data, wl_seat *seat, uint32_t caps);
 	void seatCapabilities(wl_seat *seat, uint32_t caps);
 	static void pointerEnterCb(void *data, struct wl_pointer *pointer,
@@ -428,7 +428,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)									\
 {																									\
 	for (int32_t i = 0; i < __argc; i++) { VulkanExample::args.push_back(__argv[i]); };  			\
 	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
+	vulkanExample->initVulkanSetting();																	\
 	vulkanExample->setupWindow(hInstance, WndProc);													\
 	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
@@ -461,7 +461,7 @@ int main(const int argc, const char *argv[])													    \
 {																									\
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
 	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
+	vulkanExample->initVulkanSetting();																	\
 	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
 	delete(vulkanExample);																			\
@@ -481,7 +481,7 @@ int main(const int argc, const char *argv[])													    \
 {																									\
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
 	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
+	vulkanExample->initVulkanSetting();																	\
 	vulkanExample->setupWindow();					 												\
 	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
@@ -495,7 +495,7 @@ int main(const int argc, const char *argv[])													    \
 {																									\
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
 	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
+	vulkanExample->initVulkanSetting();																	\
 	vulkanExample->setupWindow();					 												\
 	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
@@ -516,7 +516,7 @@ int main(const int argc, const char *argv[])													    \
 {																									\
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
 	vulkanExample = new VulkanExample();															\
-	vulkanExample->initVulkan();																	\
+	vulkanExample->initVulkanSetting();																	\
 	vulkanExample->setupWindow();					 												\
 	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
@@ -533,7 +533,7 @@ int main(const int argc, const char *argv[])														\
 	{																								\
 		for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };				\
 		vulkanExample = new VulkanExample();														\
-		vulkanExample->initVulkan();																\
+		vulkanExample->initVulkanSetting();																\
 		vulkanExample->setupWindow(nullptr);														\
 		vulkanExample->prepareForRendering();																	\
 		vulkanExample->renderLoop();																\
@@ -552,7 +552,7 @@ int main(const int argc, const char *argv[])										\
 {															\
 	for (int i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };					\
 	vulkanExample = new VulkanExample();										\
-	vulkanExample->initVulkan();											\
+	vulkanExample->initVulkanSetting();											\
 	vulkanExample->setupWindow();											\
 	vulkanExample->prepareForRendering();											\
 	vulkanExample->renderLoop();											\

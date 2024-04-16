@@ -22,7 +22,7 @@ std::string VulkanExampleBase::getWindowTitle()
 {
 	std::string device(deviceProperties.deviceName);
 	std::string windowTitle;
-	windowTitle = title + " - " + device;
+	windowTitle = windowTitle + " - " + device;
 	if (!settings.overlay) {
 		windowTitle += " - " + std::to_string(frameCounter) + " fps";
 	}
@@ -134,7 +134,7 @@ void VulkanExampleBase::updateOverlay()
 	ImGui::SetNextWindowPos(ImVec2(10 * uiOverlay.scale, 10 * uiOverlay.scale));
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiSetCond_FirstUseEver);
 	ImGui::Begin("Vulkan Example", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-	ImGui::TextUnformatted(title.c_str());
+	ImGui::TextUnformatted(windowTitle.c_str());
 	ImGui::TextUnformatted(deviceProperties.deviceName);
 	ImGui::Text("%.2f ms/frame (%.1d fps)", (1000.0f / lastFPS), lastFPS);
 
@@ -442,7 +442,7 @@ VulkanExampleBase::~VulkanExampleBase()
 #endif
 }
 
-bool VulkanExampleBase::initVulkan()
+bool VulkanExampleBase::initVulkanSetting()
 {
 	VkResult err;
 
@@ -623,7 +623,7 @@ HWND VulkanExampleBase::setupWindow(HINSTANCE hinstance, WNDPROC wndproc)
 	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wndClass.lpszMenuName = NULL;
-	wndClass.lpszClassName = name.c_str();
+	wndClass.lpszClassName = appName.c_str();
 	wndClass.hIconSm = LoadIcon(NULL, IDI_WINLOGO);
 
 	if (!RegisterClassEx(&wndClass))
@@ -688,7 +688,7 @@ HWND VulkanExampleBase::setupWindow(HINSTANCE hinstance, WNDPROC wndproc)
 
 	std::string windowTitle = getWindowTitle();
 	window = CreateWindowEx(0,
-		name.c_str(),
+		appName.c_str(),
 		windowTitle.c_str(),
 		dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
 		0,
@@ -1020,7 +1020,7 @@ void VulkanExampleBase::handleAppCommand(android_app * app, int32_t cmd)
 		LOGD("APP_CMD_INIT_WINDOW");
 		if (androidApp->window != NULL)
 		{
-			if (vulkanExample->initVulkan()) {
+			if (vulkanExample->initVulkanSetting()) {
 				vulkanExample->prepareForRendering();
 				assert(vulkanExample->prepared);
 			}
@@ -1354,7 +1354,7 @@ void* VulkanExampleBase::setupWindow(void* view)
 											  styleMask:kWindowStyle
 												backing:NSBackingStoreBuffered
 												  defer:NO];
-	[window setTitle:@(title.c_str())];
+	[window setTitle:@(windowTitle.c_str())];
 	[window setAcceptsMouseMovedEvents:YES];
 	[window center];
 	[window makeKeyAndOrderFront:nil];
@@ -1606,11 +1606,11 @@ void VulkanExampleBase::handleEvent(const DFBWindowEvent *event)
 }
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 /*static*/void VulkanExampleBase::registryGlobalCb(void *data,
-		wl_registry *registry, uint32_t name, const char *interface,
+		wl_registry *registry, uint32_t appName, const char *interface,
 		uint32_t version)
 {
 	VulkanExampleBase *self = reinterpret_cast<VulkanExampleBase *>(data);
-	self->registryGlobal(registry, name, interface, version);
+	self->registryGlobal(registry, appName, interface, version);
 }
 
 /*static*/void VulkanExampleBase::seatCapabilitiesCb(void *data, wl_seat *seat,
@@ -1799,23 +1799,23 @@ static const struct xdg_wm_base_listener xdg_wm_base_listener = {
 	xdg_wm_base_ping,
 };
 
-void VulkanExampleBase::registryGlobal(wl_registry *registry, uint32_t name,
+void VulkanExampleBase::registryGlobal(wl_registry *registry, uint32_t appName,
 		const char *interface, uint32_t version)
 {
 	if (strcmp(interface, "wl_compositor") == 0)
 	{
-		compositor = (wl_compositor *) wl_registry_bind(registry, name,
+		compositor = (wl_compositor *) wl_registry_bind(registry, appName,
 				&wl_compositor_interface, 3);
 	}
 	else if (strcmp(interface, "xdg_wm_base") == 0)
 	{
-		shell = (xdg_wm_base *) wl_registry_bind(registry, name,
+		shell = (xdg_wm_base *) wl_registry_bind(registry, appName,
 				&xdg_wm_base_interface, 1);
 		xdg_wm_base_add_listener(shell, &xdg_wm_base_listener, nullptr);
 	}
 	else if (strcmp(interface, "wl_seat") == 0)
 	{
-		seat = (wl_seat *) wl_registry_bind(registry, name, &wl_seat_interface,
+		seat = (wl_seat *) wl_registry_bind(registry, appName, &wl_seat_interface,
 				1);
 
 		static const struct wl_seat_listener seat_listener =
@@ -1825,7 +1825,7 @@ void VulkanExampleBase::registryGlobal(wl_registry *registry, uint32_t name,
 }
 
 /*static*/void VulkanExampleBase::registryGlobalRemoveCb(void *data,
-		struct wl_registry *registry, uint32_t name)
+		struct wl_registry *registry, uint32_t appName)
 {
 }
 
@@ -1982,7 +1982,7 @@ xcb_window_t VulkanExampleBase::setupWindow()
 	std::string windowTitle = getWindowTitle();
 	xcb_change_property(connection, XCB_PROP_MODE_REPLACE,
 		window, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
-		title.size(), windowTitle.c_str());
+		windowTitle.size(), windowTitle.c_str());
 
 	free(reply);
 
@@ -1992,9 +1992,9 @@ xcb_window_t VulkanExampleBase::setupWindow()
 	 * on GNOME and other desktop environments
 	 */
 	std::string wm_class;
-	wm_class = wm_class.insert(0, name);
-	wm_class = wm_class.insert(name.size(), 1, '\0');
-	wm_class = wm_class.insert(name.size() + 1, title);
+	wm_class = wm_class.insert(0, appName);
+	wm_class = wm_class.insert(appName.size(), 1, '\0');
+	wm_class = wm_class.insert(appName.size() + 1, windowTitle);
 	wm_class = wm_class.insert(wm_class.size(), 1, '\0');
 	xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, XCB_ATOM_WM_CLASS, XCB_ATOM_STRING, 8, wm_class.size() + 2, wm_class.c_str());
 
@@ -2344,7 +2344,7 @@ void VulkanExampleBase::handleEvent()
 
 void VulkanExampleBase::setupWindow()
 {
-	const char *idstr = name.c_str();
+	const char *idstr = appName.c_str();
 	int size[2];
 	int usage = SCREEN_USAGE_VULKAN;
 	int rc;
@@ -2447,8 +2447,8 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = name.c_str();
-	appInfo.pEngineName = name.c_str();
+	appInfo.pApplicationName = appName.c_str();
+	appInfo.pEngineName = appName.c_str();
 	appInfo.apiVersion = apiVersion;
 
 	std::vector<const char*> instanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };

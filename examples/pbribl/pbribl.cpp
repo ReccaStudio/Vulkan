@@ -90,7 +90,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "PBR with image based lighting";
+		windowTitle = "PBR with image based lighting";
 
 		camera.type = Camera::CameraType::firstperson;
 		camera.movementSpeed = 4.0f;

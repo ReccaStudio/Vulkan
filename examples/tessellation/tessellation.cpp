@@ -42,7 +42,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Tessellation shader (PN Triangles)";
+		windowTitle = "Tessellation shader (PN Triangles)";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.0f));
 		camera.setRotation(glm::vec3(-350.0f, 60.0f, 0.0f));

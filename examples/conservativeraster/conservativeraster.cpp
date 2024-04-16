@@ -76,7 +76,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Conservative rasterization";
+		windowTitle = "Conservative rasterization";
 
 		camera.type = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);

@@ -79,7 +79,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Offscreen rendering";
+		windowTitle = "Offscreen rendering";
 		timerSpeed *= 0.25f;
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 1.0f, -6.0f));

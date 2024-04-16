@@ -409,7 +409,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "glTF model rendering";
+		windowTitle = "glTF model rendering";
 		camera.type = Camera::CameraType::lookat;
 		camera.flipY = true;
 		camera.setPosition(glm::vec3(0.0f, -0.1f, -1.0f));

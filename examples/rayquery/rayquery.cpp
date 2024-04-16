@@ -40,7 +40,7 @@ public:
 
 	VulkanExample() : VulkanRaytracingSample()
 	{
-		title = "Ray queries for ray traced shadows";
+		windowTitle = "Ray queries for ray traced shadows";
 		camera.type = Camera::CameraType::lookat;
 		timerSpeed *= 0.25f;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);

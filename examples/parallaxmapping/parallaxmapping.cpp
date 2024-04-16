@@ -58,7 +58,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Parallax Mapping";
+		windowTitle = "Parallax Mapping";
 		timerSpeed *= 0.5f;
 		camera.type = Camera::CameraType::firstperson;
 		camera.setPosition(glm::vec3(0.0f, 1.25f, -1.5f));

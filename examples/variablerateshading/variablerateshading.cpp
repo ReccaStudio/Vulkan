@@ -10,7 +10,7 @@
 
 VulkanExample::VulkanExample() : VulkanExampleBase()
 {
-	title = "Variable rate shading";
+	windowTitle = "Variable rate shading";
 	apiVersion = VK_API_VERSION_1_1;
 	camera.type = Camera::CameraType::firstperson;
 	camera.flipY = true;

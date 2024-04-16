@@ -69,7 +69,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Textured PBR with IBL";
+		windowTitle = "Textured PBR with IBL";
 
 		camera.type = Camera::CameraType::firstperson;
 		camera.movementSpeed = 4.0f;

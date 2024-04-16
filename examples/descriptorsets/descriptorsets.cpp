@@ -39,7 +39,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Using descriptor Sets";
+		windowTitle = "Using descriptor Sets";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));

@@ -33,7 +33,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Saving framebuffer to screenshot";
+		windowTitle = "Saving framebuffer to screenshot";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(-25.0f, 23.75f, 0.0f));

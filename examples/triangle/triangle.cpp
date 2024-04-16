@@ -115,7 +115,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Vulkan Example - Basic indexed triangle";
+		windowTitle = "Vulkan Example - Basic indexed triangle";
 		// To keep things simple, we don't use the UI overlay from the framework
 		settings.overlay = false;
 		// Setup a default look-at camera
@@ -1060,7 +1060,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLin
 {
 	for (size_t i = 0; i < __argc; i++) { VulkanExample::args.push_back(__argv[i]); };
 	vulkanExample = new VulkanExample();
-	vulkanExample->initVulkan();
+	vulkanExample->initVulkanSetting();
 	vulkanExample->setupWindow(hInstance, WndProc);
 	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
@@ -1093,7 +1093,7 @@ int main(const int argc, const char *argv[])
 {
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
 	vulkanExample = new VulkanExample();
-	vulkanExample->initVulkan();
+	vulkanExample->initVulkanSetting();
 	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
 	delete(vulkanExample);
@@ -1112,7 +1112,7 @@ int main(const int argc, const char *argv[])
 {
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
 	vulkanExample = new VulkanExample();
-	vulkanExample->initVulkan();
+	vulkanExample->initVulkanSetting();
 	vulkanExample->setupWindow();
 	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
@@ -1125,7 +1125,7 @@ int main(const int argc, const char *argv[])
 {
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
 	vulkanExample = new VulkanExample();
-	vulkanExample->initVulkan();
+	vulkanExample->initVulkanSetting();
 	vulkanExample->setupWindow();
 	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
@@ -1153,7 +1153,7 @@ int main(const int argc, const char *argv[])
 {
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
 	vulkanExample = new VulkanExample();
-	vulkanExample->initVulkan();
+	vulkanExample->initVulkanSetting();
 	vulkanExample->setupWindow();
 	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
@@ -1168,7 +1168,7 @@ int main(const int argc, const char *argv[])
 	{
 		for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
 		vulkanExample = new VulkanExample();
-		vulkanExample->initVulkan();
+		vulkanExample->initVulkanSetting();
 		vulkanExample->setupWindow(nullptr);
 		vulkanExample->prepareForRendering();
 		vulkanExample->renderLoop();

@@ -132,7 +132,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Cascaded shadow mapping";
+		windowTitle = "Cascaded shadow mapping";
 		timerSpeed *= 0.025f;
 		camera.type = Camera::CameraType::firstperson;
 		camera.movementSpeed = 2.5f;

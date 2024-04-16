@@ -98,7 +98,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "High dynamic range rendering";
+		windowTitle = "High dynamic range rendering";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -6.0f));
 		camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));

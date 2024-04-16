@@ -462,7 +462,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Vulkan Example - Text overlay";
+		windowTitle = "Vulkan Example - Text overlay";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
 		camera.setRotation(glm::vec3(-25.0f, -0.0f, 0.0f));
@@ -533,7 +533,7 @@ public:
 
 		textOverlay->beginTextUpdate();
 
-		textOverlay->addText(title, 5.0f * uiOverlay.scale, 5.0f * uiOverlay.scale, TextOverlay::alignLeft);
+		textOverlay->addText(windowTitle, 5.0f * uiOverlay.scale, 5.0f * uiOverlay.scale, TextOverlay::alignLeft);
 
 		std::stringstream ss;
 		ss << std::fixed << std::setprecision(2) << (frameTimer * 1000.0f) << "ms (" << lastFPS << " fps)";

@@ -35,7 +35,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Viewport arrays";
+		windowTitle = "Viewport arrays";
 		camera.type = Camera::CameraType::firstperson;
 		camera.setRotation(glm::vec3(0.0f, 90.0f, 0.0f));
 		camera.setTranslation(glm::vec3(7.0f, 3.2f, 0.0f));

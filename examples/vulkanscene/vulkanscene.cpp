@@ -44,7 +44,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Vulkan Demo Scene (c) by Sascha Willems";
+		windowTitle = "Vulkan Demo Scene (c) by Sascha Willems";
 		camera.type = Camera::CameraType::lookat;
 		//camera.flipY = true;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -3.75f));

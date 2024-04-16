@@ -61,7 +61,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase()
 	{
-		title = "Inline uniform blocks";
+		windowTitle = "Inline uniform blocks";
 		camera.type = Camera::CameraType::firstperson;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
 		camera.setRotation(glm::vec3(0.0, 0.0f, 0.0f));
