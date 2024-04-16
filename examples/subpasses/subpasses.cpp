@@ -98,7 +98,7 @@ public:
 		camera.setPosition(glm::vec3(-3.2f, 1.0f, 5.9f));
 		camera.setRotation(glm::vec3(0.5f, 210.05f, 0.0f));
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
-		UIOverlay.subpass = 2;
+		uiOverlay.subpass = 2;
 	}
 
 	~VulkanExample()

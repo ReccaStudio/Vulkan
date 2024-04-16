@@ -61,9 +61,9 @@ public:
 		
 		//SRS - Set ImGui font and style scale factors to handle retina and other HiDPI displays
 		ImGuiIO& io = ImGui::GetIO();
-		io.FontGlobalScale = example->UIOverlay.scale;
+		io.FontGlobalScale = example->uiOverlay.scale;
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.ScaleAllSizes(example->UIOverlay.scale);
+		style.ScaleAllSizes(example->uiOverlay.scale);
 	};
 
 	~ImGUI()
@@ -380,8 +380,8 @@ public:
 		// Init imGui windows and elements
 
 		// Debug window
-		ImGui::SetWindowPos(ImVec2(20 * example->UIOverlay.scale, 20 * example->UIOverlay.scale), ImGuiSetCond_FirstUseEver);
-        ImGui::SetWindowSize(ImVec2(300 * example->UIOverlay.scale, 300 * example->UIOverlay.scale), ImGuiSetCond_Always);
+		ImGui::SetWindowPos(ImVec2(20 * example->uiOverlay.scale, 20 * example->uiOverlay.scale), ImGuiSetCond_FirstUseEver);
+        ImGui::SetWindowSize(ImVec2(300 * example->uiOverlay.scale, 300 * example->uiOverlay.scale), ImGuiSetCond_Always);
 		ImGui::TextUnformatted(example->title.c_str());
 		ImGui::TextUnformatted(device->properties.deviceName);
 		
@@ -409,8 +409,8 @@ public:
 		ImGui::InputFloat3("rotation", &example->camera.rotation.x, 2);
 
 		// Example settings window
-		ImGui::SetNextWindowPos(ImVec2(20 * example->UIOverlay.scale, 360 * example->UIOverlay.scale), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(300 * example->UIOverlay.scale, 200 * example->UIOverlay.scale), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(20 * example->uiOverlay.scale, 360 * example->uiOverlay.scale), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(300 * example->uiOverlay.scale, 200 * example->uiOverlay.scale), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin("Example settings");
 		ImGui::Checkbox("Render models", &uiSettings.displayModels);
 		ImGui::Checkbox("Display logos", &uiSettings.displayLogos);
@@ -638,7 +638,7 @@ public:
 			}
 
 			// Render imGui
-			if (UIOverlay.visible) {
+			if (uiOverlay.visible) {
 				imGui->drawFrame(drawCmdBuffers[i]);
 			}
 
@@ -794,9 +794,9 @@ public:
 		io.DeltaTime = frameTimer;
 
 		io.MousePos = ImVec2(mouseState.position.x, mouseState.position.y);
-		io.MouseDown[0] = mouseState.buttons.left && UIOverlay.visible;
-		io.MouseDown[1] = mouseState.buttons.right && UIOverlay.visible;
-		io.MouseDown[2] = mouseState.buttons.middle && UIOverlay.visible;
+		io.MouseDown[0] = mouseState.buttons.left && uiOverlay.visible;
+		io.MouseDown[1] = mouseState.buttons.right && uiOverlay.visible;
+		io.MouseDown[2] = mouseState.buttons.middle && uiOverlay.visible;
 
 		draw();
 	}
@@ -804,7 +804,7 @@ public:
 	virtual void mouseMoved(double x, double y, bool &handled)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		handled = io.WantCaptureMouse && UIOverlay.visible;
+		handled = io.WantCaptureMouse && uiOverlay.visible;
 	}
 
 // Input handling is platform specific, to show how it's basically done this sample implements it for Windows

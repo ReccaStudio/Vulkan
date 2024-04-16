@@ -508,7 +508,7 @@ public:
 	void prepareForRendering()
 	{
 		sampleCount = getMaxAvailableSampleCount();
-		UIOverlay.rasterizationSamples = sampleCount;
+		uiOverlay.rasterizationSamples = sampleCount;
 		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();

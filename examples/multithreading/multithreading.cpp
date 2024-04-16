@@ -388,7 +388,7 @@ public:
 		}
 
 		// Render ui last
-		if (UIOverlay.visible) {
+		if (uiOverlay.visible) {
 			commandBuffers.push_back(secondaryCommandBuffers.ui);
 		}
 
