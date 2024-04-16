@@ -20,10 +20,11 @@ std::vector<const char*> VulkanExampleBase::args;
 
 std::string VulkanExampleBase::getWindowTitle()
 {
-	std::string device(deviceProperties.deviceName);
+	std::string deviceName(deviceProperties.deviceName);
 	std::string tempWindowTile;
-	tempWindowTile = windowTitle + " - " + device;
-	if (!settings.overlay) {
+	tempWindowTile = windowTitle + " - " + deviceName;
+	if (!settings.overlay)
+	{
 		tempWindowTile += " - " + std::to_string(frameCounter) + " fps";
 	}
 	return tempWindowTile;
@@ -467,7 +468,8 @@ bool VulkanExampleBase::initVulkanSetting()
 	uint32_t gpuCount = 0;
 	// Get number of available physical devices
 	VK_CHECK_RESULT(vkEnumeratePhysicalDevices(instance, &gpuCount, nullptr));
-	if (gpuCount == 0) {
+	if (gpuCount == 0)
+	{
 		vks::tools::exitFatal("No device with Vulkan support found", -1);
 		return false;
 	}
@@ -496,16 +498,20 @@ bool VulkanExampleBase::initVulkanSetting()
 			selectedDevice = index;
 		}
 	}
-	if (commandLineParser.isSet("gpulist")) {
+
+	if (commandLineParser.isSet("gpulist"))
+    {
 		std::cout << "Available Vulkan devices" << "\n";
-		for (uint32_t i = 0; i < gpuCount; i++) {
+		for (uint32_t i = 0;i<gpuCount;++i)
+		{
 			VkPhysicalDeviceProperties deviceProperties;
 			vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProperties);
 			std::cout << "Device [" << i << "] : " << deviceProperties.deviceName << std::endl;
 			std::cout << " Type: " << vks::tools::physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
 			std::cout << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
 		}
-	}
+	}// gpulist
+
 #endif
 
 	physicalDevice = physicalDevices[selectedDevice];
