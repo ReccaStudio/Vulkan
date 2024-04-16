@@ -161,7 +161,7 @@ public:
 					vulkanDevice->queueFamilyIndices.graphicIndex,
 					indirectCommandsBuffer.buffer,
 					0,
-					indirectCommandsBuffer.descriptor.range
+					indirectCommandsBuffer.descriptorBufferInfo.range
 				};
 
 				vkCmdPipelineBarrier(
@@ -222,7 +222,7 @@ public:
 					vulkanDevice->queueFamilyIndices.computeIndex,
 					indirectCommandsBuffer.buffer,
 					0,
-					indirectCommandsBuffer.descriptor.range
+					indirectCommandsBuffer.descriptorBufferInfo.range
 				};
 
 				vkCmdPipelineBarrier(
@@ -265,7 +265,7 @@ public:
 				vulkanDevice->queueFamilyIndices.computeIndex,
 				indirectCommandsBuffer.buffer,
 				0,
-				indirectCommandsBuffer.descriptor.range
+				indirectCommandsBuffer.descriptorBufferInfo.range
 			};
 
 			vkCmdPipelineBarrier(
@@ -282,7 +282,7 @@ public:
 		vkCmdBindDescriptorSets(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute.pipelineLayout, 0, 1, &compute.descriptorSet, 0, 0);
 
 		// Clear the buffer that the compute shader pass will write statistics and draw calls to
-		vkCmdFillBuffer(compute.commandBuffer, indirectDrawCountBuffer.buffer, 0, indirectCommandsBuffer.descriptor.range, 0);
+		vkCmdFillBuffer(compute.commandBuffer, indirectDrawCountBuffer.buffer, 0, indirectCommandsBuffer.descriptorBufferInfo.range, 0);
 
 		// This barrier ensures that the fill command is finished before the compute shader can start writing to the buffer
 		VkMemoryBarrier memoryBarrier = vks::initializers::memoryBarrier();
@@ -317,7 +317,7 @@ public:
 				vulkanDevice->queueFamilyIndices.graphicIndex,
 				indirectCommandsBuffer.buffer,
 				0,
-				indirectCommandsBuffer.descriptor.range
+				indirectCommandsBuffer.descriptorBufferInfo.range
 			};
 
 			vkCmdPipelineBarrier(
@@ -358,7 +358,7 @@ public:
 		VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
 			// Binding 0: Vertex shader uniform buffer
-			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformData.scene.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformData.scene.descriptorBufferInfo),
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 	}
@@ -527,7 +527,7 @@ public:
 				vulkanDevice->queueFamilyIndices.computeIndex,
 				indirectCommandsBuffer.buffer,
 				0,
-				indirectCommandsBuffer.descriptor.range
+				indirectCommandsBuffer.descriptorBufferInfo.range
 			};
 
 			vkCmdPipelineBarrier(
@@ -648,31 +648,31 @@ public:
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				0,
-				&instanceBuffer.descriptor),
+				&instanceBuffer.descriptorBufferInfo),
 			// Binding 1: Indirect draw command output buffer
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				1,
-				&indirectCommandsBuffer.descriptor),
+				&indirectCommandsBuffer.descriptorBufferInfo),
 			// Binding 2: Uniform buffer with global matrices
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				2,
-				&uniformData.scene.descriptor),
+				&uniformData.scene.descriptorBufferInfo),
 			// Binding 3: Atomic counter (written in shader)
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				3,
-				&indirectDrawCountBuffer.descriptor),
+				&indirectDrawCountBuffer.descriptorBufferInfo),
 			// Binding 4: LOD info
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				4,
-				&compute.lodLevelsBuffers.descriptor)
+				&compute.lodLevelsBuffers.descriptorBufferInfo)
 		};
 
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(computeWriteDescriptorSets.size()), computeWriteDescriptorSets.data(), 0, NULL);

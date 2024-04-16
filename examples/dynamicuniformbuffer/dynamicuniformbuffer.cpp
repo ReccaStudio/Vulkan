@@ -232,9 +232,9 @@ public:
 
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
 			// Binding 0 : Projection/View matrix as uniform buffer
-			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.view.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.view.descriptorBufferInfo),
 			// Binding 1 : Instance matrix as dynamic uniform buffer
-			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, &uniformBuffers.dynamic.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, &uniformBuffers.dynamic.descriptorBufferInfo),
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 	}
@@ -326,7 +326,7 @@ public:
 			bufferSize));
 
 		// Override descriptor range to [base, base + dynamicAlignment]
-		uniformBuffers.dynamic.descriptor.range = dynamicAlignment;
+		uniformBuffers.dynamic.descriptorBufferInfo.range = dynamicAlignment;
 
 		// Map persistent
 		VK_CHECK_RESULT(uniformBuffers.view.map());

@@ -239,7 +239,7 @@ public:
 			writeDescriptorSets[0].dstSet = cube.descriptorSet;
 			writeDescriptorSets[0].dstBinding = 0;
 			writeDescriptorSets[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			writeDescriptorSets[0].pBufferInfo = &cube.uniformBuffer.descriptor;
+			writeDescriptorSets[0].pBufferInfo = &cube.uniformBuffer.descriptorBufferInfo;
 			writeDescriptorSets[0].descriptorCount = 1;
 
 			/*

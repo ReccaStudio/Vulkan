@@ -497,13 +497,13 @@ public:
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				0,
-				&storageBuffer.descriptor),
+				&storageBuffer.descriptorBufferInfo),
 			// Binding 1 : Uniform buffer
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				1,
-				&compute.uniformBuffer.descriptor)
+				&compute.uniformBuffer.descriptorBufferInfo)
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(computeWriteDescriptorSets.size()), computeWriteDescriptorSets.data(), 0, NULL);
 

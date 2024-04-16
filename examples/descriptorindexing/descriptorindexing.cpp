@@ -268,7 +268,7 @@ public:
 
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets(2);
 
-		writeDescriptorSets[0] = vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffer.descriptor);
+		writeDescriptorSets[0] = vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffer.descriptorBufferInfo);
 
 		// Image descriptors for the texture array
 		std::vector<VkDescriptorImageInfo> textureDescriptors(textures.size());

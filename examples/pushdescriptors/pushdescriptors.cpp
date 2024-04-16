@@ -126,7 +126,7 @@ public:
 				writeDescriptorSets[0].dstBinding = 0;
 				writeDescriptorSets[0].descriptorCount = 1;
 				writeDescriptorSets[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				writeDescriptorSets[0].pBufferInfo = &uniformBuffer.descriptor;
+				writeDescriptorSets[0].pBufferInfo = &uniformBuffer.descriptorBufferInfo;
 
 				// Model matrices
 				writeDescriptorSets[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -134,7 +134,7 @@ public:
 				writeDescriptorSets[1].dstBinding = 1;
 				writeDescriptorSets[1].descriptorCount = 1;
 				writeDescriptorSets[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				writeDescriptorSets[1].pBufferInfo = &cube.uniformBuffer.descriptor;
+				writeDescriptorSets[1].pBufferInfo = &cube.uniformBuffer.descriptorBufferInfo;
 
 				// Texture
 				writeDescriptorSets[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

@@ -68,7 +68,7 @@ namespace vkglTF
 		uint32_t width, height;
 		uint32_t mipLevels;
 		uint32_t layerCount;
-		VkDescriptorImageInfo descriptor;
+		VkDescriptorImageInfo descriptorImageInfo;
 		VkSampler sampler;
 		uint32_t index;
 		void updateDescriptor();
@@ -136,7 +136,7 @@ namespace vkglTF
 		struct UniformBuffer {
 			VkBuffer buffer;
 			VkDeviceMemory memory;
-			VkDescriptorBufferInfo descriptor;
+			VkDescriptorBufferInfo descriptorBufferInfo;
 			VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 			void* mapped;
 		} uniformBuffer;

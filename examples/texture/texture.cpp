@@ -563,7 +563,7 @@ public:
 
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
 			// Binding 0 : Vertex shader uniform buffer
-			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffer.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffer.descriptorBufferInfo),
 			// Binding 1 : Fragment shader texture sampler
 			//	Fragment shader: layout (binding = 1) uniform sampler2D samplerColor;
 			vks::initializers::writeDescriptorSet(descriptorSet,

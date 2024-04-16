@@ -263,7 +263,7 @@ public:
 		{
 		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &textures.particle.descriptorImageInfo),
 		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &textures.gradient.descriptorImageInfo),
-		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, &graphics.uniformBuffer.descriptor),
+		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, &graphics.uniformBuffer.descriptorBufferInfo),
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 	}
@@ -464,7 +464,7 @@ public:
 		// Add memory barrier to ensure that the computer shader has finished writing to the buffer
 		VkBufferMemoryBarrier secondComputePassBufferBarrier = vks::initializers::bufferMemoryBarrier();
 		secondComputePassBufferBarrier.buffer = storageBuffer.buffer;
-		secondComputePassBufferBarrier.size = storageBuffer.descriptor.range;
+		secondComputePassBufferBarrier.size = storageBuffer.descriptorBufferInfo.range;
 		secondComputePassBufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
 		secondComputePassBufferBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 		// Transfer owernship if compute and graphics queue family indices differ
@@ -525,9 +525,9 @@ public:
 
 		std::vector<VkWriteDescriptorSet> computeWriteDescriptorSets = {
 			// Binding 0 : Particle position storage buffer
-			vks::initializers::writeDescriptorSet(compute.descriptorSet, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, &storageBuffer.descriptor),
+			vks::initializers::writeDescriptorSet(compute.descriptorSet, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, &storageBuffer.descriptorBufferInfo),
 			// Binding 1 : Uniform buffer
-			vks::initializers::writeDescriptorSet(compute.descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,1,&compute.uniformBuffer.descriptor)
+			vks::initializers::writeDescriptorSet(compute.descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,1,&compute.uniformBuffer.descriptorBufferInfo)
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(computeWriteDescriptorSets.size()), computeWriteDescriptorSets.data(), 0, nullptr);
 
