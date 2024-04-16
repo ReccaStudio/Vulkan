@@ -609,7 +609,7 @@ public:
 
 		// Submit graphics commands
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
+		submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
 		submitInfo.waitSemaphoreCount = 2;
 		submitInfo.pWaitSemaphores = graphicsWaitSemaphores;
 		submitInfo.pWaitDstStageMask = graphicsWaitStageMasks;

@@ -697,22 +697,22 @@ public:
 		VulkanExampleBase::prepareFrame();
 
 		// Multiview offscreen render
-		VK_CHECK_RESULT(vkWaitForFences(device, 1, &multiviewPass.waitFences[currentBuffer], VK_TRUE, UINT64_MAX));
-		VK_CHECK_RESULT(vkResetFences(device, 1, &multiviewPass.waitFences[currentBuffer]));
+		VK_CHECK_RESULT(vkWaitForFences(device, 1, &multiviewPass.waitFences[currentCmdBufferIndex], VK_TRUE, UINT64_MAX));
+		VK_CHECK_RESULT(vkResetFences(device, 1, &multiviewPass.waitFences[currentCmdBufferIndex]));
 		submitInfo.pWaitSemaphores = &semaphores.presentComplete;
 		submitInfo.pSignalSemaphores = &multiviewPass.semaphore;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &multiviewPass.commandBuffers[currentBuffer];
-		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, multiviewPass.waitFences[currentBuffer]));
+		submitInfo.pCommandBuffers = &multiviewPass.commandBuffers[currentCmdBufferIndex];
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, multiviewPass.waitFences[currentCmdBufferIndex]));
 
 		// View display
-		VK_CHECK_RESULT(vkWaitForFences(device, 1, &waitFences[currentBuffer], VK_TRUE, UINT64_MAX));
-		VK_CHECK_RESULT(vkResetFences(device, 1, &waitFences[currentBuffer]));
+		VK_CHECK_RESULT(vkWaitForFences(device, 1, &waitFences[currentCmdBufferIndex], VK_TRUE, UINT64_MAX));
+		VK_CHECK_RESULT(vkResetFences(device, 1, &waitFences[currentCmdBufferIndex]));
 		submitInfo.pWaitSemaphores = &multiviewPass.semaphore;
 		submitInfo.pSignalSemaphores = &semaphores.renderComplete;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
-		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, waitFences[currentBuffer]));
+		submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, waitFences[currentCmdBufferIndex]));
 
 		VulkanExampleBase::submitFrame();
 	}

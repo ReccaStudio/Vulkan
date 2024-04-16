@@ -707,7 +707,7 @@ public:
 	{
 		VulkanExampleBase::prepareFrame();
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
+		submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
 		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 		// Read query results for displaying in next frame (if the device supports pipeline statistics)
 		if (deviceFeatures.pipelineStatisticsQuery) {

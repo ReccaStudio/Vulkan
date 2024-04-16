@@ -726,7 +726,7 @@ public:
 		queueBeginLabel(graphicQueue, "Graphics queue command buffer submission", { 1.0f, 1.0f, 1.0f, 1.0f });
 		VulkanExampleBase::prepareFrame();
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
+		submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
 		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 		VulkanExampleBase::submitFrame();
 		queueEndLabel(graphicQueue);

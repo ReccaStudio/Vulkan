@@ -3218,7 +3218,7 @@ void VulkanExampleBase::drawUI(const VkCommandBuffer commandBuffer)
 void VulkanExampleBase::prepareFrame()
 {
 	// Acquire the next image from the swap chain
-	VkResult result = swapChain.acquireNextImage(semaphores.presentComplete, &currentBuffer);
+	VkResult result = swapChain.acquireNextImage(semaphores.presentComplete, &currentCmdBufferIndex);
 	// Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE)
 	// SRS - If no longer optimal (VK_SUBOPTIMAL_KHR), wait until submitFrame() in case number of swapchain images will change on resize
 	if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
@@ -3234,7 +3234,7 @@ void VulkanExampleBase::prepareFrame()
 
 void VulkanExampleBase::submitFrame()
 {
-	VkResult result = swapChain.queuePresent(graphicQueue, currentBuffer, semaphores.renderComplete);
+	VkResult result = swapChain.queuePresent(graphicQueue, currentCmdBufferIndex, semaphores.renderComplete);
 	// Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
 	
     if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
@@ -3253,7 +3253,7 @@ void VulkanExampleBase::renderFrame()
 {
 	VulkanExampleBase::prepareFrame();
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
+	submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
 	VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 	VulkanExampleBase::submitFrame();
 }

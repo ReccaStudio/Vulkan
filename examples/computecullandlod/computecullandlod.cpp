@@ -772,7 +772,7 @@ public:
 		// Submit graphics command buffer
 
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
+		submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
 
 		// Wait on present and compute semaphores
 		std::array<VkPipelineStageFlags, 2> stageFlags = {
