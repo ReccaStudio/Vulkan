@@ -63,7 +63,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Compute shader image load/store";
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
 		camera.setRotation(glm::vec3(0.0f));
 		camera.setPerspective(60.0f, (float)width * 0.5f / (float)height, 1.0f, 256.0f);

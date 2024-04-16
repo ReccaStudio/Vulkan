@@ -48,7 +48,7 @@ public:
 	{
 		windowTitle = "Ray tracing callable shaders";
 		timerSpeed *= 0.25f;
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -10.0f));

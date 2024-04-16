@@ -65,7 +65,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Descriptor buffers (VK_EXT_descriptor_buffer)";
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -5.0f));

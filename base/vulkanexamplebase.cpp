@@ -20,10 +20,11 @@ std::vector<const char*> VulkanExampleBase::args;
 
 std::string VulkanExampleBase::getWindowTitle()
 {
-	std::string device(deviceProperties.deviceName);
+	std::string deviceName(deviceProperties.deviceName);
 	std::string tempWindowTile;
-	tempWindowTile = windowTitle + " - " + device;
-	if (!settings.overlay) {
+	tempWindowTile = windowTitle + " - " + deviceName;
+	if (!settings.overlay)
+	{
 		tempWindowTile += " - " + std::to_string(frameCounter) + " fps";
 	}
 	return tempWindowTile;
@@ -467,7 +468,8 @@ bool VulkanExampleBase::initVulkanSetting()
 	uint32_t gpuCount = 0;
 	// Get number of available physical devices
 	VK_CHECK_RESULT(vkEnumeratePhysicalDevices(instance, &gpuCount, nullptr));
-	if (gpuCount == 0) {
+	if (gpuCount == 0)
+	{
 		vks::tools::exitFatal("No device with Vulkan support found", -1);
 		return false;
 	}
@@ -496,16 +498,20 @@ bool VulkanExampleBase::initVulkanSetting()
 			selectedDevice = index;
 		}
 	}
-	if (commandLineParser.isSet("gpulist")) {
+
+	if (commandLineParser.isSet("gpulist"))
+    {
 		std::cout << "Available Vulkan devices" << "\n";
-		for (uint32_t i = 0; i < gpuCount; i++) {
+		for (uint32_t i = 0;i<gpuCount;++i)
+		{
 			VkPhysicalDeviceProperties deviceProperties;
 			vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProperties);
 			std::cout << "Device [" << i << "] : " << deviceProperties.deviceName << std::endl;
 			std::cout << " Type: " << vks::tools::physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
 			std::cout << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
 		}
-	}
+	}// gpulist
+
 #endif
 
 	physicalDevice = physicalDevices[selectedDevice];
@@ -539,9 +545,12 @@ bool VulkanExampleBase::initVulkanSetting()
 	// Find a suitable depth and/or stencil format
 	VkBool32 validFormat{ false };
 	// Samples that make use of stencil will require a depth + stencil format, so we select from a different list
-	if (requiresStencil) {
+	if (requiresStencil)
+    {
 		validFormat = vks::tools::getSupportedDepthStencilFormat(physicalDevice, &depthFormat);
-	} else {
+	}
+    else
+    {
 		validFormat = vks::tools::getSupportedDepthFormat(physicalDevice, &depthFormat);
 	}
 	assert(validFormat);
@@ -746,10 +755,10 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			uiOverlay.updated = true;
 			break;
 		case KEY_F2:
-			if (camera.type == Camera::CameraType::lookat) {
-				camera.type = Camera::CameraType::firstperson;
+			if (camera.cameraType == Camera::CameraType::lookat) {
+				camera.cameraType = Camera::CameraType::firstperson;
 			}else {
-				camera.type = Camera::CameraType::lookat;
+				camera.cameraType = Camera::CameraType::lookat;
 			}
 			break;
 		case KEY_ESCAPE:
@@ -757,7 +766,7 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			break;
 		}
 
-		if (camera.type == Camera::firstperson)
+		if (camera.cameraType == Camera::firstperson)
 		{
 			switch (wParam)
 			{
@@ -778,8 +787,9 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 		keyPressed((uint32_t)wParam);
 		break;
+
 	case WM_KEYUP:
-		if (camera.type == Camera::firstperson)
+		if (camera.cameraType == Camera::firstperson)
 		{
 			switch (wParam)
 			{
@@ -798,6 +808,7 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			}
 		}
 		break;
+
 	case WM_LBUTTONDOWN:
 		mouseState.position = glm::vec2((float)LOWORD(lParam), (float)HIWORD(lParam));
 		mouseState.buttons.left = true;
@@ -826,11 +837,13 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		viewUpdated = true;
 		break;
 	}
+	
 	case WM_MOUSEMOVE:
 	{
 		handleMouseMove(LOWORD(lParam), HIWORD(lParam));
 		break;
 	}
+
 	case WM_SIZE:
 		if ((prepared) && (wParam != SIZE_MINIMIZED))
 		{
@@ -842,6 +855,7 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			}
 		}
 		break;
+
 	case WM_GETMINMAXINFO:
 	{
 		LPMINMAXINFO minMaxInfo = (LPMINMAXINFO)lParam;
@@ -849,9 +863,11 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		minMaxInfo->ptMinTrackSize.y = 64;
 		break;
 	}
+
 	case WM_ENTERSIZEMOVE:
 		resizing = true;
 		break;
+
 	case WM_EXITSIZEMOVE:
 		resizing = false;
 		break;
@@ -2987,7 +3003,7 @@ void VulkanExampleBase::renderLoop()
 			const float deadZone = 0.0015f;
 			// todo : check if gamepad is present
 			// todo : time based and relative axis positions
-			if (camera.type != Camera::CameraType::firstperson)
+			if (camera.cameraType != Camera::CameraType::firstperson)
 			{
 				// Rotate
 				if (std::abs(gamePadState.axisLeft.x) > deadZone)

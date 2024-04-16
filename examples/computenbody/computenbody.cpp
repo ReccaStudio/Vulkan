@@ -92,7 +92,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Compute shader N-body system";
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(-26.0f, 75.0f, 0.0f));
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -14.0f));

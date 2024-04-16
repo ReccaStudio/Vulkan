@@ -640,7 +640,7 @@ void VulkanglTFModel::draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipel
 VulkanExample::VulkanExample() : VulkanExampleBase()
 {
 	windowTitle        = "glTF vertex skinning";
-	camera.type  = Camera::CameraType::lookat;
+	camera.cameraType  = Camera::CameraType::lookat;
 	camera.flipY = true;
 	camera.setPosition(glm::vec3(0.0f, 0.75f, -2.0f));
 	camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));

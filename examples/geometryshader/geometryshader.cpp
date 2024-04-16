@@ -34,7 +34,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Geometry shader normal debugging";
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -1.0f));
 		camera.setRotation(glm::vec3(0.0f, -25.0f, 0.0f));
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 128.0f);

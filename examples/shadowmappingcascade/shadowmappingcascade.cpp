@@ -134,7 +134,7 @@ public:
 	{
 		windowTitle = "Cascaded shadow mapping";
 		timerSpeed *= 0.025f;
-		camera.type = Camera::CameraType::firstperson;
+		camera.cameraType = Camera::CameraType::firstperson;
 		camera.movementSpeed = 2.5f;
 		camera.setPerspective(45.0f, (float)width / (float)height, zNear, zFar);
 		camera.setPosition(glm::vec3(-0.12f, 1.14f, -2.25f));

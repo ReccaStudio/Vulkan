@@ -92,7 +92,7 @@ public:
 	{
 		windowTitle = "PBR with image based lighting";
 
-		camera.type = Camera::CameraType::firstperson;
+		camera.cameraType = Camera::CameraType::firstperson;
 		camera.movementSpeed = 4.0f;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 		camera.rotationSpeed = 0.25f;

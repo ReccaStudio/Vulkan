@@ -36,7 +36,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Pipeline state objects";
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -10.5f));
 		camera.setRotation(glm::vec3(-25.0f, 15.0f, 0.0f));
 		camera.setRotationSpeed(0.5f);

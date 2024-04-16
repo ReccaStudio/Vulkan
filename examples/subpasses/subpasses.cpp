@@ -90,7 +90,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Subpasses";
-		camera.type = Camera::CameraType::firstperson;
+		camera.cameraType = Camera::CameraType::firstperson;
 		camera.movementSpeed = 5.0f;
 #ifndef __ANDROID__
 		camera.rotationSpeed = 0.25f;

@@ -50,7 +50,7 @@ public:
 	VulkanExample() : VulkanExampleBase()
 	{
 		windowTitle = "Cube map textures";
-		camera.type = Camera::CameraType::lookat;
+		camera.cameraType = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.0f));
 		camera.setRotation(glm::vec3(0.0f));
 		camera.setRotationSpeed(0.25f);
