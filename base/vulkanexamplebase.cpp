@@ -837,7 +837,7 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			{
 				destWidth = LOWORD(lParam);
 				destHeight = HIWORD(lParam);
-				windowResize();
+				resizeWindow();
 			}
 		}
 		break;
@@ -1297,7 +1297,7 @@ static CVReturn displayLinkOutputCallback(CVDisplayLinkRef displayLink, const CV
 	vulkanExample->viewUpdated = true;
 }
 
-// SRS - Window resizing already handled by windowResize() in VulkanExampleBase::submitFrame()
+// SRS - Window resizing already handled by resizeWindow() in VulkanExampleBase::submitFrame()
 //	   - handling window resize events here is redundant and can cause thread interaction problems
 /*
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
@@ -1402,7 +1402,7 @@ void VulkanExampleBase::windowWillResize(float x, float y)
 	{
 		destWidth = x;
 		destHeight = y;
-		windowResize();
+		resizeWindow();
 	}
 }
 
@@ -1598,7 +1598,7 @@ void VulkanExampleBase::handleEvent(const DFBWindowEvent *event)
 	case DWET_SIZE:
 		destWidth = event->w;
 		destHeight = event->h;
-		windowResize();
+		resizeWindow();
 		break;
 	default:
 		break;
@@ -1873,7 +1873,7 @@ void VulkanExampleBase::setSize(int width, int height)
 	destWidth = width;
 	destHeight = height;
 
-	windowResize();
+	resizeWindow();
 }
 
 static void
@@ -2144,7 +2144,7 @@ void VulkanExampleBase::handleEvent(const xcb_generic_event_t *event)
 				destHeight = cfgEvent->height;
 				if ((destWidth > 0) && (destHeight > 0))
 				{
-					windowResize();
+					resizeWindow();
 				}
 		}
 	}
@@ -2269,7 +2269,7 @@ void VulkanExampleBase::handleEvent()
 							}
 							width = size[0];
 							height = size[1];
-							windowResize();
+							resizeWindow();
 							break;
 						default:
 							/* We are not interested in any other events for now */
@@ -2772,7 +2772,7 @@ VkPipelineShaderStageCreateInfo VulkanExampleBase::loadShader(std::string fileNa
 	return shaderStage;
 }
 
-void VulkanExampleBase::windowResize()
+void VulkanExampleBase::resizeWindow()
 {
 	if (!prepared)
 	{
@@ -3223,7 +3223,7 @@ void VulkanExampleBase::prepareFrame()
 	// SRS - If no longer optimal (VK_SUBOPTIMAL_KHR), wait until submitFrame() in case number of swapchain images will change on resize
 	if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-			windowResize();
+			resizeWindow();
 		}
 		return;
 	}
@@ -3238,7 +3238,7 @@ void VulkanExampleBase::submitFrame()
 	// Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
 	
     if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
-		windowResize();
+		resizeWindow();
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 			return;
 		}

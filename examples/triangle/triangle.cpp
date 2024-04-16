@@ -914,7 +914,7 @@ public:
 		uint32_t imageIndex;
 		VkResult result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, presentCompleteSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-			windowResize();
+			resizeWindow();
 			return;
 		}
 		else if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR)) {
@@ -1031,7 +1031,7 @@ public:
 		result = vkQueuePresentKHR(graphicQueue, &presentInfo);
 
 		if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
-			windowResize();
+			resizeWindow();
 		}
 		else if (result != VK_SUCCESS) {
 			throw "Could not present the image to the swap chain!";

@@ -388,7 +388,7 @@ public:
 	/** @brief Loads a SPIR-V shader file for the given shader stage */
 	VkPipelineShaderStageCreateInfo loadShader(std::string fileName, VkShaderStageFlagBits stage);
 
-	void windowResize();
+	void resizeWindow();
 
 	/** @brief Entry point for the main render loop */
 	void renderLoop();
