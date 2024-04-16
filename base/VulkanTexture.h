@@ -28,9 +28,9 @@
 
 namespace vks
 {
-class Texture
-{
-  public:
+	class Texture
+    {
+	public:
 	vks::VulkanDevice *   device;
 	VkImage               image;
 	VkImageLayout         imageLayout;
@@ -42,10 +42,12 @@ class Texture
 	VkDescriptorImageInfo descriptorImageInfo;
 	VkSampler             sampler;
 
-	void      updateDescriptor();
-	void      destroy();
-	ktxResult loadKTXFile(std::string filename, ktxTexture **target);
-};
+		void updateDescriptor();
+
+		void destroy();
+
+		ktxResult loadKTXFile(std::string fileName, ktxTexture **target);
+	};
 
 class Texture2D : public Texture
 {
