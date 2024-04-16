@@ -418,12 +418,12 @@ public:
 			uniformData.globSpeed += frameTimer * 0.01f;
 		}
 
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareInstanceData();
 		prepareUniformBuffers();

@@ -619,13 +619,13 @@ void VulkanExample::updateUniformBuffers()
 	uniformData.viewPos = camera.viewPos;
 
 	VK_CHECK_RESULT(uniformBuffer.map());
-	memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+	memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	uniformBuffer.unmap();
 }
 
-void VulkanExample::prepare()
+void VulkanExample::prepareForRendering()
 {
-	VulkanExampleBase::prepare();
+	VulkanExampleBase::prepareForRendering();
 	// Check if the GPU supports sparse residency for 2D images
 	if (!vulkanDevice->features.sparseResidencyImage2D) {
 		vks::tools::exitFatal("Device does not support sparse residency for 2D images!", VK_ERROR_FEATURE_NOT_PRESENT);
@@ -692,7 +692,7 @@ void VulkanExample::uploadContent(VirtualTexturePage page, VkImage image)
 		bufferSize));
 	imageBuffer.map();
 
-	uint8_t* data = (uint8_t*)imageBuffer.mapped;
+	uint8_t* data = (uint8_t*)imageBuffer.mappedData;
 	randomPattern(data, page.extent.height, page.extent.width);
 
 	VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
@@ -787,7 +787,7 @@ void VulkanExample::fillMipTail()
 		std::random_device rd;
 		std::mt19937 rndEngine(rd());
 		std::uniform_int_distribution<uint32_t> rndDist(0, 255);
-		uint8_t* data = (uint8_t*)imageBuffer.mapped;
+		uint8_t* data = (uint8_t*)imageBuffer.mappedData;
 		randomPattern(data, width, height);
 
 		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);

@@ -383,7 +383,7 @@ public:
 	virtual void getEnabledExtensions();
 
 	/** @brief Prepares all Vulkan resources and functions required to run the sample */
-	virtual void prepare();
+	virtual void prepareForRendering();
 
 	/** @brief Loads a SPIR-V shader file for the given shader stage */
 	VkPipelineShaderStageCreateInfo loadShader(std::string fileName, VkShaderStageFlagBits stage);
@@ -430,7 +430,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)									\
 	vulkanExample = new VulkanExample();															\
 	vulkanExample->initVulkan();																	\
 	vulkanExample->setupWindow(hInstance, WndProc);													\
-	vulkanExample->prepare();																		\
+	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
 	delete(vulkanExample);																			\
 	return 0;																						\
@@ -462,7 +462,7 @@ int main(const int argc, const char *argv[])													    \
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };  				\
 	vulkanExample = new VulkanExample();															\
 	vulkanExample->initVulkan();																	\
-	vulkanExample->prepare();																		\
+	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
 	delete(vulkanExample);																			\
 	return 0;																						\
@@ -483,7 +483,7 @@ int main(const int argc, const char *argv[])													    \
 	vulkanExample = new VulkanExample();															\
 	vulkanExample->initVulkan();																	\
 	vulkanExample->setupWindow();					 												\
-	vulkanExample->prepare();																		\
+	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
 	delete(vulkanExample);																			\
 	return 0;																						\
@@ -497,7 +497,7 @@ int main(const int argc, const char *argv[])													    \
 	vulkanExample = new VulkanExample();															\
 	vulkanExample->initVulkan();																	\
 	vulkanExample->setupWindow();					 												\
-	vulkanExample->prepare();																		\
+	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
 	delete(vulkanExample);																			\
 	return 0;																						\
@@ -518,7 +518,7 @@ int main(const int argc, const char *argv[])													    \
 	vulkanExample = new VulkanExample();															\
 	vulkanExample->initVulkan();																	\
 	vulkanExample->setupWindow();					 												\
-	vulkanExample->prepare();																		\
+	vulkanExample->prepareForRendering();																		\
 	vulkanExample->renderLoop();																	\
 	delete(vulkanExample);																			\
 	return 0;																						\
@@ -535,7 +535,7 @@ int main(const int argc, const char *argv[])														\
 		vulkanExample = new VulkanExample();														\
 		vulkanExample->initVulkan();																\
 		vulkanExample->setupWindow(nullptr);														\
-		vulkanExample->prepare();																	\
+		vulkanExample->prepareForRendering();																	\
 		vulkanExample->renderLoop();																\
 		delete(vulkanExample);																		\
 	}																								\
@@ -554,7 +554,7 @@ int main(const int argc, const char *argv[])										\
 	vulkanExample = new VulkanExample();										\
 	vulkanExample->initVulkan();											\
 	vulkanExample->setupWindow();											\
-	vulkanExample->prepare();											\
+	vulkanExample->prepareForRendering();											\
 	vulkanExample->renderLoop();											\
 	delete(vulkanExample);												\
 	return 0;													\

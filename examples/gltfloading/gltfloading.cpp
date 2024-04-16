@@ -710,12 +710,12 @@ public:
 		shaderData.values.projection = camera.matrices.perspective;
 		shaderData.values.model = camera.matrices.view;
 		shaderData.values.viewPos = camera.viewPos;
-		memcpy(shaderData.buffer.mapped, &shaderData.values, sizeof(shaderData.values));
+		memcpy(shaderData.buffer.mappedData, &shaderData.values, sizeof(shaderData.values));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

@@ -248,15 +248,15 @@ public:
 		if (!displacement) {
 			uniformData.tessLevel = 1.0f;
 		}
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 		if (!displacement) {
 			uniformData.tessLevel = savedLevel;
 		}
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

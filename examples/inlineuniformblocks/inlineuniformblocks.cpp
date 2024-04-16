@@ -305,12 +305,12 @@ public:
 		uniformData.view = camera.matrices.view;
 		uniformData.model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
 		uniformData.camPos = camera.position * glm::vec3(-1.0f, 1.0f, -1.0f);
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

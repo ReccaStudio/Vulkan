@@ -164,7 +164,7 @@ public:
 	void preparePipelines();
 	void prepareUniformBuffers();
 	void updateUniformBuffers();
-	void prepare();
+	void prepareForRendering();
 	virtual void render();
 	virtual void OnUpdateUIOverlay(vks::UIOverlay* overlay);
 };

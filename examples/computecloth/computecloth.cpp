@@ -157,8 +157,8 @@ public:
 			VkBufferMemoryBarrier bufferBarrier = vks::initializers::bufferMemoryBarrier();
 			bufferBarrier.srcAccessMask = srcAccessMask;
 			bufferBarrier.dstAccessMask = dstAccessMask;
-			bufferBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
-			bufferBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+			bufferBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
+			bufferBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 			bufferBarrier.size = VK_WHOLE_SIZE;
 
 			std::vector<VkBufferMemoryBarrier> bufferBarriers;
@@ -205,8 +205,8 @@ public:
 			VkBufferMemoryBarrier bufferBarrier = vks::initializers::bufferMemoryBarrier();
 			bufferBarrier.srcAccessMask = srcAccessMask;
 			bufferBarrier.dstAccessMask = dstAccessMask;
-			bufferBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
-			bufferBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
+			bufferBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
+			bufferBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
 			bufferBarrier.size = VK_WHOLE_SIZE;
 			std::vector<VkBufferMemoryBarrier> bufferBarriers;
 			bufferBarrier.buffer = storageBuffers.input.buffer;
@@ -531,7 +531,7 @@ public:
 	void prepareCompute()
 	{
 		// Create a compute capable device queue
-		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.compute, 0, &compute.queue);
+		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.computeIndex, 0, &compute.queue);
 
 		// Uniform buffer for passing data to the compute shader
 		vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &compute.uniformBuffer, sizeof(Compute::UniformData));
@@ -590,7 +590,7 @@ public:
 		// Separate command pool as queue family for compute may be different than graphics
 		VkCommandPoolCreateInfo cmdPoolInfo = {};
 		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &compute.commandPool));
 
@@ -627,14 +627,14 @@ public:
 		else {
 			compute.uniformData.deltaT = 0.0f;
 		}
-		memcpy(compute.uniformBuffer.mapped, &compute.uniformData, sizeof(Compute::UniformData));
+		memcpy(compute.uniformBuffer.mappedData, &compute.uniformData, sizeof(Compute::UniformData));
 	}
 
 	void updateGraphicsUBO()
 	{
 		graphics.uniformData.projection = camera.matrices.perspective;
 		graphics.uniformData.view = camera.matrices.view;
-		memcpy(graphics.uniformBuffer.mapped, &graphics.uniformData, sizeof(Graphics::UniformData));
+		memcpy(graphics.uniformBuffer.mappedData, &graphics.uniformData, sizeof(Graphics::UniformData));
 	}
 
 	void draw()
@@ -685,16 +685,16 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		// Make sure the code works properly both with different queues families for graphics and compute and the same queue family
 		// You can use DEBUG_FORCE_SHARED_GRAPHICS_COMPUTE_QUEUE preprocessor define to force graphics and compute from the same queue family 
 #ifdef DEBUG_FORCE_SHARED_GRAPHICS_COMPUTE_QUEUE
-		vulkanDevice->queueFamilyIndices.compute = vulkanDevice->queueFamilyIndices.graphics;
+		vulkanDevice->queueFamilyIndices.computeIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
 #endif
 		// Check whether the compute queue family is distinct from the graphics queue family
-		dedicatedComputeQueue = vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute;
+		dedicatedComputeQueue = vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex;
 		loadAssets();
 		prepareStorageBuffers();
 		prepareGraphics();

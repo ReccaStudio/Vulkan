@@ -656,7 +656,7 @@ public:
 		uniformDataOffscreen.projection = camera.matrices.perspective;
 		uniformDataOffscreen.view = camera.matrices.view;
 		uniformDataOffscreen.model = glm::mat4(1.0f);
-		memcpy(uniformBuffers.offscreen.mapped, &uniformDataOffscreen, sizeof(uniformDataOffscreen));
+		memcpy(uniformBuffers.offscreen.mappedData, &uniformDataOffscreen, sizeof(uniformDataOffscreen));
 	}
 
 	Light initLight(glm::vec3 pos, glm::vec3 target, glm::vec3 color)
@@ -699,17 +699,17 @@ public:
 		}
 
 		memcpy(uniformDataShadows.instancePos, uniformDataOffscreen.instancePos, sizeof(UniformDataOffscreen::instancePos));
-		memcpy(uniformBuffers.shadowGeometryShader.mapped, &uniformDataShadows, sizeof(UniformDataShadows));
+		memcpy(uniformBuffers.shadowGeometryShader.mappedData, &uniformDataShadows, sizeof(UniformDataShadows));
 
 		uniformDataComposition.viewPos = glm::vec4(camera.position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);;
 		uniformDataComposition.debugDisplayTarget = debugDisplayTarget;
 
-		memcpy(uniformBuffers.composition.mapped, &uniformDataComposition, sizeof(uniformDataComposition));
+		memcpy(uniformBuffers.composition.mappedData, &uniformDataComposition, sizeof(uniformDataComposition));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		deferredSetup();
 		shadowSetup();

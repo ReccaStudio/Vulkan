@@ -397,10 +397,10 @@ public:
 		createShaderBindingTable(shaderBindingTables.hit, 1);
 
 		// Copy handles
-		memcpy(shaderBindingTables.raygen.mapped, shaderHandleStorage.data(), handleSize);
+		memcpy(shaderBindingTables.raygen.mappedData, shaderHandleStorage.data(), handleSize);
 		// We are using two miss shaders, so we need to get two handles for the miss shader binding table
-		memcpy(shaderBindingTables.miss.mapped, shaderHandleStorage.data() + handleSizeAligned, handleSize * 2);
-		memcpy(shaderBindingTables.hit.mapped, shaderHandleStorage.data() + handleSizeAligned * 3, handleSize);
+		memcpy(shaderBindingTables.miss.mappedData, shaderHandleStorage.data() + handleSizeAligned, handleSize * 2);
+		memcpy(shaderBindingTables.hit.mappedData, shaderHandleStorage.data() + handleSizeAligned * 3, handleSize);
 	}
 
 	/*
@@ -711,7 +711,7 @@ public:
 		// In this sample we use noise offset by this frame index to shoot rays for transparency into different directions
 		// Once enough frames with random ray directions have been accumulated, it looks like proper transparency
 		uniformData.frame++;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
 	void getEnabledFeatures()
@@ -745,9 +745,9 @@ public:
 		model.loadFromFile(getAssetPath() + "models/FlightHelmet/glTF/FlightHelmet.gltf", vulkanDevice, graphicQueue);
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanRaytracingSample::prepare();
+		VulkanRaytracingSample::prepareForRendering();
 
 		loadAssets();
 

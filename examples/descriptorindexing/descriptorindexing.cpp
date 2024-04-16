@@ -357,7 +357,7 @@ public:
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.view = camera.matrices.view;
 		uniformData.model = glm::mat4(1.0f);
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void buildCommandBuffers()
@@ -397,9 +397,9 @@ public:
 		}
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		generateTextures();
 		generateCubes();
 		prepareUniformBuffers();

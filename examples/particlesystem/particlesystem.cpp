@@ -514,7 +514,7 @@ public:
 		uniformDataParticles.projection = camera.matrices.perspective;
 		uniformDataParticles.modelView = camera.matrices.view;
 		uniformDataParticles.viewportDim = glm::vec2((float)width, (float)height);
-		memcpy(uniformBuffers.particles.mapped, &uniformDataParticles, sizeof(UniformDataParticles));
+		memcpy(uniformBuffers.particles.mappedData, &uniformDataParticles, sizeof(UniformDataParticles));
 
 		// Environment
 		uniformDataEnvironment.projection = camera.matrices.perspective;
@@ -526,12 +526,12 @@ public:
 			uniformDataEnvironment.lightPos.y = 0.0f;
 			uniformDataEnvironment.lightPos.z = cos(timer * 2.0f * float(M_PI)) * 1.5f;
 		}
-		memcpy(uniformBuffers.environment.mapped, &uniformDataEnvironment, sizeof(UniformDataEnvironment));
+		memcpy(uniformBuffers.environment.mappedData, &uniformDataEnvironment, sizeof(UniformDataEnvironment));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareParticles();
 		prepareUniformBuffers();

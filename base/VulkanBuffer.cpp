@@ -22,7 +22,7 @@ namespace vks
 	*/
 	VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset)
 	{
-		return vkMapMemory(device, memory, offset, size, 0, &mapped);
+		return vkMapMemory(device, memory, offset, size, 0, &mappedData);
 	}
 
 	/**
@@ -32,10 +32,10 @@ namespace vks
 	*/
 	void Buffer::unmap()
 	{
-		if (mapped)
+		if (mappedData)
 		{
 			vkUnmapMemory(device, memory);
-			mapped = nullptr;
+			mappedData = nullptr;
 		}
 	}
 
@@ -74,8 +74,8 @@ namespace vks
 	*/
 	void Buffer::copyTo(void* data, VkDeviceSize size)
 	{
-		assert(mapped);
-		memcpy(mapped, data, size);
+		assert(mappedData);
+		memcpy(mappedData, data, size);
 	}
 
 	/** 

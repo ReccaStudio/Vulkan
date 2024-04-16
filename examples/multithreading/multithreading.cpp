@@ -462,9 +462,9 @@ public:
 		frustum.update(matrices.projection * matrices.view);
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		// Create a fence for synchronization
 		VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 		vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence);

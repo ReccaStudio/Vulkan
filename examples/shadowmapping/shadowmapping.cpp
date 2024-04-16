@@ -531,7 +531,7 @@ public:
 		uniformDataScene.depthBiasMVP = uniformDataOffscreen.depthMVP;
 		uniformDataScene.zNear = zNear;
 		uniformDataScene.zFar = zFar;
-		memcpy(uniformBuffers.scene.mapped, &uniformDataScene, sizeof(uniformDataScene));
+		memcpy(uniformBuffers.scene.mappedData, &uniformDataScene, sizeof(uniformDataScene));
 	}
 
 	void updateUniformBufferOffscreen()
@@ -543,12 +543,12 @@ public:
 
 		uniformDataOffscreen.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
-		memcpy(uniformBuffers.offscreen.mapped, &uniformDataOffscreen, sizeof(uniformDataOffscreen));
+		memcpy(uniformBuffers.offscreen.mappedData, &uniformDataOffscreen, sizeof(uniformDataOffscreen));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareOffscreenFramebuffer();
 		prepareUniformBuffers();

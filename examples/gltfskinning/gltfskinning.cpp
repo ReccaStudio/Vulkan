@@ -963,7 +963,7 @@ void VulkanExample::updateUniformBuffers()
 {
 	shaderData.values.projection = camera.matrices.perspective;
 	shaderData.values.model      = camera.matrices.view;
-	memcpy(shaderData.buffer.mapped, &shaderData.values, sizeof(shaderData.values));
+	memcpy(shaderData.buffer.mappedData, &shaderData.values, sizeof(shaderData.values));
 }
 
 void VulkanExample::loadAssets()
@@ -971,9 +971,9 @@ void VulkanExample::loadAssets()
 	loadglTFFile(getAssetPath() + "models/CesiumMan/glTF/CesiumMan.gltf");
 }
 
-void VulkanExample::prepare()
+void VulkanExample::prepareForRendering()
 {
-	VulkanExampleBase::prepare();
+	VulkanExampleBase::prepareForRendering();
 	loadAssets();
 	prepareUniformBuffers();
 	setupDescriptors();

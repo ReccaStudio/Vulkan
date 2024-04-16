@@ -168,7 +168,7 @@ public:
 	{
 		uboVS.projection = camera.matrices.perspective;
 		uboVS.model = camera.matrices.view;
-		memcpy(uniformBuffer.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffer.mappedData, &uboVS, sizeof(uboVS));
 	}
 
 	void draw()
@@ -180,9 +180,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

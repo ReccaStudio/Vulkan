@@ -649,7 +649,7 @@ public:
 		uniformDataScene.view = camera.matrices.view;
 		uniformDataScene.model = glm::mat4(1.0f);
 		uniformDataScene.lightPos = lightPos;
-		memcpy(uniformBuffers.scene.mapped, &uniformDataScene, sizeof(UniformData));
+		memcpy(uniformBuffers.scene.mappedData, &uniformDataScene, sizeof(UniformData));
 	}
 
 	void updateUniformBufferOffscreen()
@@ -660,7 +660,7 @@ public:
 		uniformDataOffscreen.view = glm::mat4(1.0f);
 		uniformDataOffscreen.model = glm::translate(glm::mat4(1.0f), glm::vec3(-lightPos.x, -lightPos.y, -lightPos.z));
 		uniformDataOffscreen.lightPos = lightPos;
-		memcpy(uniformBuffers.offscreen.mapped, &uniformDataOffscreen, sizeof(UniformData));
+		memcpy(uniformBuffers.offscreen.mappedData, &uniformDataOffscreen, sizeof(UniformData));
 	}
 
 	void draw()
@@ -672,9 +672,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		prepareCubeMap();

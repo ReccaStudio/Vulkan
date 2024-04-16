@@ -411,7 +411,7 @@ public:
 		uniformData.view = camera.matrices.view;
 		uniformData.model = glm::mat4(1.0f);
 		uniformData.lightPos = lightPos;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void getEnabledFeatures()
@@ -440,9 +440,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanRaytracingSample::prepare();
+		VulkanRaytracingSample::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		createBottomLevelAccelerationStructure();

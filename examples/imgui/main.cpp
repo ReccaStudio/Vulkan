@@ -200,7 +200,7 @@ public:
 			uploadSize));
 
 		stagingBuffer.map();
-		memcpy(stagingBuffer.mapped, fontData, uploadSize);
+		memcpy(stagingBuffer.mappedData, fontData, uploadSize);
 		stagingBuffer.unmap();
 
 		// Copy buffer data to font image
@@ -466,8 +466,8 @@ public:
 		}
 
 		// Upload data
-		ImDrawVert* vtxDst = (ImDrawVert*)vertexBuffer.mapped;
-		ImDrawIdx* idxDst = (ImDrawIdx*)indexBuffer.mapped;
+		ImDrawVert* vtxDst = (ImDrawVert*)vertexBuffer.mappedData;
+		ImDrawIdx* idxDst = (ImDrawIdx*)indexBuffer.mappedData;
 
 		for (int n = 0; n < imDrawData->CmdListsCount; n++) {
 			const ImDrawList* cmd_list = imDrawData->CmdLists[n];
@@ -739,7 +739,7 @@ public:
 		};
 
 		VK_CHECK_RESULT(uniformBufferVS.map());
-		memcpy(uniformBufferVS.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBufferVS.mappedData, &uboVS, sizeof(uboVS));
 		uniformBufferVS.unmap();
 	}
 
@@ -768,9 +768,9 @@ public:
 		imGui->initResources(renderPass, graphicQueue, getShadersPath());
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupLayoutsAndDescriptors();

@@ -130,7 +130,7 @@ namespace vks
 			uploadSize));
 
 		stagingBuffer.map();
-		memcpy(stagingBuffer.mapped, fontData, uploadSize);
+		memcpy(stagingBuffer.mappedData, fontData, uploadSize);
 		stagingBuffer.unmap();
 
 		// Copy buffer data to font image
@@ -349,8 +349,8 @@ namespace vks
 		}
 
 		// Upload data
-		ImDrawVert* vtxDst = (ImDrawVert*)vertexBuffer.mapped;
-		ImDrawIdx* idxDst = (ImDrawIdx*)indexBuffer.mapped;
+		ImDrawVert* vtxDst = (ImDrawVert*)vertexBuffer.mappedData;
+		ImDrawIdx* idxDst = (ImDrawIdx*)indexBuffer.mappedData;
 
 		for (int n = 0; n < imDrawData->CmdListsCount; n++) {
 			const ImDrawList* cmd_list = imDrawData->CmdLists[n];

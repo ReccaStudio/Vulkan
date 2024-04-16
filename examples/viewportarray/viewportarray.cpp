@@ -250,12 +250,12 @@ public:
 		uniformDataGS.projection[1] = glm::frustum(left, right, bottom, top, zNear, zFar);
 		uniformDataGS.modelview[1] = rotM * transM;
 
-		memcpy(uniformBufferGS.mapped, &uniformDataGS, sizeof(uniformDataGS));
+		memcpy(uniformBufferGS.mappedData, &uniformDataGS, sizeof(uniformDataGS));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

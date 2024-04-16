@@ -466,7 +466,7 @@ public:
 		camera.setPerspective(45.0f, ((float)width / (float)splitX) / ((float)height / (float)splitY), 0.1f, 256.0f);
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.modelView = camera.matrices.view * glm::rotate(glm::mat4(1.0f), glm::radians(rotation * 360.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void draw()
@@ -478,9 +478,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

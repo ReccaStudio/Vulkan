@@ -439,12 +439,12 @@ public:
 		// Note: Both the object and skybox use the same uniform data, the translation part of the skybox is removed in the shader (see skybox.vert)
 		uboVS.modelView = camera.matrices.view;
 		uboVS.inverseModelview = glm::inverse(camera.matrices.view);
-		memcpy(uniformBuffer.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffer.mappedData, &uboVS, sizeof(uboVS));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

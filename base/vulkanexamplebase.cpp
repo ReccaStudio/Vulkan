@@ -531,7 +531,7 @@ bool VulkanExampleBase::initVulkan()
 	device = vulkanDevice->logicalDevice;
 
 	// Get a graphics queue from the device
-	vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.graphics, 0, &graphicQueue);
+	vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.graphicIndex, 0, &graphicQueue);
 
 	// Find a suitable depth and/or stencil format
 	VkBool32 validFormat{ false };
@@ -1019,7 +1019,7 @@ void VulkanExampleBase::handleAppCommand(android_app * app, int32_t cmd)
 		if (androidApp->window != NULL)
 		{
 			if (vulkanExample->initVulkan()) {
-				vulkanExample->prepare();
+				vulkanExample->prepareForRendering();
 				assert(vulkanExample->prepared);
 			}
 			else {
@@ -2730,7 +2730,7 @@ void VulkanExampleBase::getEnabledFeatures() {}
 
 void VulkanExampleBase::getEnabledExtensions() {}
 
-void VulkanExampleBase::prepare()
+void VulkanExampleBase::prepareForRendering()
 {
 	initSwapchain();
 	createCommandPool();

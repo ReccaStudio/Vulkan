@@ -676,7 +676,7 @@ public:
 			uniformDataTessellation.tessellationFactor = 0.0f;
 		}
 
-		memcpy(uniformBuffers.terrainTessellation.mapped, &uniformDataTessellation, sizeof(UniformDataTessellation));
+		memcpy(uniformBuffers.terrainTessellation.mappedData, &uniformDataTessellation, sizeof(UniformDataTessellation));
 
 		if (!tessellation)
 		{
@@ -685,12 +685,12 @@ public:
 
 		// Vertex shader
 		uniformDataVertex.mvp = camera.matrices.perspective * glm::mat4(glm::mat3(camera.matrices.view));
-		memcpy(uniformBuffers.skysphereVertex.mapped, &uniformDataVertex, sizeof(UniformDataVertex));
+		memcpy(uniformBuffers.skysphereVertex.mappedData, &uniformDataVertex, sizeof(UniformDataVertex));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		generateTerrain();
 		if (deviceFeatures.pipelineStatisticsQuery) {

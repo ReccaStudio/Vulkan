@@ -110,7 +110,7 @@ public:
 	void preparePipelines();
 	void prepareUniformBuffers();
 	void updateUniformBuffers();
-	void prepare();
+	void prepareForRendering();
 	virtual void render();
 	void uploadContent(VirtualTexturePage page, VkImage image);
 	void fillRandomPages();

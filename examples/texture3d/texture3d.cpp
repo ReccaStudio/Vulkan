@@ -607,12 +607,12 @@ public:
 				uniformData.depth = uniformData.depth - 1.0f;
 			}
 		}
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		generateQuad();
 		prepareUniformBuffers();
 		prepareNoiseTexture(128, 128, 128);

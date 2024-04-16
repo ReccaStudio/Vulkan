@@ -318,12 +318,12 @@ public:
 	{
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.modelView = camera.matrices.view;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		// Dynamic states are set with vkCmd* calls in the command buffer, so we need to load the function pointers depending on extension supports
 		if (hasDynamicState) {

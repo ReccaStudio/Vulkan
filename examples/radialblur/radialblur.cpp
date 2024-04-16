@@ -540,7 +540,7 @@ public:
 	// This only does the copy, actual parameters are set via the UI
 	void updateUniformBuffersBlurParams()
 	{
-		memcpy(uniformBuffers.blurParams.mapped, &uniformDataBlurParams, sizeof(UniformDataBlurParams));
+		memcpy(uniformBuffers.blurParams.mappedData, &uniformDataBlurParams, sizeof(UniformDataBlurParams));
 	}
 
 	// Update uniform buffers for rendering the 3D scene
@@ -554,12 +554,12 @@ public:
 		if (!paused) {
 			uniformDataScene.gradientPos += frameTimer * 0.1f;
 		}
-		memcpy(uniformBuffers.scene.mapped, &uniformDataScene, sizeof(UniformDataScene));
+		memcpy(uniformBuffers.scene.mappedData, &uniformDataScene, sizeof(UniformDataScene));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareOffscreen();
 		prepareUniformBuffers();

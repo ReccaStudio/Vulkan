@@ -350,7 +350,7 @@ public:
 		uboVS.projection = camera.matrices.perspective;
 		uboVS.view = camera.matrices.view;
 
-		memcpy(uniformBuffers.view.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffers.view.mappedData, &uboVS, sizeof(uboVS));
 	}
 
 	void updateDynamicUniformBuffer()
@@ -391,7 +391,7 @@ public:
 
 		animationTimer = 0.0f;
 
-		memcpy(uniformBuffers.dynamic.mapped, uboDataDynamic.model, uniformBuffers.dynamic.size);
+		memcpy(uniformBuffers.dynamic.mappedData, uboDataDynamic.model, uniformBuffers.dynamic.size);
 		// Flush to make changes visible to the host
 		VkMappedMemoryRange memoryRange = vks::initializers::mappedMemoryRange();
 		memoryRange.memory = uniformBuffers.dynamic.memory;
@@ -399,9 +399,9 @@ public:
 		vkFlushMappedMemoryRanges(device, 1, &memoryRange);
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		generateCube();
 		prepareUniformBuffers();
 		setupDescriptors();

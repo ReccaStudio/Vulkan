@@ -62,7 +62,7 @@ public:
 	void preparePipelines();
 	void prepareUniformBuffers();
 	void updateUniformBuffers();
-	void prepare();
+	void prepareForRendering();
 	void setupFrameBuffer() override;
 	void setupRenderPass() override;
 	virtual void render();

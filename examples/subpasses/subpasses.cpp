@@ -745,7 +745,7 @@ public:
 		uboGBuffer.projection = camera.matrices.perspective;
 		uboGBuffer.view = camera.matrices.view;
 		uboGBuffer.model = glm::mat4(1.0f);
-		memcpy(buffers.GBuffer.mapped, &uboGBuffer, sizeof(uboGBuffer));
+		memcpy(buffers.GBuffer.mappedData, &uboGBuffer, sizeof(uboGBuffer));
 	}
 
 	void initLights()
@@ -772,7 +772,7 @@ public:
 			light.radius = 1.0f + std::abs(rndDist(rndGen));
 		}
 
-		memcpy(buffers.lights.mapped, lights.data(), lights.size() * sizeof(Light));
+		memcpy(buffers.lights.mappedData, lights.data(), lights.size() * sizeof(Light));
 	}
 
 	void draw()
@@ -789,9 +789,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		initLights();

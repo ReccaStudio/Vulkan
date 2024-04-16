@@ -233,10 +233,10 @@ public:
 		}
 
 		uniformDataVertexShader.cameraPos = glm::vec4(camera.position, -1.0f) * -1.0f;
-		memcpy(uniformBuffers.vertexShader.mapped, &uniformDataVertexShader, sizeof(UniformDataVertexShader));
+		memcpy(uniformBuffers.vertexShader.mappedData, &uniformDataVertexShader, sizeof(UniformDataVertexShader));
 
 		// Fragment shader
-		memcpy(uniformBuffers.fragmentShader.mapped, &uniformDataFragmentShader, sizeof(UniformDataFragmentShader));
+		memcpy(uniformBuffers.fragmentShader.mappedData, &uniformDataFragmentShader, sizeof(UniformDataFragmentShader));
 	}
 
 	void draw()
@@ -248,9 +248,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

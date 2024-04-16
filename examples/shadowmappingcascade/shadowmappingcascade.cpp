@@ -728,7 +728,7 @@ public:
 		for (uint32_t i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++) {
 			depthPass.ubo.cascadeViewProjMat[i] = cascades[i].viewProjMatrix;
 		}
-		memcpy(depthPass.uniformBuffer.mapped, &depthPass.ubo, sizeof(depthPass.ubo));
+		memcpy(depthPass.uniformBuffer.mappedData, &depthPass.ubo, sizeof(depthPass.ubo));
 
 		/*
 			Scene rendering
@@ -739,7 +739,7 @@ public:
 
 		uboVS.lightDir = normalize(-lightPos);
 
-		memcpy(uniformBuffers.VS.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffers.VS.mappedData, &uboVS, sizeof(uboVS));
 
 		for (uint32_t i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++) {
 			uboFS.cascadeSplits[i] = cascades[i].splitDepth;
@@ -748,7 +748,7 @@ public:
 		uboFS.inverseViewMat = glm::inverse(camera.matrices.view);
 		uboFS.lightDir = normalize(-lightPos);
 		uboFS.colorCascades = colorCascades;
-		memcpy(uniformBuffers.FS.mapped, &uboFS, sizeof(uboFS));
+		memcpy(uniformBuffers.FS.mappedData, &uboFS, sizeof(uboFS));
 	}
 
 	void draw()
@@ -760,9 +760,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		updateLight();
 		updateCascades();

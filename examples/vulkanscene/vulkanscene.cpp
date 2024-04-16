@@ -180,7 +180,7 @@ public:
 		uniformData.model = glm::mat4(1.0f);
 		uniformData.normal = glm::inverseTranspose(uniformData.view * uniformData.model);
 		uniformData.lightPos = lightPos;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
 	void buildCommandBuffers()
@@ -238,9 +238,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

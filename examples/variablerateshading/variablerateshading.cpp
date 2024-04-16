@@ -570,12 +570,12 @@ void VulkanExample::updateUniformBuffers()
 	shaderData.values.view = camera.matrices.view;
 	shaderData.values.viewPos = camera.viewPos;
 	shaderData.values.colorShadingRate = colorShadingRate;
-	memcpy(shaderData.buffer.mapped, &shaderData.values, sizeof(shaderData.values));
+	memcpy(shaderData.buffer.mappedData, &shaderData.values, sizeof(shaderData.values));
 }
 
-void VulkanExample::prepare()
+void VulkanExample::prepareForRendering()
 {
-	VulkanExampleBase::prepare();
+	VulkanExampleBase::prepareForRendering();
 	loadAssets();
 	prepareUniformBuffers();
 	setupDescriptors();

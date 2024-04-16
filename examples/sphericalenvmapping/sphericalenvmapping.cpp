@@ -187,12 +187,12 @@ public:
 		uniformData.view = camera.matrices.view;
 		uniformData.model = glm::mat4(1.0f);
 		uniformData.normal = glm::inverseTranspose(uniformData.view * uniformData.model);
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

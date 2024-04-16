@@ -331,7 +331,7 @@ public:
 			cube.matrices.model = glm::rotate(cube.matrices.model, glm::radians(cube.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			cube.matrices.model = glm::rotate(cube.matrices.model, glm::radians(cube.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 			cube.matrices.model = glm::scale(cube.matrices.model, glm::vec3(0.25f));
-			memcpy(cube.uniformBuffer.mapped, &cube.matrices, sizeof(cube.matrices));
+			memcpy(cube.uniformBuffer.mappedData, &cube.matrices, sizeof(cube.matrices));
 		}
 	}
 
@@ -344,9 +344,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

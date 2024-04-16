@@ -87,5 +87,5 @@ public:
 	// Draw the ImGUI UI overlay using a render pass
 	void drawUI(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer);
 
-	virtual void prepare();
+	virtual void prepareForRendering();
 };

@@ -663,20 +663,20 @@ public:
 		ubos.scene.model = glm::rotate(ubos.scene.model, -sinf(glm::radians(timer * 360.0f)) * 0.15f, glm::vec3(1.0f, 0.0f, 0.0f));
 		ubos.scene.model = glm::rotate(ubos.scene.model, glm::radians(timer * 360.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		memcpy(uniformBuffers.scene.mapped, &ubos.scene, sizeof(ubos.scene));
+		memcpy(uniformBuffers.scene.mappedData, &ubos.scene, sizeof(ubos.scene));
 
 		// Skybox
 		ubos.skyBox.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 256.0f);
 		ubos.skyBox.view = glm::mat4(glm::mat3(camera.matrices.view));
 		ubos.skyBox.model = glm::mat4(1.0f);
 
-		memcpy(uniformBuffers.skyBox.mapped, &ubos.skyBox, sizeof(ubos.skyBox));
+		memcpy(uniformBuffers.skyBox.mappedData, &ubos.skyBox, sizeof(ubos.skyBox));
 	}
 
 	// Update blur pass parameter uniform buffer
 	void updateUniformBuffersBlur()
 	{
-		memcpy(uniformBuffers.blurParams.mapped, &ubos.blurParams, sizeof(ubos.blurParams));
+		memcpy(uniformBuffers.blurParams.mappedData, &ubos.blurParams, sizeof(ubos.blurParams));
 	}
 
 	void draw()
@@ -688,9 +688,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		prepareOffscreen();

@@ -363,26 +363,26 @@ public:
 		uboVS.visible = 1.0f;
 		uboVS.model = glm::scale(glm::mat4(1.0f), glm::vec3(6.0f));
 		uboVS.color = glm::vec4(0.0f, 0.0f, 1.0f, 0.5f);
-		memcpy(uniformBuffers.occluder.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffers.occluder.mappedData, &uboVS, sizeof(uboVS));
 
 		// Teapot
 		// Toggle color depending on visibility
 		uboVS.visible = (passedSamples[0] > 0) ? 1.0f : 0.0f;
 		uboVS.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 		uboVS.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		memcpy(uniformBuffers.teapot.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffers.teapot.mappedData, &uboVS, sizeof(uboVS));
 
 		// Sphere
 		// Toggle color depending on visibility
 		uboVS.visible = (passedSamples[1] > 0) ? 1.0f : 0.0f;
 		uboVS.model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
 		uboVS.color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		memcpy(uniformBuffers.sphere.mapped, &uboVS, sizeof(uboVS));
+		memcpy(uniformBuffers.sphere.mappedData, &uboVS, sizeof(uboVS));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		setupQueryPool();
 		prepareUniformBuffers();

@@ -638,12 +638,12 @@ public:
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.modelView = camera.matrices.view;
 		uniformData.viewPos = camera.viewPos;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadTexture();
 		generateQuad();
 		prepareUniformBuffers();

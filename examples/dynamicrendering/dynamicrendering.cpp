@@ -276,12 +276,12 @@ public:
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.modelView = camera.matrices.view;
 		uniformData.viewPos = camera.viewPos;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		// Since we use an extension, we need to expliclity load the function pointers for extension related Vulkan commands
 		vkCmdBeginRenderingKHR = reinterpret_cast<PFN_vkCmdBeginRenderingKHR>(vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR"));

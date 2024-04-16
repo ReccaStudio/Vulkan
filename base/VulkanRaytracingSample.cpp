@@ -287,9 +287,9 @@ void VulkanRaytracingSample::deleteStorageImage()
 	vkFreeMemory(vulkanDevice->logicalDevice, storageImage.memory, nullptr);
 }
 
-void VulkanRaytracingSample::prepare()
+void VulkanRaytracingSample::prepareForRendering()
 {
-	VulkanExampleBase::prepare();
+	VulkanExampleBase::prepareForRendering();
 	// Get properties and features
 	rayTracingPipelineProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
 	VkPhysicalDeviceProperties2 deviceProperties2{};

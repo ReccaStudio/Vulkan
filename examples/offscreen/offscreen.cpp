@@ -553,11 +553,11 @@ public:
 		uniformData.model = glm::mat4(1.0f);
 		uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		uniformData.model = glm::translate(uniformData.model, modelPosition);
-		memcpy(uniformBuffers.vsShared.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffers.vsShared.mappedData, &uniformData, sizeof(UniformData));
 
 		// Mirror
 		uniformData.model = glm::mat4(1.0f);
-		memcpy(uniformBuffers.vsMirror.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffers.vsMirror.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void updateUniformBufferOffscreen()
@@ -568,12 +568,12 @@ public:
 		uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		uniformData.model = glm::scale(uniformData.model, glm::vec3(1.0f, -1.0f, 1.0f));
 		uniformData.model = glm::translate(uniformData.model, modelPosition);
-		memcpy(uniformBuffers.vsOffScreen.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffers.vsOffScreen.mappedData, &uniformData, sizeof(UniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareOffscreen();
 		prepareUniformBuffers();

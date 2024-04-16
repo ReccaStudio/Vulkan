@@ -161,7 +161,7 @@ public:
 		// Set up GeometrySBO data.
 		geometrySBO.count = 0;
 		geometrySBO.maxNodeCount = NODE_COUNT * width * height;
-		memcpy(stagingBuffer.mapped, &geometrySBO, sizeof(geometrySBO));
+		memcpy(stagingBuffer.mappedData, &geometrySBO, sizeof(geometrySBO));
 
 		// Copy data to device
 		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
@@ -531,12 +531,12 @@ public:
 	{
 		renderPassUniformData.projection = camera.matrices.perspective;
 		renderPassUniformData.view = camera.matrices.view;
-		memcpy(renderPassUniformBuffer.mapped, &renderPassUniformData, sizeof(RenderPassUniformData));
+		memcpy(renderPassUniformBuffer.mappedData, &renderPassUniformData, sizeof(RenderPassUniformData));
 	}
 
-	void prepare() override
+	void prepareForRendering() override
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		prepareGeometryPass();

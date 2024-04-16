@@ -164,7 +164,7 @@ public:
 		// Add an initial release barrier to the graphics queue,
 		// so that when the compute command buffer executes for the first time
 		// it doesn't complain about a lack of a corresponding "release" to its "acquire"
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 		{
 			VkImageMemoryBarrier imageMemoryBarrier = {};
 			imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -174,8 +174,8 @@ public:
 			imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 			imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
 			imageMemoryBarrier.dstAccessMask = 0;
-			imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
-			imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+			imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
+			imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 			vkCmdPipelineBarrier(
 				layoutCmd,
 				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
@@ -249,13 +249,13 @@ public:
 			imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
 			imageMemoryBarrier.image = storageImage.image;
 			imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-			if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+			if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 			{
 				// Acquire barrier for graphics queue
 				imageMemoryBarrier.srcAccessMask = 0;
 				imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-				imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
-				imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
+				imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
+				imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
 				vkCmdPipelineBarrier(
 					drawCmdBuffers[i],
 					VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -300,13 +300,13 @@ public:
 
 			vkCmdEndRenderPass(drawCmdBuffers[i]);
 
-			if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+			if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 			{
 				// Release barrier from graphics queue
 				imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
 				imageMemoryBarrier.dstAccessMask = 0;
-				imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
-				imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+				imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
+				imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 				vkCmdPipelineBarrier(
 					drawCmdBuffers[i],
 					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
@@ -334,13 +334,13 @@ public:
 		imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
 		imageMemoryBarrier.image = storageImage.image;
 		imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 		{
 			// Acquire barrier for compute queue
 			imageMemoryBarrier.srcAccessMask = 0;
 			imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-			imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
-			imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+			imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
+			imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 			vkCmdPipelineBarrier(
 				compute.commandBuffer,
 				VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -356,13 +356,13 @@ public:
 
 		vkCmdDispatch(compute.commandBuffer, storageImage.width / 16, storageImage.height / 16, 1);
 
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 		{
 			// Release barrier from compute queue
 			imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
 			imageMemoryBarrier.dstAccessMask = 0;
-			imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
-			imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
+			imageMemoryBarrier.srcQueueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
+			imageMemoryBarrier.dstQueueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
 			vkCmdPipelineBarrier(
 				compute.commandBuffer,
 				VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
@@ -512,9 +512,9 @@ public:
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.pNext = NULL;
-		queueCreateInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		queueCreateInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		queueCreateInfo.queueCount = 1;
-		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.compute, 0, &compute.queue);
+		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.computeIndex, 0, &compute.queue);
 
 		// Setup descriptors
 
@@ -551,7 +551,7 @@ public:
 		// Separate command pool as queue family for compute may be different from the graphics one
 		VkCommandPoolCreateInfo cmdPoolInfo = {};
 		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &compute.commandPool));
 
@@ -581,13 +581,13 @@ public:
 		compute.uniformData.lightPos.z = 0.0f + cos(glm::radians(timer * 360.0f)) * 2.0f;
 		compute.uniformData.camera.pos = camera.position * -1.0f;
 		VK_CHECK_RESULT(compute.uniformBuffer.map());
-		memcpy(compute.uniformBuffer.mapped, &compute.uniformData, sizeof(Compute::UniformDataCompute));
+		memcpy(compute.uniformBuffer.mappedData, &compute.uniformData, sizeof(Compute::UniformDataCompute));
 		compute.uniformBuffer.unmap();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		prepareStorageImage();
 		prepareStorageBuffers();
 		prepareUniformBuffers();

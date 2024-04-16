@@ -244,12 +244,12 @@ public:
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.view = glm::scale(camera.matrices.view, glm::vec3(0.1f , -0.1f, 0.1f));
 		uniformData.model = glm::translate(glm::mat4(1.0f), scene.dimensions.min);
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void updateConditionalBuffer()
 	{
-		memcpy(conditionalBuffer.mapped, conditionalVisibility.data(), sizeof(int32_t) * conditionalVisibility.size());
+		memcpy(conditionalBuffer.mappedData, conditionalVisibility.data(), sizeof(int32_t) * conditionalVisibility.size());
 	}
 
 	/*
@@ -308,9 +308,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareConditionalRendering();
 		prepareUniformBuffers();

@@ -673,7 +673,7 @@ public:
 		uniformDataOffscreen.projection = camera.matrices.perspective;
 		uniformDataOffscreen.view = camera.matrices.view;
 		uniformDataOffscreen.model = glm::mat4(1.0f);
-		memcpy(uniformBuffers.offscreen.mapped, &uniformDataOffscreen, sizeof(UniformDataOffscreen));
+		memcpy(uniformBuffers.offscreen.mappedData, &uniformDataOffscreen, sizeof(UniformDataOffscreen));
 	}
 
 	// Update lights and parameters passed to the composition shaders
@@ -727,12 +727,12 @@ public:
 
 		uniformDataComposition.debugDisplayTarget = debugDisplayTarget;
 
-		memcpy(uniformBuffers.composition.mapped, &uniformDataComposition, sizeof(UniformDataComposition));
+		memcpy(uniformBuffers.composition.mappedData, &uniformDataComposition, sizeof(UniformDataComposition));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareOffscreenFramebuffer();
 		prepareUniformBuffers();

@@ -193,7 +193,7 @@ public:
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.view = camera.matrices.view;
 		uniformData.model = glm::mat4(1.0f);
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void draw()
@@ -205,9 +205,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		// Get the function pointer of the mesh shader drawing funtion
 		vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(device, "vkCmdDrawMeshTasksEXT"));

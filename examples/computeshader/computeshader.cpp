@@ -126,10 +126,10 @@ public:
 		// If compute and graphics queue family indices differ, we create an image that can be shared between them
 		// This can result in worse performance than exclusive sharing mode, but save some synchronization to keep the sample simple
 		std::vector<uint32_t> queueFamilyIndices;
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute) {
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex) {
 			queueFamilyIndices = {
-				vulkanDevice->queueFamilyIndices.graphics,
-				vulkanDevice->queueFamilyIndices.compute
+				vulkanDevice->queueFamilyIndices.graphicIndex,
+				vulkanDevice->queueFamilyIndices.computeIndex
 			};
 			imageCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
 			imageCreateInfo.queueFamilyIndexCount = 2;
@@ -436,7 +436,7 @@ public:
 	void prepareCompute()
 	{
 		// Get a compute queue from the device
-		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.compute, 0, &compute.queue);
+		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.computeIndex, 0, &compute.queue);
 
 		// Create compute pipeline
 		// Compute pipelines are created separate from graphics pipelines even if they use the same queue
@@ -478,7 +478,7 @@ public:
 		// Separate command pool as queue family for compute may be different than graphics
 		VkCommandPoolCreateInfo cmdPoolInfo = {};
 		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &compute.commandPool));
 
@@ -508,12 +508,12 @@ public:
 		camera.setPerspective(60.0f, (float)width * 0.5f / (float)height, 1.0f, 256.0f);
 		graphics.uniformData.projection = camera.matrices.perspective;
 		graphics.uniformData.modelView = camera.matrices.view;
-		memcpy(graphics.uniformBuffer.mapped, &graphics.uniformData, sizeof(Graphics::UniformData));
+		memcpy(graphics.uniformBuffer.mappedData, &graphics.uniformData, sizeof(Graphics::UniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		generateQuad();
 		prepareUniformBuffers();

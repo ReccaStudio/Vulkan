@@ -229,7 +229,7 @@ public:
 		descriptorInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_GET_INFO_EXT;
 
 		// Put image descriptors into the corresponding resource buffer
-		char* imageDescriptorBufPtr = (char*)combinedImageDescriptor.buffer.mapped;
+		char* imageDescriptorBufPtr = (char*)combinedImageDescriptor.buffer.mappedData;
 		descriptorInfo.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		for (uint32_t i = 0; i < static_cast<uint32_t>(cubes.size()); i++) {
 			descriptorInfo.data.pCombinedImageSampler = &cubes[i].texture.descriptor;
@@ -238,7 +238,7 @@ public:
 
 		// For uniform buffers we only need buffer device addresses
 		// Global uniform buffer
-		char* uniformDescriptorBufPtr = (char*)uniformDescriptor.buffer.mapped;
+		char* uniformDescriptorBufPtr = (char*)uniformDescriptor.buffer.mappedData;
 
 		VkDescriptorAddressInfoEXT descriptorAddressInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_ADDRESS_INFO_EXT };
 		descriptorAddressInfo.address = getBufferDeviceAddress(uniformBufferCamera.buffer);
@@ -372,8 +372,8 @@ public:
 
 	void updateUniformBuffers()
 	{
-		memcpy(uniformBufferCamera.mapped, &camera.matrices.perspective, sizeof(glm::mat4));
-		memcpy((char*)uniformBufferCamera.mapped + sizeof(glm::mat4), &camera.matrices.view, sizeof(glm::mat4));
+		memcpy(uniformBufferCamera.mappedData, &camera.matrices.perspective, sizeof(glm::mat4));
+		memcpy((char*)uniformBufferCamera.mappedData + sizeof(glm::mat4), &camera.matrices.view, sizeof(glm::mat4));
 
 		cubes[0].matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 0.0f, 0.0f));
 		cubes[1].matrix = glm::translate(glm::mat4(1.0f), glm::vec3( 1.5f, 0.5f, 0.0f));
@@ -383,7 +383,7 @@ public:
 			cube.matrix = glm::rotate(cube.matrix, glm::radians(cube.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			cube.matrix = glm::rotate(cube.matrix, glm::radians(cube.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 			cube.matrix = glm::scale(cube.matrix, glm::vec3(0.25f));
-			memcpy(cube.uniformBuffer.mapped, &cube.matrix, sizeof(glm::mat4));
+			memcpy(cube.uniformBuffer.mappedData, &cube.matrix, sizeof(glm::mat4));
 		}
 	}
 
@@ -396,9 +396,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		vkGetBufferDeviceAddressKHR = reinterpret_cast<PFN_vkGetBufferDeviceAddressKHR>(vkGetDeviceProcAddr(device, "vkGetBufferDeviceAddressKHR"));
 

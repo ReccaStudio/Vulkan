@@ -626,12 +626,12 @@ public:
 		uniformData.projection[1] = glm::frustum(left, right, bottom, top, zNear, zFar);
 		uniformData.modelview[1] = rotM * transM;
 
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareMultiview();
 		prepareUniformBuffers();

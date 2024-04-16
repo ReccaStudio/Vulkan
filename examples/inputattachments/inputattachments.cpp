@@ -567,8 +567,8 @@ public:
 		uboMatrices.projection = camera.matrices.perspective;
 		uboMatrices.view = camera.matrices.view;
 		uboMatrices.model = glm::mat4(1.0f);
-		memcpy(uniformBuffers.matrices.mapped, &uboMatrices, sizeof(uboMatrices));
-		memcpy(uniformBuffers.params.mapped, &uboParams, sizeof(uboParams));
+		memcpy(uniformBuffers.matrices.mappedData, &uboMatrices, sizeof(uboMatrices));
+		memcpy(uniformBuffers.params.mappedData, &uboParams, sizeof(uboParams));
 	}
 
 	void draw()
@@ -580,9 +580,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

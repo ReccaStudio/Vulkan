@@ -547,21 +547,21 @@ public:
 		raygenShaderBindingTable.map();
 		missShaderBindingTable.map();
 		hitShaderBindingTable.map();
-		memcpy(raygenShaderBindingTable.mapped, shaderHandleStorage.data(), handleSize);
-		memcpy(missShaderBindingTable.mapped, shaderHandleStorage.data() + handleSizeAligned, handleSize);
-		memcpy(hitShaderBindingTable.mapped, shaderHandleStorage.data() + handleSizeAligned * 2, handleSize);
+		memcpy(raygenShaderBindingTable.mappedData, shaderHandleStorage.data(), handleSize);
+		memcpy(missShaderBindingTable.mappedData, shaderHandleStorage.data() + handleSizeAligned, handleSize);
+		memcpy(hitShaderBindingTable.mappedData, shaderHandleStorage.data() + handleSizeAligned * 2, handleSize);
 
 		// Copy over raygen record data
 		glm::vec3 color1(0.5f, 0.5f, 0.5f);
-		memcpy(((uint8_t*)(raygenShaderBindingTable.mapped)) + handleSize, &color1, sizeof(glm::vec3));
+		memcpy(((uint8_t*)(raygenShaderBindingTable.mappedData)) + handleSize, &color1, sizeof(glm::vec3));
 
 		// Copy over miss record data
 		glm::vec3 color2(1.f, 1.f, 1.f);
-		memcpy(((uint8_t*)(missShaderBindingTable.mapped)) + handleSize, &color2, sizeof(glm::vec3));
+		memcpy(((uint8_t*)(missShaderBindingTable.mappedData)) + handleSize, &color2, sizeof(glm::vec3));
 
 		// Copy over hit group record data
 		glm::vec3 color3(1.f, 0.f, 0.f);
-		memcpy(((uint8_t*)(hitShaderBindingTable.mapped)) + handleSize, &color3, sizeof(glm::vec3));
+		memcpy(((uint8_t*)(hitShaderBindingTable.mappedData)) + handleSize, &color3, sizeof(glm::vec3));
 	}
 
 	/*
@@ -852,7 +852,7 @@ public:
 	{
 		uniformData.projInverse = glm::inverse(camera.matrices.perspective);
 		uniformData.viewInverse = glm::inverse(camera.matrices.view);
-		memcpy(ubo.mapped, &uniformData, sizeof(uniformData));
+		memcpy(ubo.mappedData, &uniformData, sizeof(uniformData));
 	}
 
 	void getEnabledFeatures()
@@ -872,9 +872,9 @@ public:
 		deviceCreatepNextChain = &enabledAccelerationStructureFeatures;
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		// Get ray tracing pipeline properties, which will be used later on in the sample
 		rayTracingPipelineProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;

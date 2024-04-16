@@ -489,12 +489,12 @@ public:
 			uniformData.model[i] = glm::rotate(uniformData.model[i], glm::radians((gear.rotSpeed * degree) + gear.rotOffset), glm::vec3(0.0f, 0.0f, 1.0f));
 		}
 
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		prepareGears();
 		prepareUniformBuffers();
 		setupDescriptors();

@@ -909,9 +909,9 @@ public:
 		uniformBuffers.ssaoParams.unmap();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareOffscreenFramebuffers();
 		prepareUniformBuffers();

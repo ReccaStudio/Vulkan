@@ -486,7 +486,7 @@ public:
 	{
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.model = camera.matrices.view;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	// Select the highest sample count usable by the platform
@@ -505,11 +505,11 @@ public:
 		return VK_SAMPLE_COUNT_1_BIT;
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
 		sampleCount = getMaxAvailableSampleCount();
 		UIOverlay.rasterizationSamples = sampleCount;
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareUniformBuffers();
 		setupDescriptors();

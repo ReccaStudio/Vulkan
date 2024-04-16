@@ -559,7 +559,7 @@ public:
 			compute.uniformData.destY = normalizedMy;
 		}
 
-		memcpy(compute.uniformBuffer.mapped, &compute.uniformData, sizeof(Compute::UniformData));
+		memcpy(compute.uniformBuffer.mappedData, &compute.uniformData, sizeof(Compute::UniformData));
 	}
 
 	void draw()
@@ -597,13 +597,13 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		// We will be using the queue family indices to check if graphics and compute queue families differ
 		// If that's the case, we need additional barriers for acquiring and releasing resources
-		graphics.queueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
-		compute.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		graphics.queueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
+		compute.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		loadAssets();
 		setupDescriptorPool();
 		prepareGraphics();

@@ -238,7 +238,7 @@ public:
 	{
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.view = camera.matrices.view;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(uniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(uniformData));
 	}
 
 	void updateCubeUniformBuffers()
@@ -251,7 +251,7 @@ public:
 			cube.modelMat = glm::rotate(cube.modelMat, glm::radians(cube.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			cube.modelMat = glm::rotate(cube.modelMat, glm::radians(cube.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 			cube.modelMat = glm::scale(cube.modelMat, glm::vec3(0.25f));
-			memcpy(cube.uniformBuffer.mapped, &cube.modelMat, sizeof(glm::mat4));
+			memcpy(cube.uniformBuffer.mappedData, &cube.modelMat, sizeof(glm::mat4));
 		}
 
 		if (animate && !paused) {
@@ -264,9 +264,9 @@ public:
 		}
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		/*
 			Extension specific functions

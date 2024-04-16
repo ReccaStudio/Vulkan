@@ -42,8 +42,8 @@ struct VulkanDevice
 	/** @brief Contains queue family indices */
 	struct
 	{
-		uint32_t graphics;
-		uint32_t compute;
+		uint32_t graphicIndex;
+		uint32_t computeIndex;
 		uint32_t transfer;
 	} queueFamilyIndices;
 	operator VkDevice() const

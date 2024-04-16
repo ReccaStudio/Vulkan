@@ -460,7 +460,7 @@ public:
 	}
 
 	// Create the depth (and stencil) buffer attachments used by our framebuffers
-	// Note: Override of virtual function in the base class and called from within VulkanExampleBase::prepare
+	// Note: Override of virtual function in the base class and called from within VulkanExampleBase::prepareForRendering
 	void setupDepthStencil()
 	{
 		// Create an optimal image used as the depth stencil attachment
@@ -510,7 +510,7 @@ public:
 	}
 
 	// Create a frame buffer for each swap chain image
-	// Note: Override of virtual function in the base class and called from within VulkanExampleBase::prepare
+	// Note: Override of virtual function in the base class and called from within VulkanExampleBase::prepareForRendering
 	void setupFrameBuffer()
 	{
 		// Create a frame buffer for every image in the swapchain
@@ -541,7 +541,7 @@ public:
 	// Render passes are a new concept in Vulkan. They describe the attachments used during rendering and may contain multiple subpasses with attachment dependencies
 	// This allows the driver to know up-front what the rendering will look like and is a good opportunity to optimize especially on tile-based renderers (with multiple subpasses)
 	// Using sub pass dependencies also adds implicit layout transitions for the attachment used, so we don't need to add explicit image memory barriers to transform them
-	// Note: Override of virtual function in the base class and called from within VulkanExampleBase::prepare
+	// Note: Override of virtual function in the base class and called from within VulkanExampleBase::prepareForRendering
 	void setupRenderPass()
 	{
 		// This example will use a single render pass with one subpass
@@ -886,9 +886,9 @@ public:
 
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		createSynchronizationPrimitives();
 		createCommandBuffers();
 		createVertexBuffer();
@@ -1062,7 +1062,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLin
 	vulkanExample = new VulkanExample();
 	vulkanExample->initVulkan();
 	vulkanExample->setupWindow(hInstance, WndProc);
-	vulkanExample->prepare();
+	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
 	delete(vulkanExample);
 	return 0;
@@ -1094,7 +1094,7 @@ int main(const int argc, const char *argv[])
 	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
 	vulkanExample = new VulkanExample();
 	vulkanExample->initVulkan();
-	vulkanExample->prepare();
+	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
 	delete(vulkanExample);
 	return 0;
@@ -1114,7 +1114,7 @@ int main(const int argc, const char *argv[])
 	vulkanExample = new VulkanExample();
 	vulkanExample->initVulkan();
 	vulkanExample->setupWindow();
-	vulkanExample->prepare();
+	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
 	delete(vulkanExample);
 	return 0;
@@ -1127,7 +1127,7 @@ int main(const int argc, const char *argv[])
 	vulkanExample = new VulkanExample();
 	vulkanExample->initVulkan();
 	vulkanExample->setupWindow();
-	vulkanExample->prepare();
+	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
 	delete(vulkanExample);
 	return 0;
@@ -1155,7 +1155,7 @@ int main(const int argc, const char *argv[])
 	vulkanExample = new VulkanExample();
 	vulkanExample->initVulkan();
 	vulkanExample->setupWindow();
-	vulkanExample->prepare();
+	vulkanExample->prepareForRendering();
 	vulkanExample->renderLoop();
 	delete(vulkanExample);
 	return 0;
@@ -1170,7 +1170,7 @@ int main(const int argc, const char *argv[])
 		vulkanExample = new VulkanExample();
 		vulkanExample->initVulkan();
 		vulkanExample->setupWindow(nullptr);
-		vulkanExample->prepare();
+		vulkanExample->prepareForRendering();
 		vulkanExample->renderLoop();
 		delete(vulkanExample);
 	}

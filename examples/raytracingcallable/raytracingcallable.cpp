@@ -334,10 +334,10 @@ public:
 		createShaderBindingTable(shaderBindingTables.callable, objectCount);
 
 		// Copy handles
-		memcpy(shaderBindingTables.raygen.mapped, shaderHandleStorage.data(), handleSize);
-		memcpy(shaderBindingTables.miss.mapped, shaderHandleStorage.data() + handleSizeAligned, handleSize);
-		memcpy(shaderBindingTables.hit.mapped, shaderHandleStorage.data() + handleSizeAligned * 2, handleSize);
-		memcpy(shaderBindingTables.callable.mapped, shaderHandleStorage.data() + handleSizeAligned * 3, handleSize * 3);
+		memcpy(shaderBindingTables.raygen.mappedData, shaderHandleStorage.data(), handleSize);
+		memcpy(shaderBindingTables.miss.mappedData, shaderHandleStorage.data() + handleSizeAligned, handleSize);
+		memcpy(shaderBindingTables.hit.mappedData, shaderHandleStorage.data() + handleSizeAligned * 2, handleSize);
+		memcpy(shaderBindingTables.callable.mappedData, shaderHandleStorage.data() + handleSizeAligned * 3, handleSize * 3);
 	}
 
 	/*
@@ -591,7 +591,7 @@ public:
 	{
 		uniformData.projInverse = glm::inverse(camera.matrices.perspective);
 		uniformData.viewInverse = glm::inverse(camera.matrices.view);
-		memcpy(ubo.mapped, &uniformData, sizeof(uniformData));
+		memcpy(ubo.mappedData, &uniformData, sizeof(uniformData));
 	}
 
 	void getEnabledFeatures()
@@ -611,9 +611,9 @@ public:
 		deviceCreatepNextChain = &enabledAccelerationStructureFeatures;
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanRaytracingSample::prepare();
+		VulkanRaytracingSample::prepareForRendering();
 
 		// Create the acceleration structures used to render the ray traced scene
 		createBottomLevelAccelerationStructure();

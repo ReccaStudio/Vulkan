@@ -516,7 +516,7 @@ public:
 		uniformDataOffscreen.projection = camera.matrices.perspective;
 		uniformDataOffscreen.view = camera.matrices.view;
 		uniformDataOffscreen.model = glm::mat4(1.0f);
-		memcpy(uniformBuffers.offscreen.mapped, &uniformDataOffscreen, sizeof(UniformDataOffscreen));
+		memcpy(uniformBuffers.offscreen.mappedData, &uniformDataOffscreen, sizeof(UniformDataOffscreen));
 	}
 
 	// Update deferred composition fragment shader light position and parameters uniform block
@@ -551,12 +551,12 @@ public:
 		uniformDataComposition.viewPos = glm::vec4(camera.position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
 		uniformDataComposition.debugDisplayTarget = debugDisplayTarget;
 
-		memcpy(uniformBuffers.composition.mapped, &uniformDataComposition, sizeof(UniformDataComposition));
+		memcpy(uniformBuffers.composition.mappedData, &uniformDataComposition, sizeof(UniformDataComposition));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		sampleCount = getMaxUsableSampleCount();
 		loadAssets();
 		deferredSetup();

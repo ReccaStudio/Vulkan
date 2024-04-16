@@ -411,7 +411,7 @@ public:
 	{
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.modelView = camera.matrices.view;
-		memcpy(uniformBuffer.mapped, &uniformData, sizeof(UniformData));
+		memcpy(uniformBuffer.mappedData, &uniformData, sizeof(UniformData));
 	}
 
 	void draw()
@@ -423,9 +423,9 @@ public:
 		VulkanExampleBase::submitFrame();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 
 		// As this is an extension, we need to explicitly load the function pointers for the shader object commands used in this sample
 

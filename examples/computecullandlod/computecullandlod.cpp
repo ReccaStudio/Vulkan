@@ -149,7 +149,7 @@ public:
 			VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
 
 			// Acquire barrier
-			if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+			if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 			{
 				VkBufferMemoryBarrier buffer_barrier =
 				{
@@ -157,8 +157,8 @@ public:
 					nullptr,
 					0,
 					VK_ACCESS_INDIRECT_COMMAND_READ_BIT,
-					vulkanDevice->queueFamilyIndices.compute,
-					vulkanDevice->queueFamilyIndices.graphics,
+					vulkanDevice->queueFamilyIndices.computeIndex,
+					vulkanDevice->queueFamilyIndices.graphicIndex,
 					indirectCommandsBuffer.buffer,
 					0,
 					indirectCommandsBuffer.descriptor.range
@@ -210,7 +210,7 @@ public:
 			vkCmdEndRenderPass(drawCmdBuffers[i]);
 
 			// Release barrier
-			if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+			if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 			{
 				VkBufferMemoryBarrier buffer_barrier =
 				{
@@ -218,8 +218,8 @@ public:
 					nullptr,
 					VK_ACCESS_INDIRECT_COMMAND_READ_BIT,
 					0,
-					vulkanDevice->queueFamilyIndices.graphics,
-					vulkanDevice->queueFamilyIndices.compute,
+					vulkanDevice->queueFamilyIndices.graphicIndex,
+					vulkanDevice->queueFamilyIndices.computeIndex,
 					indirectCommandsBuffer.buffer,
 					0,
 					indirectCommandsBuffer.descriptor.range
@@ -253,7 +253,7 @@ public:
 
 		// Acquire barrier
 		// Add memory barrier to ensure that the indirect commands have been consumed before the compute shader updates them
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 		{
 			VkBufferMemoryBarrier buffer_barrier =
 			{
@@ -261,8 +261,8 @@ public:
 				nullptr,
 				0,
 				VK_ACCESS_SHADER_WRITE_BIT,
-				vulkanDevice->queueFamilyIndices.graphics,
-				vulkanDevice->queueFamilyIndices.compute,
+				vulkanDevice->queueFamilyIndices.graphicIndex,
+				vulkanDevice->queueFamilyIndices.computeIndex,
 				indirectCommandsBuffer.buffer,
 				0,
 				indirectCommandsBuffer.descriptor.range
@@ -305,7 +305,7 @@ public:
 
 		// Release barrier
 		// Add memory barrier to ensure that the compute shader has finished writing the indirect command buffer before it's consumed
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 		{
 			VkBufferMemoryBarrier buffer_barrier =
 			{
@@ -313,8 +313,8 @@ public:
 				nullptr,
 				VK_ACCESS_SHADER_WRITE_BIT,
 				0,
-				vulkanDevice->queueFamilyIndices.compute,
-				vulkanDevice->queueFamilyIndices.graphics,
+				vulkanDevice->queueFamilyIndices.computeIndex,
+				vulkanDevice->queueFamilyIndices.graphicIndex,
 				indirectCommandsBuffer.buffer,
 				0,
 				indirectCommandsBuffer.descriptor.range
@@ -516,15 +516,15 @@ public:
 		// Add an initial release barrier to the graphics queue,
 		// so that when the compute command buffer executes for the first time
 		// it doesn't complain about a lack of a corresponding "release" to its "acquire"
-		if (vulkanDevice->queueFamilyIndices.graphics != vulkanDevice->queueFamilyIndices.compute)
+		if (vulkanDevice->queueFamilyIndices.graphicIndex != vulkanDevice->queueFamilyIndices.computeIndex)
 		{			VkBufferMemoryBarrier buffer_barrier =
 			{
 				VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
 				nullptr,
 				VK_ACCESS_INDIRECT_COMMAND_READ_BIT,
 				0,
-				vulkanDevice->queueFamilyIndices.graphics,
-				vulkanDevice->queueFamilyIndices.compute,
+				vulkanDevice->queueFamilyIndices.graphicIndex,
+				vulkanDevice->queueFamilyIndices.computeIndex,
 				indirectCommandsBuffer.buffer,
 				0,
 				indirectCommandsBuffer.descriptor.range
@@ -595,7 +595,7 @@ public:
 	void prepareCompute()
 	{
 		// Get a compute capable device queue
-		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.compute, 0, &compute.queue);
+		vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.computeIndex, 0, &compute.queue);
 
 		// Create compute pipeline
 		// Compute pipelines are created separate from graphics pipelines even if they use the same queue (family index)
@@ -702,7 +702,7 @@ public:
 		// Separate command pool as queue family for compute may be different than graphics
 		VkCommandPoolCreateInfo cmdPoolInfo = {};
 		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		cmdPoolInfo.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &compute.commandPool));
 
@@ -736,12 +736,12 @@ public:
 			frustum.update(uboScene.projection * uboScene.modelview);
 			memcpy(uboScene.frustumPlanes, frustum.planes.data(), sizeof(glm::vec4) * 6);
 		}
-		memcpy(uniformData.scene.mapped, &uboScene, sizeof(uboScene));
+		memcpy(uniformData.scene.mappedData, &uboScene, sizeof(uboScene));
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		loadAssets();
 		prepareBuffers();
 		setupDescriptors();
@@ -794,7 +794,7 @@ public:
 		VulkanExampleBase::submitFrame();
 
 		// Get draw count from compute
-		memcpy(&indirectStats, indirectDrawCountBuffer.mapped, sizeof(indirectStats));
+		memcpy(&indirectStats, indirectDrawCountBuffer.mappedData, sizeof(indirectStats));
 	}
 
 	virtual void render()
