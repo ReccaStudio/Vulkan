@@ -122,13 +122,13 @@ public:
 		// Spheres
 		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, sizeof(Sphere)* spheres.size(), spheres.data()));
 		VK_CHECK_RESULT(vulkanDevice->createBuffer(usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &spheresBuffer, sizeof(Sphere)* spheres.size()));
-		vulkanDevice->copyBuffer(&stagingBuffer, &spheresBuffer, queue);
+		vulkanDevice->copyBuffer(&stagingBuffer, &spheresBuffer, graphicQueue);
 		stagingBuffer.destroy();
 
 		// AABBs
 		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, sizeof(AABB)* aabbs.size(), aabbs.data()));
 		VK_CHECK_RESULT(vulkanDevice->createBuffer(usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &aabbsBuffer, sizeof(AABB)* aabbs.size()));
-		vulkanDevice->copyBuffer(&stagingBuffer, &aabbsBuffer, queue);
+		vulkanDevice->copyBuffer(&stagingBuffer, &aabbsBuffer, graphicQueue);
 		stagingBuffer.destroy();
 	}
 
@@ -188,7 +188,7 @@ public:
 			1,
 			&accelerationBuildGeometryInfo,
 			accelerationBuildStructureRangeInfos.data());
-		vulkanDevice->flushCommandBuffer(commandBuffer, queue);
+		vulkanDevice->flushCommandBuffer(commandBuffer, graphicQueue);
 
 		deleteScratchBuffer(scratchBuffer);
 	}
@@ -276,7 +276,7 @@ public:
 			1,
 			&accelerationBuildGeometryInfo,
 			accelerationBuildStructureRangeInfos.data());
-		vulkanDevice->flushCommandBuffer(commandBuffer, queue);
+		vulkanDevice->flushCommandBuffer(commandBuffer, graphicQueue);
 
 		deleteScratchBuffer(scratchBuffer);
 		instancesBuffer.destroy();
@@ -605,7 +605,7 @@ public:
 		VulkanExampleBase::prepareFrame();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 		VulkanExampleBase::submitFrame();
 	}
 

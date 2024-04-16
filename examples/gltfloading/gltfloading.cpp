@@ -493,7 +493,7 @@ public:
 
 		// Pass some Vulkan resources required for setup and rendering to the glTF model loading class
 		glTFModel.vulkanDevice = vulkanDevice;
-		glTFModel.copyQueue = queue;
+		glTFModel.copyQueue = graphicQueue;
 
 		std::vector<uint32_t> indexBuffer;
 		std::vector<VulkanglTFModel::Vertex> vertexBuffer;
@@ -577,7 +577,7 @@ public:
 			1,
 			&copyRegion);
 
-		vulkanDevice->flushCommandBuffer(copyCmd, queue, true);
+		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
 
 		// Free staging resources
 		vkDestroyBuffer(device, vertexStaging.buffer, nullptr);

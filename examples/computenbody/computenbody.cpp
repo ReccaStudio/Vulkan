@@ -11,7 +11,10 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
-#include "vulkanexamplebase.h"
+#include "VulkanExampleBase.h"
+
+#define VERTEX_BUFFER_BIND_ID 0
+#define ENABLE_VALIDATION true
 
 #if defined(__ANDROID__)
 // Lower particle count on Android for performance reasons
@@ -119,8 +122,8 @@ public:
 
 	void loadAssets()
 	{
-		textures.particle.loadFromFile(getAssetPath() + "textures/particle01_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
-		textures.gradient.loadFromFile(getAssetPath() + "textures/particle_gradient_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
+		textures.particle.loadFromFile(getAssetPath() + "textures/particle01_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, graphicQueue);
+		textures.gradient.loadFromFile(getAssetPath() + "textures/particle_gradient_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, graphicQueue);
 	}
 
 	void setupDescriptorPool()
@@ -236,120 +239,12 @@ public:
 				1, &buffer_barrier,
 				0, nullptr);
 		}
-		vulkanDevice->flushCommandBuffer(copyCmd, queue, true);
-
+		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
 		stagingBuffer.destroy();
 	}
 
-	void buildCommandBuffers()
+	void setupDescriptorSetLayoutAndUpdate()
 	{
-		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
-
-		VkClearValue clearValues[2];
-		clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
-		clearValues[1].depthStencil = { 1.0f, 0 };
-
-		VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
-		renderPassBeginInfo.renderPass = renderPass;
-		renderPassBeginInfo.renderArea.offset.x = 0;
-		renderPassBeginInfo.renderArea.offset.y = 0;
-		renderPassBeginInfo.renderArea.extent.width = width;
-		renderPassBeginInfo.renderArea.extent.height = height;
-		renderPassBeginInfo.clearValueCount = 2;
-		renderPassBeginInfo.pClearValues = clearValues;
-
-		for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
-		{
-			// Set target frame buffer
-			renderPassBeginInfo.framebuffer = frameBuffers[i];
-
-			VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
-
-			// Acquire barrier
-			if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
-			{
-				VkBufferMemoryBarrier buffer_barrier =
-				{
-					VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-					nullptr,
-					0,
-					VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
-					compute.queueFamilyIndex,
-					graphics.queueFamilyIndex,
-					storageBuffer.buffer,
-					0,
-					storageBuffer.size
-				};
-
-				vkCmdPipelineBarrier(
-					drawCmdBuffers[i],
-					VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-					VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-					0,
-					0, nullptr,
-					1, &buffer_barrier,
-					0, nullptr);
-			}
-
-			// Draw the particle system using the update vertex buffer
-			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
-
-			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
-			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
-
-			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphics.pipeline);
-			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphics.pipelineLayout, 0, 1, &graphics.descriptorSet, 0, nullptr);
-
-			VkDeviceSize offsets[1] = { 0 };
-			vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, &storageBuffer.buffer, offsets);
-			vkCmdDraw(drawCmdBuffers[i], numParticles, 1, 0, 0);
-
-			drawUI(drawCmdBuffers[i]);
-
-			vkCmdEndRenderPass(drawCmdBuffers[i]);
-
-			// Release barrier
-			if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
-			{
-				VkBufferMemoryBarrier buffer_barrier =
-				{
-					VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-					nullptr,
-					VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
-					0,
-					graphics.queueFamilyIndex,
-					compute.queueFamilyIndex,
-					storageBuffer.buffer,
-					0,
-					storageBuffer.size
-				};
-
-				vkCmdPipelineBarrier(
-					drawCmdBuffers[i],
-					VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-					VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-					0,
-					0, nullptr,
-					1, &buffer_barrier,
-					0, nullptr);
-			}
-
-			VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
-		}
-
-	}
-
-	void prepareGraphics()
-	{
-		// Vertex shader uniform buffer block
-		vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        &graphics.uniformBuffer, sizeof(Graphics::UniformData));
-		VK_CHECK_RESULT(graphics.uniformBuffer.map());
-
-		// Descriptor layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings;
 		setLayoutBindings = {
 			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
@@ -364,13 +259,22 @@ public:
 		VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &graphics.descriptorSetLayout, 1);
 		VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &graphics.descriptorSet));
 
-		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
+		updateDescriptorSets();
+	}
+
+	void updateDescriptorSets()
+	{
+		std::vector<VkWriteDescriptorSet> writeDescriptorSets = 
+		{
 		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &textures.particle.descriptor),
 		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &textures.gradient.descriptor),
 		   vks::initializers::writeDescriptorSet(graphics.descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, &graphics.uniformBuffer.descriptor),
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+	}
 
+	void prepareGraphicPipelines()
+	{
 		// Pipeline layout
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = vks::initializers::pipelineLayoutCreateInfo(&graphics.descriptorSetLayout, 1);
 		VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &graphics.pipelineLayout));
@@ -431,6 +335,92 @@ public:
 		blendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
 
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &graphics.pipeline));
+	}
+
+	void buildCommandBuffers()
+	{
+		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
+
+		VkClearValue clearValues[2];
+		clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+
+		VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
+		renderPassBeginInfo.renderPass = renderPass;
+		renderPassBeginInfo.renderArea.offset.x = 0;
+		renderPassBeginInfo.renderArea.offset.y = 0;
+		renderPassBeginInfo.renderArea.extent.width = width;
+		renderPassBeginInfo.renderArea.extent.height = height;
+		renderPassBeginInfo.clearValueCount = 2;
+		renderPassBeginInfo.pClearValues = clearValues;
+
+		for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
+		{
+			// Set target frame buffer
+			renderPassBeginInfo.framebuffer = frameBuffers[i];
+
+			VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
+
+			// Acquire barrier
+			if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
+			{
+				VkBufferMemoryBarrier bufferBarrier =
+				{
+					VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,nullptr,0,VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+					compute.queueFamilyIndex,graphics.queueFamilyIndex,storageBuffer.buffer,0,storageBuffer.size
+				};
+				vkCmdPipelineBarrier(drawCmdBuffers[i], VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0,
+					0, nullptr, 1, &bufferBarrier, 0, nullptr);
+			}//if
+
+			// Draw the particle system using the update vertex buffer
+			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
+
+			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
+
+			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphics.pipeline);
+			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphics.pipelineLayout, 0, 1, &graphics.descriptorSet, 0, nullptr);
+
+			VkDeviceSize offsets[1] = { 0 };
+			vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, &storageBuffer.buffer, offsets);
+			vkCmdDraw(drawCmdBuffers[i], numParticles, 1, 0, 0);
+
+			drawUI(drawCmdBuffers[i]);
+
+			vkCmdEndRenderPass(drawCmdBuffers[i]);
+
+			// Release barrier
+			if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
+			{
+				VkBufferMemoryBarrier bufferBarrier =
+				{
+					VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,nullptr,VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,0,
+					graphics.queueFamilyIndex,compute.queueFamilyIndex,storageBuffer.buffer,0,storageBuffer.size
+				};
+
+				vkCmdPipelineBarrier(drawCmdBuffers[i], VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0,
+					0, nullptr, 1, &bufferBarrier, 0, nullptr);
+			}//if
+
+			VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
+		}
+
+	}
+
+	void prepareGraphics()
+	{
+		// Vertex shader uniform buffer block
+		vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            &graphics.uniformBuffer, sizeof(graphics.uniformData));
+		VK_CHECK_RESULT(graphics.uniformBuffer.map());// Map for host access
+
+		setupDescriptorSetLayoutAndUpdate();
+
+		prepareGraphicPipelines();
 
 		// We use a semaphore to synchronize compute and graphics
 		VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
@@ -455,83 +445,51 @@ public:
 		// Acquire barrier
 		if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
 		{
-			VkBufferMemoryBarrier buffer_barrier =
+			VkBufferMemoryBarrier toCpmputeBufferBarrier =
 			{
-				VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-				nullptr,
-				0,
-				VK_ACCESS_SHADER_WRITE_BIT,
-				graphics.queueFamilyIndex,
-				compute.queueFamilyIndex,
-				storageBuffer.buffer,
-				0,
-				storageBuffer.size
+				VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,nullptr,0,VK_ACCESS_SHADER_WRITE_BIT,
+				graphics.queueFamilyIndex,compute.queueFamilyIndex,storageBuffer.buffer,0,storageBuffer.size
 			};
 
-			vkCmdPipelineBarrier(
-				compute.commandBuffer,
-				VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-				0,
-				0, nullptr,
-				1, &buffer_barrier,
-				0, nullptr);
+			vkCmdPipelineBarrier(compute.commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0,
+				0, nullptr, 1, &toCpmputeBufferBarrier, 0, nullptr);
 		}
 
 		// First pass: Calculate particle movement
 		// -------------------------------------------------------------------------------------------------------
 		vkCmdBindPipeline(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute.pipelineCalculate);
-		vkCmdBindDescriptorSets(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute.pipelineLayout, 0, 1, &compute.descriptorSet, 0, 0);
+		vkCmdBindDescriptorSets(compute.commandBuffer,VK_PIPELINE_BIND_POINT_COMPUTE, compute.pipelineLayout, 0, 1, &compute.descriptorSet, 0, 0);
 		vkCmdDispatch(compute.commandBuffer, numParticles / 256, 1, 1);
 
 		// Add memory barrier to ensure that the computer shader has finished writing to the buffer
-		VkBufferMemoryBarrier bufferBarrier = vks::initializers::bufferMemoryBarrier();
-		bufferBarrier.buffer = storageBuffer.buffer;
-		bufferBarrier.size = storageBuffer.descriptor.range;
-		bufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-		bufferBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		// Transfer ownership if compute and graphics queue family indices differ
-		bufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		bufferBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		VkBufferMemoryBarrier secondComputePassBufferBarrier = vks::initializers::bufferMemoryBarrier();
+		secondComputePassBufferBarrier.buffer = storageBuffer.buffer;
+		secondComputePassBufferBarrier.size = storageBuffer.descriptor.range;
+		secondComputePassBufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+		secondComputePassBufferBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		// Transfer owernship if compute and graphics queue family indices differ
+		secondComputePassBufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		secondComputePassBufferBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 
-		vkCmdPipelineBarrier(
-			compute.commandBuffer,
-			VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-			VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-			VK_FLAGS_NONE,
-			0, nullptr,
-			1, &bufferBarrier,
-			0, nullptr);
+		vkCmdPipelineBarrier(compute.commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+			VK_FLAGS_NONE, 0, nullptr, 1, &secondComputePassBufferBarrier, 0, nullptr);
 
 		// Second pass: Integrate particles
-		// -------------------------------------------------------------------------------------------------------
+		// ------------------------------------------
 		vkCmdBindPipeline(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute.pipelineIntegrate);
 		vkCmdDispatch(compute.commandBuffer, numParticles / 256, 1, 1);
 
 		// Release barrier
 		if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
 		{
-			VkBufferMemoryBarrier buffer_barrier =
+			VkBufferMemoryBarrier computeToGraphicBufferBarrier =
 			{
-				VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-				nullptr,
-				VK_ACCESS_SHADER_WRITE_BIT,
-				0,
-				compute.queueFamilyIndex,
-				graphics.queueFamilyIndex,
-				storageBuffer.buffer,
-				0,
-				storageBuffer.size
+				VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,nullptr,VK_ACCESS_SHADER_WRITE_BIT,0,
+				compute.queueFamilyIndex,graphics.queueFamilyIndex,storageBuffer.buffer,0,storageBuffer.size
 			};
 
-			vkCmdPipelineBarrier(
-				compute.commandBuffer,
-				VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-				0,
-				0, nullptr,
-				1, &buffer_barrier,
-				0, nullptr);
+			vkCmdPipelineBarrier(compute.commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				0, 0, nullptr, 1, &computeToGraphicBufferBarrier, 0, nullptr);
 		}
 
 		vkEndCommandBuffer(compute.commandBuffer);
@@ -657,7 +615,7 @@ public:
 		submitInfo.pWaitDstStageMask = graphicsWaitStageMasks;
 		submitInfo.signalSemaphoreCount = 2;
 		submitInfo.pSignalSemaphores = graphicsSignalSemaphores;
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 
 		VulkanExampleBase::submitFrame();
 	}

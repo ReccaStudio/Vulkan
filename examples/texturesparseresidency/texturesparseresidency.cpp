@@ -249,7 +249,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 
 	VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	vks::tools::setImageLayout(copyCmd, texture.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, texture.subRange);
-	vulkanDevice->flushCommandBuffer(copyCmd, queue);
+	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
 
 	// Get memory requirements
 	VkMemoryRequirements sparseImageMemoryReqs;
@@ -432,9 +432,9 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 
 	// Bind to queue
 	// todo: in draw?
-	vkQueueBindSparse(queue, 1, &texture.bindSparseInfo, VK_NULL_HANDLE);
+	vkQueueBindSparse(graphicQueue, 1, &texture.bindSparseInfo, VK_NULL_HANDLE);
 	//todo: use sparse bind semaphore
-	vkQueueWaitIdle(queue);
+	vkQueueWaitIdle(graphicQueue);
 
 	// Create sampler
 	VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
@@ -527,7 +527,7 @@ void VulkanExample::buildCommandBuffers()
 void VulkanExample::loadAssets()
 {
 	const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-	plane.loadFromFile(getAssetPath() + "models/plane.gltf", vulkanDevice, queue, glTFLoadingFlags);
+	plane.loadFromFile(getAssetPath() + "models/plane.gltf", vulkanDevice, graphicQueue, glTFLoadingFlags);
 }
 
 void VulkanExample::setupDescriptors()
@@ -645,7 +645,7 @@ void VulkanExample::draw()
 	VulkanExampleBase::prepareFrame();
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
-	VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+	VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 	VulkanExampleBase::submitFrame();
 }
 
@@ -705,7 +705,7 @@ void VulkanExample::uploadContent(VirtualTexturePage page, VkImage image)
 	region.imageExtent = page.extent;
 	vkCmdCopyBufferToImage(copyCmd, imageBuffer.buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 	vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, texture.subRange, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-	vulkanDevice->flushCommandBuffer(copyCmd, queue);
+	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
 
 	imageBuffer.destroy();
 }
@@ -735,7 +735,7 @@ void VulkanExample::fillRandomPages()
 	VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
 	VkFence fence;
 	VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &fence));
-	vkQueueBindSparse(queue, 1, &texture.bindSparseInfo, fence);
+	vkQueueBindSparse(graphicQueue, 1, &texture.bindSparseInfo, fence);
 	vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
 	vkDestroyFence(device, fence, nullptr);
 
@@ -800,7 +800,7 @@ void VulkanExample::fillMipTail()
 		region.imageExtent = { width, height, 1 };
 		vkCmdCopyBufferToImage(copyCmd, imageBuffer.buffer, texture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 		vks::tools::setImageLayout(copyCmd, texture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, texture.subRange, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-		vulkanDevice->flushCommandBuffer(copyCmd, queue);
+		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
 
 		imageBuffer.destroy();
 	}
@@ -831,7 +831,7 @@ void VulkanExample::flushRandomPages()
 	VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
 	VkFence fence;
 	VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &fence));
-	vkQueueBindSparse(queue, 1, &texture.bindSparseInfo, fence);
+	vkQueueBindSparse(graphicQueue, 1, &texture.bindSparseInfo, fence);
 	vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
 	vkDestroyFence(device, fence, nullptr);
 	for (auto& page : texture.pages)

@@ -523,7 +523,7 @@ public:
 			VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
 		}
 
-		vkQueueWaitIdle(queue);
+		vkQueueWaitIdle(graphicQueue);
 	}
 
 	// Update the text buffer displayed by the text overlay
@@ -572,7 +572,7 @@ public:
 	void loadAssets()
 	{
 		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		model.loadFromFile(getAssetPath() + "models/torusknot.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		model.loadFromFile(getAssetPath() + "models/torusknot.gltf", vulkanDevice, graphicQueue, glTFLoadingFlags);
 	}
 
 	void setupDescriptors()
@@ -660,7 +660,7 @@ public:
 
 		textOverlay = new TextOverlay(
 			vulkanDevice,
-			queue,
+			graphicQueue,
 			renderPass,
 			&width,
 			&height,
@@ -687,7 +687,7 @@ public:
 		VulkanExampleBase::prepareFrame();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 		VulkanExampleBase::submitFrame();
 	}
 

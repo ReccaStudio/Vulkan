@@ -366,7 +366,7 @@ void VulkanExample::loadglTFFile(std::string filename)
 
 	// Pass some Vulkan resources required for setup and rendering to the glTF model loading class
 	glTFScene.vulkanDevice = vulkanDevice;
-	glTFScene.copyQueue    = queue;
+	glTFScene.copyQueue    = graphicQueue;
 
 	size_t pos = filename.find_last_of('/');
 	glTFScene.path = filename.substr(0, pos);
@@ -453,7 +453,7 @@ void VulkanExample::loadglTFFile(std::string filename)
 		1,
 		&copyRegion);
 
-	vulkanDevice->flushCommandBuffer(copyCmd, queue, true);
+	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
 
 	// Free staging resources
 	vkDestroyBuffer(device, vertexStaging.buffer, nullptr);

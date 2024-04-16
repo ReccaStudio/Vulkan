@@ -277,7 +277,7 @@ void VulkanRaytracingSample::createStorageImage(VkFormat format, VkExtent3D exte
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_GENERAL,
 		{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-	vulkanDevice->flushCommandBuffer(cmdBuffer, queue);
+	vulkanDevice->flushCommandBuffer(cmdBuffer, graphicQueue);
 }
 
 void VulkanRaytracingSample::deleteStorageImage()

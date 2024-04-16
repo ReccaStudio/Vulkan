@@ -727,7 +727,7 @@ void VulkanExample::loadglTFFile(std::string filename)
 
 	// Pass some Vulkan resources required for setup and rendering to the glTF model loading class
 	glTFModel.vulkanDevice = vulkanDevice;
-	glTFModel.copyQueue    = queue;
+	glTFModel.copyQueue    = graphicQueue;
 
 	std::vector<uint32_t>                indexBuffer;
 	std::vector<VulkanglTFModel::Vertex> vertexBuffer;
@@ -806,7 +806,7 @@ void VulkanExample::loadglTFFile(std::string filename)
 	vkCmdCopyBuffer(copyCmd, vertexStaging.buffer, glTFModel.vertices.buffer, 1, &copyRegion);
 	copyRegion.size = indexBufferSize;
 	vkCmdCopyBuffer(copyCmd, indexStaging.buffer, glTFModel.indices.buffer, 1, &copyRegion);
-	vulkanDevice->flushCommandBuffer(copyCmd, queue, true);
+	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
 
 	// Free staging resources
 	vkDestroyBuffer(device, vertexStaging.buffer, nullptr);

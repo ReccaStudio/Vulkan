@@ -445,8 +445,8 @@ public:
 			indexBufferSize));
 
 		// Copy from host do device
-		vulkanDevice->copyBuffer(&stagingBuffers.vertices, &triangle.vertices, queue);
-		vulkanDevice->copyBuffer(&stagingBuffers.indices, &triangle.indices, queue);
+		vulkanDevice->copyBuffer(&stagingBuffers.vertices, &triangle.vertices, graphicQueue);
+		vulkanDevice->copyBuffer(&stagingBuffers.indices, &triangle.indices, graphicQueue);
 
 		// Clean up
 		stagingBuffers.vertices.destroy();
@@ -638,7 +638,7 @@ public:
 		VulkanExampleBase::prepareFrame();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 		VulkanExampleBase::submitFrame();
 	}
 

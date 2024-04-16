@@ -418,8 +418,8 @@ public:
 	void loadAssets()
 	{
 		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		models.scene.loadFromFile(getAssetPath() + "models/treasure_smooth.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.sceneGlow.loadFromFile(getAssetPath() + "models/treasure_glow.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		models.scene.loadFromFile(getAssetPath() + "models/treasure_smooth.gltf", vulkanDevice, graphicQueue, glTFLoadingFlags);
+		models.sceneGlow.loadFromFile(getAssetPath() + "models/treasure_glow.gltf", vulkanDevice, graphicQueue, glTFLoadingFlags);
 	}
 
 	// We use a custom draw function so we can insert debug labels with the names of the glTF nodes
@@ -723,13 +723,13 @@ public:
 
 	void draw()
 	{
-		queueBeginLabel(queue, "Graphics queue command buffer submission", { 1.0f, 1.0f, 1.0f, 1.0f });
+		queueBeginLabel(graphicQueue, "Graphics queue command buffer submission", { 1.0f, 1.0f, 1.0f, 1.0f });
 		VulkanExampleBase::prepareFrame();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
 		VulkanExampleBase::submitFrame();
-		queueEndLabel(queue);
+		queueEndLabel(graphicQueue);
 	}
 
 	void prepare()

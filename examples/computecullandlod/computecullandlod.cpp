@@ -242,7 +242,7 @@ public:
 	void loadAssets()
 	{
 		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		lodModel.loadFromFile(getAssetPath() + "models/suzanne_lods.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		lodModel.loadFromFile(getAssetPath() + "models/suzanne_lods.gltf", vulkanDevice, graphicQueue, glTFLoadingFlags);
 	}
 
 	void buildComputeCommandBuffer()
@@ -468,7 +468,7 @@ public:
 			&indirectCommandsBuffer,
 			stagingBuffer.size));
 
-		vulkanDevice->copyBuffer(&stagingBuffer, &indirectCommandsBuffer, queue);
+		vulkanDevice->copyBuffer(&stagingBuffer, &indirectCommandsBuffer, graphicQueue);
 
 		stagingBuffer.destroy();
 
@@ -539,7 +539,7 @@ public:
 				1, &buffer_barrier,
 				0, nullptr);
 		}
-		vulkanDevice->flushCommandBuffer(copyCmd, queue, true);
+		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
 
 		stagingBuffer.destroy();
 
@@ -576,7 +576,7 @@ public:
 			&compute.lodLevelsBuffers,
 			stagingBuffer.size));
 
-		vulkanDevice->copyBuffer(&stagingBuffer, &compute.lodLevelsBuffers, queue);
+		vulkanDevice->copyBuffer(&stagingBuffer, &compute.lodLevelsBuffers, graphicQueue);
 
 		stagingBuffer.destroy();
 
@@ -789,7 +789,7 @@ public:
 		submitInfo.pWaitDstStageMask = stageFlags.data();
 
 		// Submit to queue
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, compute.fence));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, compute.fence));
 
 		VulkanExampleBase::submitFrame();
 

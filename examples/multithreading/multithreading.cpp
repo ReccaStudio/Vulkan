@@ -403,8 +403,8 @@ public:
 	void loadAssets()
 	{
 		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		models.ufo.loadFromFile(getAssetPath() + "models/retroufo_red_lowpoly.gltf",vulkanDevice, queue,glTFLoadingFlags);
-		models.starSphere.loadFromFile(getAssetPath() + "models/sphere.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		models.ufo.loadFromFile(getAssetPath() + "models/retroufo_red_lowpoly.gltf",vulkanDevice, graphicQueue,glTFLoadingFlags);
+		models.starSphere.loadFromFile(getAssetPath() + "models/sphere.gltf", vulkanDevice, graphicQueue, glTFLoadingFlags);
 	}
 
 	void preparePipelines()
@@ -492,7 +492,7 @@ public:
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &primaryCommandBuffer;
 
-		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, renderFence));
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, renderFence));
 
 		VulkanExampleBase::submitFrame();
 	}
