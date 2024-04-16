@@ -381,13 +381,13 @@ public:
 			graphics.descriptorSet,
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			0,
-			&textures.particle.descriptor));
+			&textures.particle.descriptorImageInfo));
 		// Binding 1 : Particle gradient ramp
 		writeDescriptorSets.push_back(vks::initializers::writeDescriptorSet(
 			graphics.descriptorSet,
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			1,
-			&textures.gradient.descriptor));
+			&textures.gradient.descriptorImageInfo));
 
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, NULL);
 

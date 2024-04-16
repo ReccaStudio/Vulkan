@@ -232,7 +232,7 @@ public:
 		char* imageDescriptorBufPtr = (char*)combinedImageDescriptor.buffer.mappedData;
 		descriptorInfo.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		for (uint32_t i = 0; i < static_cast<uint32_t>(cubes.size()); i++) {
-			descriptorInfo.data.pCombinedImageSampler = &cubes[i].texture.descriptor;
+			descriptorInfo.data.pCombinedImageSampler = &cubes[i].texture.descriptorImageInfo;
 			vkGetDescriptorEXT(device, &descriptorInfo, descriptorBufferProperties.combinedImageSamplerDescriptorSize, imageDescriptorBufPtr + i * uniformDescriptor.layoutSize + uniformDescriptor.layoutOffset);
 		}
 

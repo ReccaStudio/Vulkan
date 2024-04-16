@@ -250,7 +250,7 @@ public:
 			writeDescriptorSets[1].dstBinding = 1;
 			writeDescriptorSets[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			// Images use a different descriptor structure, so we use pImageInfo instead of pBufferInfo
-			writeDescriptorSets[1].pImageInfo = &cube.texture.descriptor;
+			writeDescriptorSets[1].pImageInfo = &cube.texture.descriptorImageInfo;
 			writeDescriptorSets[1].descriptorCount = 1;
 
 			// Execute the writes to update descriptors for this set

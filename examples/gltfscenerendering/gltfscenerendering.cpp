@@ -228,7 +228,7 @@ void VulkanglTFScene::loadNode(const tinygltf::Node& inputNode, const tinygltf::
 
 VkDescriptorImageInfo VulkanglTFScene::getTextureDescriptor(const size_t index)
 {
-	return images[index].texture.descriptor;
+	return images[index].texture.descriptorImageInfo;
 }
 
 /*

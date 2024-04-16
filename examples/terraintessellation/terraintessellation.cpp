@@ -242,7 +242,7 @@ public:
 		samplerInfo.maxLod = (float)textures.heightMap.mipLevels;
 		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 		VK_CHECK_RESULT(vkCreateSampler(device, &samplerInfo, nullptr, &textures.heightMap.sampler));
-		textures.heightMap.descriptor.sampler = textures.heightMap.sampler;
+		textures.heightMap.descriptorImageInfo.sampler = textures.heightMap.sampler;
 
 		// Setup a repeating sampler for the terrain texture layers
 		vkDestroySampler(device, textures.terrainArray.sampler, nullptr);
@@ -262,7 +262,7 @@ public:
 			samplerInfo.anisotropyEnable = VK_TRUE;
 		}
 		VK_CHECK_RESULT(vkCreateSampler(device, &samplerInfo, nullptr, &textures.terrainArray.sampler));
-		textures.terrainArray.descriptor.sampler = textures.terrainArray.sampler;
+		textures.terrainArray.descriptorImageInfo.sampler = textures.terrainArray.sampler;
 	}
 
 	void buildCommandBuffersForMainRendering()
@@ -559,9 +559,9 @@ public:
 			// Binding 0 : Shared tessellation shader ubo
 			vks::initializers::writeDescriptorSet(descriptorSets.terrain, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.terrainTessellation.descriptor),
 			// Binding 1 : Height map
-			vks::initializers::writeDescriptorSet(descriptorSets.terrain, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &textures.heightMap.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSets.terrain, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &textures.heightMap.descriptorImageInfo),
 			// Binding 2 : Terrain texture array layers
-			vks::initializers::writeDescriptorSet(descriptorSets.terrain, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, &textures.terrainArray.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSets.terrain, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, &textures.terrainArray.descriptorImageInfo),
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
@@ -572,7 +572,7 @@ public:
 			// Binding 0 : Vertex shader ubo
 			vks::initializers::writeDescriptorSet(descriptorSets.skysphere, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.skysphereVertex.descriptor),
 			// Binding 1 : Fragment shader color map
-			vks::initializers::writeDescriptorSet(descriptorSets.skysphere, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &textures.skySphere.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSets.skysphere, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &textures.skySphere.descriptorImageInfo),
 		};
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 	}

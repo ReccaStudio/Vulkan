@@ -471,8 +471,8 @@ void VulkanExample::setupDescriptors()
 	for (auto& material : scene.materials) {
 		const VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.textures, 1);
 		VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &material.descriptorSet));
-		VkDescriptorImageInfo colorMap = scene.images[material.baseColorTextureIndex].texture.descriptor;
-		VkDescriptorImageInfo normalMap = scene.images[material.normalTextureIndex].texture.descriptor;
+		VkDescriptorImageInfo colorMap = scene.images[material.baseColorTextureIndex].texture.descriptorImageInfo;
+		VkDescriptorImageInfo normalMap = scene.images[material.normalTextureIndex].texture.descriptorImageInfo;
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
 			vks::initializers::writeDescriptorSet(material.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &colorMap),
 			vks::initializers::writeDescriptorSet(material.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &normalMap),

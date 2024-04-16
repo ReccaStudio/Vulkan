@@ -142,7 +142,7 @@ public:
 				writeDescriptorSets[2].dstBinding = 2;
 				writeDescriptorSets[2].descriptorCount = 1;
 				writeDescriptorSets[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				writeDescriptorSets[2].pImageInfo = &cube.texture.descriptor;
+				writeDescriptorSets[2].pImageInfo = &cube.texture.descriptorImageInfo;
 
 				vkCmdPushDescriptorSetKHR(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 3, writeDescriptorSets.data());
 

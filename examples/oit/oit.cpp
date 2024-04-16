@@ -224,8 +224,8 @@ public:
 		geometryPass.headIndex.height = height;
 		geometryPass.headIndex.mipLevels = 1;
 		geometryPass.headIndex.layerCount = 1;
-		geometryPass.headIndex.descriptor.imageView = geometryPass.headIndex.view;
-		geometryPass.headIndex.descriptor.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+		geometryPass.headIndex.descriptorImageInfo.imageView = geometryPass.headIndex.view;
+		geometryPass.headIndex.descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 		geometryPass.headIndex.sampler = VK_NULL_HANDLE;
 
 		// Create a buffer for LinkedListSBO
@@ -316,7 +316,7 @@ public:
 			// Binding 2: GeometrySBO
 			vks::initializers::writeDescriptorSet(descriptorSets.geometry, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, &geometryPass.geometry.descriptor),
 			// Binding 3: headIndexImage
-			vks::initializers::writeDescriptorSet(descriptorSets.geometry, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 2, &geometryPass.headIndex.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSets.geometry, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 2, &geometryPass.headIndex.descriptorImageInfo),
 			// Binding 4: LinkedListSBO
 			vks::initializers::writeDescriptorSet(descriptorSets.geometry, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3, &geometryPass.linkedList.descriptor)
 		};
@@ -328,7 +328,7 @@ public:
 
 		writeDescriptorSets = {
 			// Binding 0: headIndexImage
-			vks::initializers::writeDescriptorSet(descriptorSets.color, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, &geometryPass.headIndex.descriptor),
+			vks::initializers::writeDescriptorSet(descriptorSets.color, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, &geometryPass.headIndex.descriptorImageInfo),
 			// Binding 1: LinkedListSBO
 			vks::initializers::writeDescriptorSet(descriptorSets.color, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, &geometryPass.linkedList.descriptor)
 		};
