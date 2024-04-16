@@ -570,13 +570,13 @@ public:
 		buildComputeCommandBuffer();
 	}
 
-	void prepare()
+	void prepareForRendering()
 	{
-		VulkanExampleBase::prepare();
+		VulkanExampleBase::prepareForRendering();
 		// We will be using the queue family indices to check if graphics and compute queue families differ
 		// If that's the case, we need additional barriers for acquiring and releasing resources
-		graphics.queueFamilyIndex = vulkanDevice->queueFamilyIndices.graphics;
-		compute.queueFamilyIndex = vulkanDevice->queueFamilyIndices.compute;
+		graphics.queueFamilyIndex = vulkanDevice->queueFamilyIndices.graphicIndex;
+		compute.queueFamilyIndex = vulkanDevice->queueFamilyIndices.computeIndex;
 		loadAssets();
 		setupDescriptorPool();
 		prepareStorageBuffers();
@@ -623,7 +623,7 @@ public:
 	void updateComputeUniformBuffers()
 	{
 		compute.uniformData.deltaT = paused ? 0.0f : frameTimer * 0.05f;
-		memcpy(compute.uniformBuffer.mapped, &compute.uniformData, sizeof(Compute::UniformData));
+		memcpy(compute.uniformBuffer.mappedData, &compute.uniformData, sizeof(Compute::UniformData));
 	}
 
 	void updateGraphicsUniformBuffers()
@@ -631,7 +631,7 @@ public:
 		graphics.uniformData.projection = camera.matrices.perspective;
 		graphics.uniformData.view = camera.matrices.view;
 		graphics.uniformData.screenDim = glm::vec2((float)width, (float)height);
-		memcpy(graphics.uniformBuffer.mapped, &graphics.uniformData, sizeof(Graphics::UniformData));
+		memcpy(graphics.uniformBuffer.mappedData, &graphics.uniformData, sizeof(Graphics::UniformData));
 	}
 
 	virtual void render()
