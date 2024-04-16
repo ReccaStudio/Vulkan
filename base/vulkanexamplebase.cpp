@@ -190,7 +190,7 @@ void VulkanExampleBase::createSynchronizationPrimitives()
 	}
 }
 
-void VulkanExampleBase::initSwapchain()
+void VulkanExampleBase::initSwapchainSurface()
 {
 #if defined(_WIN32)
 	swapChain.initSurface(windowInstance, window);
@@ -2734,7 +2734,7 @@ void VulkanExampleBase::getEnabledExtensions() {}
 
 void VulkanExampleBase::prepareForRendering()
 {
-	initSwapchain();
+	initSwapchainSurface();
 	createCommandPool();
 	setupSwapChain();
 	createCommandBuffers();

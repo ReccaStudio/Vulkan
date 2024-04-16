@@ -86,7 +86,7 @@ private:
 	void createPipelineCache();
 	void createCommandPool();
 	void createSynchronizationPrimitives();
-	void initSwapchain();
+	void initSwapchainSurface();
 	void setupSwapChain();
 	void createCommandBuffers();
 	void destroyCommandBuffers();
