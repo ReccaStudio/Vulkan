@@ -220,7 +220,7 @@ public:
 	/** @brief Default depth stencil attachment used by the default render pass */
 	struct {
 		VkImage image;
-		VkDeviceMemory memory;
+		VkDeviceMemory deviceMemory;
 		VkImageView view;
 	} depthStencil{};
 
@@ -309,11 +309,11 @@ public:
 	void initWaylandConnection();
 	void setSize(int width, int height);
 	static void registryGlobalCb(void *data, struct wl_registry *registry,
-			uint32_t appName, const char *interface, uint32_t version);
-	void registryGlobal(struct wl_registry *registry, uint32_t appName,
+			uint32_t name, const char *interface, uint32_t version);
+	void registryGlobal(struct wl_registry *registry, uint32_t name,
 			const char *interface, uint32_t version);
 	static void registryGlobalRemoveCb(void *data, struct wl_registry *registry,
-			uint32_t appName);
+			uint32_t name);
 	static void seatCapabilitiesCb(void *data, wl_seat *seat, uint32_t caps);
 	void seatCapabilities(wl_seat *seat, uint32_t caps);
 	static void pointerEnterCb(void *data, struct wl_pointer *pointer,

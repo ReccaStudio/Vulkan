@@ -21,12 +21,12 @@ std::vector<const char*> VulkanExampleBase::args;
 std::string VulkanExampleBase::getWindowTitle()
 {
 	std::string device(deviceProperties.deviceName);
-	std::string windowTitle;
-	windowTitle = windowTitle + " - " + device;
+	std::string tempWindowTile;
+	tempWindowTile = windowTitle + " - " + device;
 	if (!settings.overlay) {
-		windowTitle += " - " + std::to_string(frameCounter) + " fps";
+		tempWindowTile += " - " + std::to_string(frameCounter) + " fps";
 	}
-	return windowTitle;
+	return tempWindowTile;
 }
 
 void VulkanExampleBase::handleMouseMove(int32_t x, int32_t y)
@@ -378,7 +378,7 @@ VulkanExampleBase::~VulkanExampleBase()
 	}
 	vkDestroyImageView(device, depthStencil.view, nullptr);
 	vkDestroyImage(device, depthStencil.image, nullptr);
-	vkFreeMemory(device, depthStencil.memory, nullptr);
+	vkFreeMemory(device, depthStencil.deviceMemory, nullptr);
 
 	vkDestroyPipelineCache(device, pipelineCache, nullptr);
 
@@ -471,6 +471,7 @@ bool VulkanExampleBase::initVulkanSetting()
 		vks::tools::exitFatal("No device with Vulkan support found", -1);
 		return false;
 	}
+
 	// Enumerate devices
 	std::vector<VkPhysicalDevice> physicalDevices(gpuCount);
 	err = vkEnumeratePhysicalDevices(instance, &gpuCount, physicalDevices.data());
@@ -552,6 +553,7 @@ bool VulkanExampleBase::initVulkanSetting()
 	// Create a semaphore used to synchronize image presentation
 	// Ensures that the image is displayed before we start submitting new commands to the queue
 	VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete));
+	
 	// Create a semaphore used to synchronize command submission
 	// Ensures that the image is not presented until all commands have been submitted and executed
 	VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete));
@@ -661,8 +663,7 @@ HWND VulkanExampleBase::setupWindow(HINSTANCE hinstance, WNDPROC wndproc)
 			screenWidth = width;
 			screenHeight = height;
 		}
-
-	}
+	}//settings.fullscreen
 
 	DWORD dwExStyle;
 	DWORD dwStyle;
@@ -1606,11 +1607,11 @@ void VulkanExampleBase::handleEvent(const DFBWindowEvent *event)
 }
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 /*static*/void VulkanExampleBase::registryGlobalCb(void *data,
-		wl_registry *registry, uint32_t appName, const char *interface,
+		wl_registry *registry, uint32_t name, const char *interface,
 		uint32_t version)
 {
 	VulkanExampleBase *self = reinterpret_cast<VulkanExampleBase *>(data);
-	self->registryGlobal(registry, appName, interface, version);
+	self->registryGlobal(registry, name, interface, version);
 }
 
 /*static*/void VulkanExampleBase::seatCapabilitiesCb(void *data, wl_seat *seat,
@@ -1799,23 +1800,23 @@ static const struct xdg_wm_base_listener xdg_wm_base_listener = {
 	xdg_wm_base_ping,
 };
 
-void VulkanExampleBase::registryGlobal(wl_registry *registry, uint32_t appName,
+void VulkanExampleBase::registryGlobal(wl_registry *registry, uint32_t name,
 		const char *interface, uint32_t version)
 {
 	if (strcmp(interface, "wl_compositor") == 0)
 	{
-		compositor = (wl_compositor *) wl_registry_bind(registry, appName,
+		compositor = (wl_compositor *) wl_registry_bind(registry, name,
 				&wl_compositor_interface, 3);
 	}
 	else if (strcmp(interface, "xdg_wm_base") == 0)
 	{
-		shell = (xdg_wm_base *) wl_registry_bind(registry, appName,
+		shell = (xdg_wm_base *) wl_registry_bind(registry, name,
 				&xdg_wm_base_interface, 1);
 		xdg_wm_base_add_listener(shell, &xdg_wm_base_listener, nullptr);
 	}
 	else if (strcmp(interface, "wl_seat") == 0)
 	{
-		seat = (wl_seat *) wl_registry_bind(registry, appName, &wl_seat_interface,
+		seat = (wl_seat *) wl_registry_bind(registry, name, &wl_seat_interface,
 				1);
 
 		static const struct wl_seat_listener seat_listener =
@@ -1825,7 +1826,7 @@ void VulkanExampleBase::registryGlobal(wl_registry *registry, uint32_t appName,
 }
 
 /*static*/void VulkanExampleBase::registryGlobalRemoveCb(void *data,
-		struct wl_registry *registry, uint32_t appName)
+		struct wl_registry *registry, uint32_t name)
 {
 }
 
@@ -2140,12 +2141,12 @@ void VulkanExampleBase::handleEvent(const xcb_generic_event_t *event)
 		const xcb_configure_notify_event_t *cfgEvent = (const xcb_configure_notify_event_t *)event;
 		if ((prepared) && ((cfgEvent->width != width) || (cfgEvent->height != height)))
 		{
-				destWidth = cfgEvent->width;
-				destHeight = cfgEvent->height;
-				if ((destWidth > 0) && (destHeight > 0))
-				{
-					resizeWindow();
-				}
+			destWidth = cfgEvent->width;
+			destHeight = cfgEvent->height;
+			if ((destWidth > 0) && (destHeight > 0))
+			{
+				resizeWindow();
+			}
 		}
 	}
 	break;
@@ -2488,8 +2489,8 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 			{
 				supportedInstanceExtensions.push_back(extension.extensionName);
 			}
-		}
-	}
+		}//if
+	}//if extCount
 
 #if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
 	// SRS - When running on iOS/macOS with MoltenVK, enable VK_KHR_get_physical_device_properties2 if not already enabled by the example (required by VK_KHR_portability_subset)
@@ -2511,7 +2512,7 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 			}
 			instanceExtensions.push_back(enabledExtension);
 		}
-	}
+	}//if
 
 	VkInstanceCreateInfo instanceCreateInfo = {};
 	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -2556,19 +2557,25 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 		vkEnumerateInstanceLayerProperties(&instanceLayerCount, nullptr);
 		std::vector<VkLayerProperties> instanceLayerProperties(instanceLayerCount);
 		vkEnumerateInstanceLayerProperties(&instanceLayerCount, instanceLayerProperties.data());
+
 		bool validationLayerPresent = false;
-		for (VkLayerProperties& layer : instanceLayerProperties) {
-			if (strcmp(layer.layerName, validationLayerName) == 0) {
+		for (VkLayerProperties layer: instanceLayerProperties)
+		{
+			if (strcmp(layer.layerName,validationLayerName)==0)
+			{
 				validationLayerPresent = true;
 				break;
 			}
 		}
-		if (validationLayerPresent) {
+
+		if (validationLayerPresent)
+		{
 			instanceCreateInfo.ppEnabledLayerNames = &validationLayerName;
 			instanceCreateInfo.enabledLayerCount = 1;
 		}
-		else {
-			std::cerr << "Validation layer VK_LAYER_KHRONOS_validation not present, validation is disabled";
+		else
+		{
+			std::cerr << "Validation layer VK_LAYER_KHRONOS_validation not present,validation is disabled";
 		}
 	}
 	VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
@@ -2581,13 +2588,21 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 	return result;
 }
 
-void VulkanExampleBase::keyPressed(uint32_t) {}
+void VulkanExampleBase::keyPressed(uint32_t)
+{
+}
 
-void VulkanExampleBase::mouseMoved(double x, double y, bool & handled) {}
+void VulkanExampleBase::mouseMoved(double x, double y, bool & handled)
+{
+}
 
-void VulkanExampleBase::windowResized() {}
+void VulkanExampleBase::windowResized()
+{
+}
 
-void VulkanExampleBase::buildCommandBuffersForMainRendering() {}
+void VulkanExampleBase::buildCommandBuffersForMainRendering()
+{
+}
 
 void VulkanExampleBase::setupDepthStencil()
 {
@@ -2606,12 +2621,12 @@ void VulkanExampleBase::setupDepthStencil()
 	VkMemoryRequirements memReqs{};
 	vkGetImageMemoryRequirements(device, depthStencil.image, &memReqs);
 
-	VkMemoryAllocateInfo memAllloc{};
-	memAllloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	memAllloc.allocationSize = memReqs.size;
-	memAllloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	VK_CHECK_RESULT(vkAllocateMemory(device, &memAllloc, nullptr, &depthStencil.memory));
-	VK_CHECK_RESULT(vkBindImageMemory(device, depthStencil.image, depthStencil.memory, 0));
+	VkMemoryAllocateInfo memAlloc{};
+	memAlloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	memAlloc.allocationSize = memReqs.size;
+	memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &depthStencil.deviceMemory));
+	VK_CHECK_RESULT(vkBindImageMemory(device, depthStencil.image, depthStencil.deviceMemory, 0));
 
 	VkImageViewCreateInfo imageViewCI{};
 	imageViewCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -2623,10 +2638,13 @@ void VulkanExampleBase::setupDepthStencil()
 	imageViewCI.subresourceRange.baseArrayLayer = 0;
 	imageViewCI.subresourceRange.layerCount = 1;
 	imageViewCI.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-	// Stencil aspect should only be set on depth + stencil formats (VK_FORMAT_D16_UNORM_S8_UINT..VK_FORMAT_D32_SFLOAT_S8_UINT
-	if (depthFormat >= VK_FORMAT_D16_UNORM_S8_UINT) {
+
+	//stencil aspect should only be set on depth+stencil formats (VK_FORMAT_D16_UNORM_S8_UINT..VK_FORMAT_D32_SFLOAT_S8_UINT)
+	if (depthFormat>=VK_FORMAT_D16_UNORM_S8_UINT)
+	{
 		imageViewCI.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
 	}
+
 	VK_CHECK_RESULT(vkCreateImageView(device, &imageViewCI, nullptr, &depthStencil.view));
 }
 
@@ -2648,7 +2666,7 @@ void VulkanExampleBase::setupFrameBuffer()
 	frameBufferCreateInfo.layers = 1;
 
 	// Create frame buffers for every swap chain image
-	frameBuffers.resize(swapChain.imageCount);
+	frameBuffers.resize(swapChain.imageCount);//¶à²ã»º³å
 	for (uint32_t i = 0; i < frameBuffers.size(); i++)
 	{
 		attachments[0] = swapChain.buffers[i].view;
@@ -2728,7 +2746,9 @@ void VulkanExampleBase::setupRenderPass()
 	VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
 }
 
-void VulkanExampleBase::getEnabledFeatures() {}
+void VulkanExampleBase::getEnabledFeatures()
+{
+}
 
 void VulkanExampleBase::getEnabledExtensions() {}
 
@@ -2743,12 +2763,15 @@ void VulkanExampleBase::prepareForRendering()
 	setupRenderPass();
 	createPipelineCache();
 	setupFrameBuffer();
+
 	settings.overlay = settings.overlay && (!benchmark.active);
-	if (settings.overlay) {
+	if (settings.overlay)
+	{
 		uiOverlay.device = vulkanDevice;
 		uiOverlay.queue = graphicQueue;
-		uiOverlay.shaders = {
-			loadShader(getShadersPath() + "base/uioverlay.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+		uiOverlay.shaders =
+		{
+			loadShader(getShadersPath() + "base/uioverlay.vert.spv",VK_SHADER_STAGE_VERTEX_BIT),
 			loadShader(getShadersPath() + "base/uioverlay.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 		uiOverlay.prepareResources();
@@ -2766,11 +2789,14 @@ VkPipelineShaderStageCreateInfo VulkanExampleBase::loadShader(std::string fileNa
 #else
 	shaderStage.module = vks::tools::loadShader(fileName.c_str(), device);
 #endif
+
 	shaderStage.pName = "main";
 	assert(shaderStage.module != VK_NULL_HANDLE);
 	shaderModules.push_back(shaderStage.module);
+
 	return shaderStage;
 }
+
 
 void VulkanExampleBase::resizeWindow()
 {
@@ -2778,6 +2804,7 @@ void VulkanExampleBase::resizeWindow()
 	{
 		return;
 	}
+
 	prepared = false;
 	resized = true;
 
@@ -2792,21 +2819,25 @@ void VulkanExampleBase::resizeWindow()
 	// Recreate the frame buffers
 	vkDestroyImageView(device, depthStencil.view, nullptr);
 	vkDestroyImage(device, depthStencil.image, nullptr);
-	vkFreeMemory(device, depthStencil.memory, nullptr);
+	vkFreeMemory(device, depthStencil.deviceMemory, nullptr);
+
 	setupDepthStencil();
-	for (uint32_t i = 0; i < frameBuffers.size(); i++) {
+
+	for (uint32_t i = 0; i < frameBuffers.size(); ++i)
+	{
 		vkDestroyFramebuffer(device, frameBuffers[i], nullptr);
 	}
 	setupFrameBuffer();
 
-	if ((width > 0.0f) && (height > 0.0f)) {
-		if (settings.overlay) {
+	if (width > 0.0f && height > 0.0f)
+	{
+		if (settings.overlay)
+		{
 			uiOverlay.resize(width, height);
 		}
 	}
 
-	// Command buffers need to be recreated as they may store
-	// references to the recreated frame buffer
+	// Command buffers need to be created as they may store references to the recreated frame buffer
 	destroyCommandBuffers();
 	createCommandBuffers();
 	buildCommandBuffersForMainRendering();
@@ -2847,7 +2878,8 @@ void VulkanExampleBase::renderLoop()
 
 		benchmark.run([=] { render(); }, vulkanDevice->properties);
 		vkDeviceWaitIdle(device);
-		if (benchmark.filename != "") {
+		if (benchmark.filename != "") 
+        {
 			benchmark.saveResults();
 		}
 		return;
@@ -2861,19 +2893,24 @@ void VulkanExampleBase::renderLoop()
 #if defined(_WIN32)
 	MSG msg;
 	bool quitMessageReceived = false;
-	while (!quitMessageReceived) {
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+	while (!quitMessageReceived)
+	{
+		while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			if (msg.message == WM_QUIT) {
+			if (msg.message ==WM_QUIT)
+			{
 				quitMessageReceived = true;
 				break;
 			}
-		}
-		if (prepared && !IsIconic(window)) {
+		}//while PeekMessage
+
+		if (prepared && !IsIconic(window))
+        {
 			nextFrame();
 		}
-	}
+	}//while quitMessageReceived
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
 	while (1)
 	{
@@ -3189,10 +3226,12 @@ void VulkanExampleBase::renderLoop()
 #elif (defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_EXAMPLE_XCODE_GENERATED))
 	[NSApp run];
 #elif defined(VK_USE_PLATFORM_SCREEN_QNX)
-	while (!quit) {
+	while (!quit)
+    {
 		handleEvent();
 
-		if (prepared) {
+		if (prepared)
+        {
 			nextFrame();
 		}
 	}
@@ -3219,15 +3258,17 @@ void VulkanExampleBase::prepareFrame()
 {
 	// Acquire the next image from the swap chain
 	VkResult result = swapChain.acquireNextImage(semaphores.presentComplete, &currentCmdBufferIndex);
-	// Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE)
-	// SRS - If no longer optimal (VK_SUBOPTIMAL_KHR), wait until submitFrame() in case number of swapchain images will change on resize
-	if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
+
+	//Recreate the swap chain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
+	if (result==VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+	{
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 			resizeWindow();
 		}
 		return;
 	}
-	else {
+	else
+	{
 		VK_CHECK_RESULT(result);
 	}
 }
@@ -3237,9 +3278,11 @@ void VulkanExampleBase::submitFrame()
 	VkResult result = swapChain.queuePresent(graphicQueue, currentCmdBufferIndex, semaphores.renderComplete);
 	// Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
 	
-    if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
+    if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
+    {
 		resizeWindow();
-		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+		if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        {
 			return;
 		}
 	}
@@ -3255,6 +3298,7 @@ void VulkanExampleBase::renderFrame()
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &drawCmdBuffers[currentCmdBufferIndex];
 	VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
+
 	VulkanExampleBase::submitFrame();
 }
 
