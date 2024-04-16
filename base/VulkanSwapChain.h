@@ -27,14 +27,15 @@
 #include <sys/utsname.h>
 #endif
 
-typedef struct _SwapChainBuffers {
+typedef struct _SwapChainBuffers
+{
 	VkImage image;
 	VkImageView view;
 } SwapChainBuffer;
 
 class VulkanSwapChain
 {
-private: 
+private:
 	VkInstance instance;
 	VkDevice device;
 	VkPhysicalDevice physicalDevice;
@@ -42,7 +43,7 @@ private:
 public:
 	VkFormat colorFormat;
 	VkColorSpaceKHR colorSpace;
-	VkSwapchainKHR swapChain = VK_NULL_HANDLE;	
+	VkSwapchainKHR swapChain = VK_NULL_HANDLE;
 	uint32_t imageCount;
 	std::vector<VkImage> images;
 	std::vector<SwapChainBuffer> buffers;
@@ -68,9 +69,18 @@ public:
 #elif defined(VK_USE_PLATFORM_SCREEN_QNX)
 	void initSurface(screen_context_t screen_context, screen_window_t screen_window);
 #endif
+
 	void connect(VkInstance instance, VkPhysicalDevice physicalDevice, VkDevice device);
+
 	void create(uint32_t* width, uint32_t* height, bool vsync = false, bool fullscreen = false);
+
 	VkResult acquireNextImage(VkSemaphore presentCompleteSemaphore, uint32_t* imageIndex);
+
 	VkResult queuePresent(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore = VK_NULL_HANDLE);
+
 	void cleanup();
+
+
+private:
+
 };

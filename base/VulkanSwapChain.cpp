@@ -95,7 +95,8 @@ void VulkanSwapChain::initSurface(screen_context_t screen_context, screen_window
 	err = vkCreateScreenSurfaceQNX(instance, &surfaceCreateInfo, NULL, &surface);
 #endif
 
-	if (err != VK_SUCCESS) {
+	if (err!=VK_SUCCESS)
+	{
 		vks::tools::exitFatal("Could not create surface!", err);
 	}
 
@@ -129,35 +130,37 @@ void VulkanSwapChain::initSurface(screen_context_t screen_context, screen_window
 				graphicsQueueNodeIndex = i;
 			}
 
-			if (supportsPresent[i] == VK_TRUE) 
+			if (supportsPresent[i] == VK_TRUE)
 			{
 				graphicsQueueNodeIndex = i;
 				presentQueueNodeIndex = i;
 				break;
-			}
+			}//应该把这段逻辑提前
 		}
-	}
-	if (presentQueueNodeIndex == UINT32_MAX) 
-	{	
+	}//for
+
+	if (presentQueueNodeIndex == UINT32_MAX)
+	{
 		// If there's no queue that supports both present and graphics
 		// try to find a separate present queue
 		for (uint32_t i = 0; i < queueCount; ++i) 
 		{
-			if (supportsPresent[i] == VK_TRUE) 
+			if (supportsPresent[i] == VK_TRUE)
 			{
 				presentQueueNodeIndex = i;
 				break;
 			}
-		}
-	}
+		}//for
+	}//if
 
 	// Exit if either a graphics or a presenting queue hasn't been found
-	if (graphicsQueueNodeIndex == UINT32_MAX || presentQueueNodeIndex == UINT32_MAX) 
+	if (graphicsQueueNodeIndex == UINT32_MAX || presentQueueNodeIndex == UINT32_MAX)
 	{
 		vks::tools::exitFatal("Could not find a graphics and/or presenting queue!", -1);
 	}
 
-	if (graphicsQueueNodeIndex != presentQueueNodeIndex) 
+	//todo : Add support for separate graphics and presenting queue
+	if (graphicsQueueNodeIndex!=presentQueueNodeIndex)
 	{
 		vks::tools::exitFatal("Separate graphics and presenting queues are not supported yet!", -1);
 	}
@@ -270,7 +273,7 @@ void VulkanSwapChain::create(uint32_t *width, uint32_t *height, bool vsync, bool
 			{
 				swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 			}
-		}
+		}//for
 	}
 
 	// Determine the number of images
@@ -430,6 +433,7 @@ VkResult VulkanSwapChain::queuePresent(VkQueue queue, uint32_t imageIndex, VkSem
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = &swapChain;
 	presentInfo.pImageIndices = &imageIndex;
+
 	// Check if a wait semaphore has been specified to wait for before presenting the image
 	if (waitSemaphore != VK_NULL_HANDLE)
 	{
@@ -457,6 +461,7 @@ void VulkanSwapChain::cleanup()
 		vkDestroySwapchainKHR(device, swapChain, nullptr);
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 	}
+
 	surface = VK_NULL_HANDLE;
 	swapChain = VK_NULL_HANDLE;
 }

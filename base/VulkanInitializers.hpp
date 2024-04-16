@@ -190,6 +190,7 @@ namespace vks
 			rect2D.extent.height = height;
 			rect2D.offset.x = offsetX;
 			rect2D.offset.y = offsetY;
+
 			return rect2D;
 		}
 
@@ -362,11 +363,11 @@ namespace vks
 			uint32_t stride,
 			VkVertexInputRate inputRate)
 		{
-			VkVertexInputBindingDescription vInputBindDescription {};
-			vInputBindDescription.binding = binding;
-			vInputBindDescription.stride = stride;
-			vInputBindDescription.inputRate = inputRate;
-			return vInputBindDescription;
+			VkVertexInputBindingDescription vertexInputBindingDescription{};
+			vertexInputBindingDescription.binding = binding;
+			vertexInputBindingDescription.stride = stride;
+			vertexInputBindingDescription.inputRate = inputRate;
+			return vertexInputBindingDescription;
 		}
 
 		inline VkVertexInputAttributeDescription vertexInputAttributeDescription(
