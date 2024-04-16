@@ -92,7 +92,7 @@ public:
 		}
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -272,7 +272,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -302,12 +302,12 @@ public:
 			if (deviceFeatures.fillModeNonSolid) {
 				if (overlay->checkBox("Wireframe", &wireframe)) {
 					updateUniformBuffers();
-					buildCommandBuffers();
+					buildCommandBuffersForMainRendering();
 				}
 				if (overlay->checkBox("Splitscreen", &splitScreen)) {
 					camera.setPerspective(45.0f, (float)(width * ((splitScreen) ? 0.5f : 1.0f)) / (float)height, 0.1f, 256.0f);
 					updateUniformBuffers();
-					buildCommandBuffers();
+					buildCommandBuffersForMainRendering();
 				}
 			}
 		}

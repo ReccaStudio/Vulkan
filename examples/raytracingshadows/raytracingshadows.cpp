@@ -436,7 +436,7 @@ public:
 	/*
 		Command buffer generation
 	*/
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		if (resized)
 		{
@@ -558,7 +558,7 @@ public:
 		createRayTracingPipeline();
 		createShaderBindingTables();
 		createDescriptorSets();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 

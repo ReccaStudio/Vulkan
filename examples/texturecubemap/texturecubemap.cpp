@@ -274,7 +274,7 @@ public:
 		ktxTexture_Destroy(ktxTexture);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -449,7 +449,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -476,10 +476,10 @@ public:
 				updateUniformBuffers();
 			}
 			if (overlay->comboBox("Object type", &models.objectIndex, objectNames)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->checkBox("Skybox", &displaySkybox)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 	}

@@ -213,7 +213,7 @@ void VulkanExample::setupRenderPass()
 	VK_CHECK_RESULT(vkCreateRenderPass2KHR(device, &renderPassCI, nullptr, &renderPass));
 }
 
-void VulkanExample::buildCommandBuffers()
+void VulkanExample::buildCommandBuffersForMainRendering()
 {
 	// As this is an extension, we need to manually load the extension pointers
 	if (!vkCmdSetFragmentShadingRateKHR) {
@@ -580,7 +580,7 @@ void VulkanExample::prepareForRendering()
 	prepareUniformBuffers();
 	setupDescriptors();
 	preparePipelines();
-	buildCommandBuffers();
+	buildCommandBuffersForMainRendering();
 	prepared = true;
 }
 
@@ -595,7 +595,7 @@ void VulkanExample::render()
 void VulkanExample::OnUpdateUIOverlay(vks::UIOverlay* overlay)
 {
 	if (overlay->checkBox("Enable shading rate", &enableShadingRate)) {
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 	}
 	if (overlay->checkBox("Color shading rates", &colorShadingRate)) {
 		updateUniformBuffers();

@@ -265,7 +265,7 @@ public:
 		textures.terrainArray.descriptor.sampler = textures.terrainArray.sampler;
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -699,7 +699,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -736,7 +736,7 @@ public:
 			}
 			if (deviceFeatures.fillModeNonSolid) {
 				if (overlay->checkBox("Wireframe", &wireframe)) {
-					buildCommandBuffers();
+					buildCommandBuffersForMainRendering();
 				}
 			}
 		}

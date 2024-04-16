@@ -330,7 +330,7 @@ public:
 		}
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		if (resized)
 			return;
@@ -642,7 +642,7 @@ public:
 		multiviewPass.commandBuffers.resize(drawCmdBuffers.size());
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, multiviewPass.commandBuffers.data()));
 
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 
 		VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 		multiviewPass.waitFences.resize(multiviewPass.commandBuffers.size());
@@ -678,7 +678,7 @@ public:
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, multiviewPass.commandBuffers.data()));
 
 		resized = false;
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		
 		// SRS - Recreate Multiview fences in case number of swapchain images has changed on resize
 		for (auto& fence : multiviewPass.waitFences) {

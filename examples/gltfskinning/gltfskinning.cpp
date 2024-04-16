@@ -672,7 +672,7 @@ void VulkanExample::getEnabledFeatures()
 	};
 }
 
-void VulkanExample::buildCommandBuffers()
+void VulkanExample::buildCommandBuffersForMainRendering()
 {
 	VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -978,7 +978,7 @@ void VulkanExample::prepareForRendering()
 	prepareUniformBuffers();
 	setupDescriptors();
 	preparePipelines();
-	buildCommandBuffers();
+	buildCommandBuffersForMainRendering();
 	prepared = true;
 }
 
@@ -998,7 +998,7 @@ void VulkanExample::OnUpdateUIOverlay(vks::UIOverlay *overlay)
 	{
 		if (overlay->checkBox("Wireframe", &wireframe))
 		{
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 	}
 }

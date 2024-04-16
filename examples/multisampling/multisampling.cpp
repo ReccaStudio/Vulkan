@@ -338,7 +338,7 @@ public:
 		}
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -514,7 +514,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -540,7 +540,7 @@ public:
 		if (vulkanDevice->features.sampleRateShading) {
 			if (overlay->header("Settings")) {
 				if (overlay->checkBox("Sample rate shading", &useSampleShading)) {
-					buildCommandBuffers();
+					buildCommandBuffersForMainRendering();
 				}
 			}
 		}

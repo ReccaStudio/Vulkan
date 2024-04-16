@@ -6,6 +6,8 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
+#define FORCE_VALIDATION true
+
 #include "vulkanexamplebase.h"
 
 #if (defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_EXAMPLE_XCODE_GENERATED))
@@ -151,7 +153,7 @@ void VulkanExampleBase::updateOverlay()
 	ImGui::Render();
 
 	if (UIOverlay.update() || UIOverlay.updated) {
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		UIOverlay.updated = false;
 	}
 
@@ -2585,7 +2587,7 @@ void VulkanExampleBase::mouseMoved(double x, double y, bool & handled) {}
 
 void VulkanExampleBase::windowResized() {}
 
-void VulkanExampleBase::buildCommandBuffers() {}
+void VulkanExampleBase::buildCommandBuffersForMainRendering() {}
 
 void VulkanExampleBase::setupDepthStencil()
 {
@@ -2807,7 +2809,7 @@ void VulkanExampleBase::windowResize()
 	// references to the recreated frame buffer
 	destroyCommandBuffers();
 	createCommandBuffers();
-	buildCommandBuffers();
+	buildCommandBuffersForMainRendering();
 
 	// SRS - Recreate fences in case number of swapchain images has changed on resize
 	for (auto& fence : waitFences) {

@@ -218,7 +218,7 @@ public:
 		storageImage.device = vulkanDevice;
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -594,7 +594,7 @@ public:
 		setupDescriptorPool();
 		prepareGraphics();
 		prepareCompute();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 

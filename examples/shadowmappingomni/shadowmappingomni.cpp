@@ -435,7 +435,7 @@ public:
 		vkCmdEndRenderPass(commandBuffer);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -682,7 +682,7 @@ public:
 		prepareOffscreenRenderpass();
 		preparePipelines();
 		prepareOffscreenFramebuffer();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -699,7 +699,7 @@ public:
 	{
 		if (overlay->header("Settings")) {
 			if (overlay->checkBox("Display shadow cube render target", &displayCubeMap)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 	}

@@ -481,7 +481,7 @@ public:
 		}
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -565,7 +565,7 @@ public:
 		// If the no. of letters changed, the no. of draw commands also changes which requires a rebuild of the command buffers
 		if (lastNumLetters != textOverlay->numLetters) {
 			std::cout << "rebuild cb\n";
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 	}
 
@@ -678,7 +678,7 @@ public:
 		setupDescriptors();
 		preparePipelines();
 		prepareTextOverlay();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 

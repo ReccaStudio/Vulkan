@@ -283,7 +283,7 @@ public:
 		ktxTexture_Destroy(ktxTexture);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -459,7 +459,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -486,10 +486,10 @@ public:
 			overlay->sliderInt("Cube map", &uniformData.cubeMapIndex, 0, cubeMapArray.layerCount - 1);
 			overlay->sliderFloat("LOD bias", &uniformData.lodBias, 0.0f, (float)cubeMapArray.mipLevels);
 			if (overlay->comboBox("Object type", &models.objectIndex, objectNames)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->checkBox("Skybox", &displaySkybox)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 	}

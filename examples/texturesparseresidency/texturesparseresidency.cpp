@@ -481,7 +481,7 @@ void VulkanExample::destroyTextureImage(SparseTexture texture)
 	texture.destroy();
 }
 
-void VulkanExample::buildCommandBuffers()
+void VulkanExample::buildCommandBuffersForMainRendering()
 {
 	VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -636,7 +636,7 @@ void VulkanExample::prepareForRendering()
 	prepareSparseTexture(4096, 4096, 1, VK_FORMAT_R8G8B8A8_UNORM);
 	setupDescriptors();
 	preparePipelines();
-	buildCommandBuffers();
+	buildCommandBuffersForMainRendering();
 	prepared = true;
 }
 

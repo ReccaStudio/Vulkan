@@ -65,7 +65,7 @@ public:
 		quad.destroy();
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -277,7 +277,7 @@ public:
 		loadAssets();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -293,19 +293,19 @@ public:
 		if (overlay->header("Scene")) {
 			overlay->text("Quad type");
 			if (overlay->comboBox("##quadtype", &quadType, { "VK (y negative)", "GL (y positive)" })) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 
 		if (overlay->header("Viewport")) {
 			if (overlay->checkBox("Negative viewport height", &negativeViewport)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->sliderFloat("offset x", &offsetx, -(float)width, (float)width)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->sliderFloat("offset y", &offsety, -(float)height, (float)height)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 		if (overlay->header("Pipeline")) {

@@ -103,7 +103,7 @@ public:
 	void prepareSparseTexture(uint32_t width, uint32_t height, uint32_t layerCount, VkFormat format);
 	// @todo: move to dtor of texture
 	void destroyTextureImage(SparseTexture texture);
-	void buildCommandBuffers();
+	void buildCommandBuffersForMainRendering();
 	void draw();
 	void loadAssets();
 	void setupDescriptors();

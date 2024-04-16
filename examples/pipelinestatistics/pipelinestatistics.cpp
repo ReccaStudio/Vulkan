@@ -141,7 +141,7 @@ public:
 			VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -336,7 +336,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -367,10 +367,10 @@ public:
 		if (overlay->header("Settings")) {
 			if (overlay->comboBox("Object type", &models.objectIndex, models.names)) {
 				updateUniformBuffers();
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->sliderInt("Grid size", &gridSize, 1, 10)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			// To avoid having to create pipelines for all the settings up front, we recreate a single pipelin with different settings instead
 			bool recreatePipeline{ false };
@@ -387,7 +387,7 @@ public:
 			}
 			if (recreatePipeline) {
 				preparePipelines();
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 		if (!pipelineStats.empty()) {

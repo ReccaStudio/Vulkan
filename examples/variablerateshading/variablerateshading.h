@@ -55,7 +55,7 @@ public:
 	~VulkanExample();
 	virtual void getEnabledFeatures();
 	void handleResize();
-	void buildCommandBuffers();
+	void buildCommandBuffersForMainRendering();
 	void loadAssets();
 	void prepareShadingRateImage();
 	void setupDescriptors();

@@ -124,7 +124,7 @@ public:
 	VulkanExample();
 	~VulkanExample();
 	virtual void getEnabledFeatures();
-	void buildCommandBuffers();
+	void buildCommandBuffersForMainRendering();
 	void uploadVertexData();
 	void loadglTFFile(std::string filename);
 	void loadAssets();

@@ -246,7 +246,7 @@ public:
 		VK_CHECK_RESULT(vkEndCommandBuffer(offScreenCmdBuffer));
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -563,7 +563,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		buildDeferredCommandBuffer();
 		prepared = true;
 	}
@@ -613,7 +613,7 @@ public:
 				updateUniformBufferDeferred();
 			}
 			if (overlay->checkBox("MSAA", &useMSAA)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (vulkanDevice->features.sampleRateShading) {
 				if (overlay->checkBox("Sample rate shading", &useSampleShading)) {

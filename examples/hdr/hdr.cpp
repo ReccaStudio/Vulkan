@@ -134,7 +134,7 @@ public:
 		}
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -789,7 +789,7 @@ public:
 		prepareoffscreenfer();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -814,14 +814,14 @@ public:
 	{
 		if (overlay->header("Settings")) {
 			if (overlay->comboBox("Object type", &models.index, modelNames)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			overlay->inputFloat("Exposure", &uniformData.exposure, 0.025f, 3);
 			if (overlay->checkBox("Bloom", &bloom)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->checkBox("Skybox", &displaySkybox)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 	}

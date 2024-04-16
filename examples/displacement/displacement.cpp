@@ -90,7 +90,7 @@ public:
 		colorHeightMap.loadFromFile(getAssetPath() + "textures/stonefloor03_color_height_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, graphicQueue);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -261,7 +261,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -296,7 +296,7 @@ public:
 			}
 			if (deviceFeatures.fillModeNonSolid) {
 				if (overlay->checkBox("Splitscreen", &splitScreen)) {
-					buildCommandBuffers();
+					buildCommandBuffersForMainRendering();
 					updateUniformBuffers();
 				}
 			}

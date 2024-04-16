@@ -94,7 +94,7 @@ public:
 		}
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -485,7 +485,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelineLibrary();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 
 		// Create a separate pipeline cache for the pipeline creation thread
 		VkPipelineCacheCreateInfo pipelineCachCI = {};
@@ -507,7 +507,7 @@ public:
 		{
 			newPipelineCreated = false;
 			vkQueueWaitIdle(graphicQueue);
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 		updateUniformBuffers();
 		draw();

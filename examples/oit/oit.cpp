@@ -407,7 +407,7 @@ public:
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipelines.color));
 	}
 
-	void buildCommandBuffers() override
+	void buildCommandBuffersForMainRendering() override
 	{
 		if (resized)
 			return;
@@ -542,7 +542,7 @@ public:
 		prepareGeometryPass();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		updateUniformBuffers();
 		prepared = true;
 	}
@@ -571,7 +571,7 @@ public:
 		vkResetDescriptorPool(device, descriptorPool, 0);
 		setupDescriptors();
 		resized = false;
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 	}
 
 	void destroyGeometryPass()

@@ -585,7 +585,7 @@ public:
 		delete imGui;
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -746,7 +746,7 @@ public:
 	void draw()
 	{
 		VulkanExampleBase::prepareFrame();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &drawCmdBuffers[currentBuffer];
 		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
@@ -776,7 +776,7 @@ public:
 		setupLayoutsAndDescriptors();
 		preparePipelines();
 		prepareImGui();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 

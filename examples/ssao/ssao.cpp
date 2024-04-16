@@ -487,7 +487,7 @@ public:
 		scene.loadFromFile(getAssetPath() + "models/sponza/sponza.gltf", vulkanDevice, graphicQueue, gltfLoadingFlags);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -917,7 +917,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 

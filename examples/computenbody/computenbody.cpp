@@ -337,7 +337,7 @@ public:
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &graphics.pipeline));
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -360,6 +360,8 @@ public:
 			renderPassBeginInfo.framebuffer = frameBuffers[i];
 
 			VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
+
+			vks::debugutils::cmdBeginLabel(drawCmdBuffers[i], "Acquire barrier", { 0.0f, 0.5f, 1.0f, 1.0f });
 
 			// Acquire barrier
 			if (graphics.queueFamilyIndex != compute.queueFamilyIndex)
@@ -406,6 +408,8 @@ public:
 					0, nullptr, 1, &bufferBarrier, 0, nullptr);
 			}//if
 
+			vks::debugutils::cmdEndLabel(drawCmdBuffers[i]);
+
 			VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
 		}
 
@@ -426,14 +430,14 @@ public:
 		VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
 		VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &graphics.semaphore));
 
-		//// Signal the semaphore for the first run
-		//VkSubmitInfo submitInfo = vks::initializers::submitInfo();
-		//submitInfo.signalSemaphoreCount = 1;
-		//submitInfo.pSignalSemaphores = &graphics.semaphore;
-		//VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
-		//VK_CHECK_RESULT(vkQueueWaitIdle(queue));
+		// Signal the semaphore for the first run
+		VkSubmitInfo submitInfo = vks::initializers::submitInfo();
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = &graphics.semaphore;
+		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
+		VK_CHECK_RESULT(vkQueueWaitIdle(graphicQueue));
 
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 	}
 
 	void buildComputeCommandBuffer()

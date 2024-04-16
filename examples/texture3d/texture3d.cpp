@@ -408,7 +408,7 @@ public:
 			vkFreeMemory(device, texture.deviceMemory, nullptr);
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -618,7 +618,7 @@ public:
 		prepareNoiseTexture(128, 128, 128);
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 

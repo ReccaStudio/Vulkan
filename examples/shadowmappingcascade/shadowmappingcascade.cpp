@@ -343,7 +343,7 @@ public:
 		VK_CHECK_RESULT(vkCreateSampler(device, &sampler, nullptr, &depth.sampler));
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -770,7 +770,7 @@ public:
 		prepareUniformBuffers();
 		setupLayoutsAndDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -797,15 +797,15 @@ public:
 				updateUniformBuffers();
 			}
 			if (overlay->checkBox("Display depth map", &displayDepthMap)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (displayDepthMap) {
 				if (overlay->sliderInt("Cascade", &displayDepthMapCascadeIndex, 0, SHADOW_MAP_CASCADE_COUNT - 1)) {
-					buildCommandBuffers();
+					buildCommandBuffersForMainRendering();
 				}
 			}
 			if (overlay->checkBox("PCF filtering", &filterPCF)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 	}

@@ -309,7 +309,7 @@ void VulkanExample::getEnabledFeatures()
 	enabledFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
 }
 
-void VulkanExample::buildCommandBuffers()
+void VulkanExample::buildCommandBuffersForMainRendering()
 {
 	VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -622,7 +622,7 @@ void VulkanExample::prepareForRendering()
 	prepareUniformBuffers();
 	setupDescriptors();
 	preparePipelines();
-	buildCommandBuffers();
+	buildCommandBuffersForMainRendering();
 	prepared = true;
 }
 
@@ -638,12 +638,12 @@ void VulkanExample::OnUpdateUIOverlay(vks::UIOverlay* overlay)
 
 		if (overlay->button("All")) {
 			std::for_each(glTFScene.nodes.begin(), glTFScene.nodes.end(), [](VulkanglTFScene::Node* node) { node->visible = true; });
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 		ImGui::SameLine();
 		if (overlay->button("None")) {
 			std::for_each(glTFScene.nodes.begin(), glTFScene.nodes.end(), [](VulkanglTFScene::Node* node) { node->visible = false; });
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 		ImGui::NewLine();
 
@@ -653,7 +653,7 @@ void VulkanExample::OnUpdateUIOverlay(vks::UIOverlay* overlay)
 		{		
 			if (overlay->checkBox(node->name.c_str(), &node->visible))
 			{
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 		ImGui::EndChild();

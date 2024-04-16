@@ -302,7 +302,7 @@ public:
 		offscreenPass.descriptor.sampler = offscreenPass.sampler;
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -650,7 +650,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -666,7 +666,7 @@ public:
 	{
 		if (overlay->header("Settings")) {
 			if (overlay->checkBox("Conservative rasterization", &conservativeRasterEnabled)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 		}
 		if (overlay->header("Device properties")) {

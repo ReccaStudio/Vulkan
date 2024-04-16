@@ -207,7 +207,7 @@ void VulkanExample::drawSceneNode(VkCommandBuffer commandBuffer, Node node)
 	}
 }
 
-void VulkanExample::buildCommandBuffers()
+void VulkanExample::buildCommandBuffersForMainRendering()
 {
 	VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -570,7 +570,7 @@ void VulkanExample::prepareForRendering()
 	prepareUniformBuffers();
 	setupDescriptors();
 	preparePipelines();
-	buildCommandBuffers();
+	buildCommandBuffersForMainRendering();
 	prepared = true;
 }
 
@@ -587,11 +587,11 @@ void VulkanExample::OnUpdateUIOverlay(vks::UIOverlay* overlay)
 		bool separate = (vertexAttributeSettings == VertexAttributeSettings::separate);
 		if (overlay->radioButton("Interleaved", interleaved)) {
 			vertexAttributeSettings = VertexAttributeSettings::interleaved;
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 		if (overlay->radioButton("Separate", separate)) {
 			vertexAttributeSettings = VertexAttributeSettings::separate;
-			buildCommandBuffers();
+			buildCommandBuffersForMainRendering();
 		}
 	}
 }

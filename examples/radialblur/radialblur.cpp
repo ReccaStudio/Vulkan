@@ -297,7 +297,7 @@ public:
 		offscreenPass.descriptor.sampler = offscreenPass.sampler;
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -565,7 +565,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
@@ -590,10 +590,10 @@ public:
 	{
 		if (overlay->header("Settings")) {
 			if (overlay->checkBox("Radial blur", &blur)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (overlay->checkBox("Display render target only", &displayTexture)) {
-				buildCommandBuffers();
+				buildCommandBuffersForMainRendering();
 			}
 			if (blur) {
 				if (overlay->header("Blur parameters")) {

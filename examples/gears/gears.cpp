@@ -294,7 +294,7 @@ public:
 
 		// We'll be using a single vertex and a single index buffer for all the gears, no matter their number
 		// This is a Vulkan best practice as it keeps the no. of memory/buffer allocations low
-		// Vulkan offers all the tools to easily index into those buffers at a later point (see the buildCommandBuffers function)
+		// Vulkan offers all the tools to easily index into those buffers at a later point (see the buildCommandBuffersForMainRendering function)
 		std::vector<Gear::Vertex> vertices{};
 		std::vector<uint32_t> indices{};
 
@@ -411,7 +411,7 @@ public:
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &pipeline));
 	}
 
-	void buildCommandBuffers()
+	void buildCommandBuffersForMainRendering()
 	{
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -499,7 +499,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
-		buildCommandBuffers();
+		buildCommandBuffersForMainRendering();
 		prepared = true;
 	}
 
