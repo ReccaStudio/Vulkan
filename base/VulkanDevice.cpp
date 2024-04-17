@@ -100,8 +100,9 @@ namespace vks
 					return i;
 				}
 			}
-			typeBits >>= 1;
-		}
+            typeBits >>= 1;
+		}//for
+
 
 		if (memTypeFound)
 		{
