@@ -65,7 +65,7 @@ public:
 		enableExtensions();
 
 		// Buffer device address requires the 64-bit integer feature to be enabled
-		enabledFeatures.shaderInt64 = VK_TRUE;
+		curEnabledDeviceFeatures.shaderInt64 = VK_TRUE;
 
 		enabledDeviceExtensions.push_back(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
 		enabledDeviceExtensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
@@ -734,9 +734,9 @@ public:
 		physicalDeviceDescriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
 		physicalDeviceDescriptorIndexingFeatures.pNext = &enabledAccelerationStructureFeatures;
 
-		deviceCreatepNextChain = &physicalDeviceDescriptorIndexingFeatures;
+		pDeviceCreateNextChain = &physicalDeviceDescriptorIndexingFeatures;
 
-		enabledFeatures.samplerAnisotropy = VK_TRUE;
+		curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 	}
 
 	void loadAssets()

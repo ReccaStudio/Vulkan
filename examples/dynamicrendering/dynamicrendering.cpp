@@ -53,7 +53,7 @@ public:
 		enabledDynamicRenderingFeaturesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
 		enabledDynamicRenderingFeaturesKHR.dynamicRendering = VK_TRUE;
 
-		deviceCreatepNextChain = &enabledDynamicRenderingFeaturesKHR;
+		pDeviceCreateNextChain = &enabledDynamicRenderingFeaturesKHR;
 	}
 
 	~VulkanExample()
@@ -82,7 +82,7 @@ public:
 	{
 		// Enable anisotropic filtering if supported
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		};
 	}
 

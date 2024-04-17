@@ -166,24 +166,24 @@ public:
 	{
 		// Geometry shader support is required for writing to multiple shadow map layers in one single pass
 		if (deviceFeatures.geometryShader) {
-			enabledFeatures.geometryShader = VK_TRUE;
+			curEnabledDeviceFeatures.geometryShader = VK_TRUE;
 		}
 		else {
 			vks::tools::exitFatal("Selected GPU does not support geometry shaders!", VK_ERROR_FEATURE_NOT_PRESENT);
 		}
 		// Enable anisotropic filtering if supported
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		}
 		// Enable texture compression
 		if (deviceFeatures.textureCompressionBC) {
-			enabledFeatures.textureCompressionBC = VK_TRUE;
+			curEnabledDeviceFeatures.textureCompressionBC = VK_TRUE;
 		}
 		else if (deviceFeatures.textureCompressionASTC_LDR) {
-			enabledFeatures.textureCompressionASTC_LDR = VK_TRUE;
+			curEnabledDeviceFeatures.textureCompressionASTC_LDR = VK_TRUE;
 		}
 		else if (deviceFeatures.textureCompressionETC2) {
-			enabledFeatures.textureCompressionETC2 = VK_TRUE;
+			curEnabledDeviceFeatures.textureCompressionETC2 = VK_TRUE;
 		}
 	}
 

@@ -123,8 +123,8 @@ public:
 
 	void getEnabledFeatures()
 	{
-		enabledFeatures.fillModeNonSolid = deviceFeatures.fillModeNonSolid;
-		enabledFeatures.wideLines = deviceFeatures.wideLines;
+		curEnabledDeviceFeatures.fillModeNonSolid = deviceFeatures.fillModeNonSolid;
+		curEnabledDeviceFeatures.wideLines = deviceFeatures.wideLines;
 	}
 
 	/*

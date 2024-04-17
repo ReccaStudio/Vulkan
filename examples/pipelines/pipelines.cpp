@@ -47,7 +47,7 @@ public:
 	{
 		if (device) {
 			vkDestroyPipeline(device, pipelines.phong, nullptr);
-			if (enabledFeatures.fillModeNonSolid)
+			if (curEnabledDeviceFeatures.fillModeNonSolid)
 			{
 				vkDestroyPipeline(device, pipelines.wireframe, nullptr);
 			}
@@ -65,12 +65,12 @@ public:
 	{
 		// Fill mode non solid is required for wireframe display
 		if (deviceFeatures.fillModeNonSolid) {
-			enabledFeatures.fillModeNonSolid = VK_TRUE;
+			curEnabledDeviceFeatures.fillModeNonSolid = VK_TRUE;
 		};
 
 		// Wide lines must be present for line width > 1.0f
 		if (deviceFeatures.wideLines) {
-			enabledFeatures.wideLines = VK_TRUE;
+			curEnabledDeviceFeatures.wideLines = VK_TRUE;
 		}
 	}
 
@@ -120,13 +120,13 @@ public:
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.toon);
 			// Line width > 1.0f only if wide lines feature is supported
-			if (enabledFeatures.wideLines) {
+			if (curEnabledDeviceFeatures.wideLines) {
 				vkCmdSetLineWidth(drawCmdBuffers[i], 2.0f);
 			}
 			scene.draw(drawCmdBuffers[i]);
 
 			// Right : Render the scene as wireframe (if that feature is supported by the implementation)
-			if (enabledFeatures.fillModeNonSolid) {
+			if (curEnabledDeviceFeatures.fillModeNonSolid) {
 				viewport.x = (float)width / 3.0f + (float)width / 3.0f;
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 				vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.wireframe);
@@ -236,7 +236,7 @@ public:
 
 		// Pipeline for wire frame rendering
 		// Non solid rendering is not a mandatory Vulkan feature
-		if (enabledFeatures.fillModeNonSolid) {
+		if (curEnabledDeviceFeatures.fillModeNonSolid) {
 			rasterizationState.polygonMode = VK_POLYGON_MODE_LINE;
 			shaderStages[0] = loadShader(getShadersPath() + "pipelines/wireframe.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
 			shaderStages[1] = loadShader(getShadersPath() + "pipelines/wireframe.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -292,7 +292,7 @@ public:
 
 	virtual void OnUpdateUIOverlay(vks::UIOverlay *overlay)
 	{
-		if (!enabledFeatures.fillModeNonSolid) {
+		if (!curEnabledDeviceFeatures.fillModeNonSolid) {
 			if (overlay->header("Info")) {
 				overlay->text("Non solid fill modes not supported!");
 			}

@@ -56,7 +56,7 @@ public:
 	{
 		// Geometry shader support is required for this example
 		if (deviceFeatures.geometryShader) {
-			enabledFeatures.geometryShader = VK_TRUE;
+			curEnabledDeviceFeatures.geometryShader = VK_TRUE;
 		}
 		else {
 			vks::tools::exitFatal("Selected GPU does not support geometry shaders!", VK_ERROR_FEATURE_NOT_PRESENT);

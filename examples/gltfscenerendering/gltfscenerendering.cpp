@@ -306,7 +306,7 @@ VulkanExample::~VulkanExample()
 
 void VulkanExample::getEnabledFeatures()
 {
-	enabledFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
+	curEnabledDeviceFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
 }
 
 void VulkanExample::buildCommandBuffersForMainRendering()

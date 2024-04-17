@@ -869,7 +869,7 @@ public:
 		enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
 		enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
 
-		deviceCreatepNextChain = &enabledAccelerationStructureFeatures;
+		pDeviceCreateNextChain = &enabledAccelerationStructureFeatures;
 	}
 
 	void prepareForRendering()

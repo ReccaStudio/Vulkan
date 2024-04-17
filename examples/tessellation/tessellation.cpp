@@ -75,20 +75,20 @@ public:
 	{
 		// Example requires tessellation shaders
 		if (deviceFeatures.tessellationShader) {
-			enabledFeatures.tessellationShader = VK_TRUE;
+			curEnabledDeviceFeatures.tessellationShader = VK_TRUE;
 		}
 		else {
 			vks::tools::exitFatal("Selected GPU does not support tessellation shaders!", VK_ERROR_FEATURE_NOT_PRESENT);
 		}
 		// Fill mode non solid is required for wireframe display
 		if (deviceFeatures.fillModeNonSolid) {
-			enabledFeatures.fillModeNonSolid = VK_TRUE;
+			curEnabledDeviceFeatures.fillModeNonSolid = VK_TRUE;
 		}
 		else {
 			wireframe = false;
 		}
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		}
 	}
 

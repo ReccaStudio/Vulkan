@@ -168,9 +168,9 @@ public:
 
 	virtual void getEnabledFeatures()
 	{
-		enabledFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
+		curEnabledDeviceFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
 		// Depth clamp to avoid near plane clipping
-		enabledFeatures.depthClamp = deviceFeatures.depthClamp;
+		curEnabledDeviceFeatures.depthClamp = deviceFeatures.depthClamp;
 	}
 
 	/*

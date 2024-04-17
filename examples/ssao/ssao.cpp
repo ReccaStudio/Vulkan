@@ -172,7 +172,7 @@ public:
 
 	void getEnabledFeatures()
 	{
-		enabledFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
+		curEnabledDeviceFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
 	}
 
 	// Create a frame buffer attachment

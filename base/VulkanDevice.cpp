@@ -290,7 +290,7 @@ namespace vks
 			deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
 		}
 
-		this->enabledFeatures = enabledFeatures;
+		this->curEnabledDeviceFeatures = enabledFeatures;
 
 		VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &logicalDevice);
 		if (result != VK_SUCCESS) 

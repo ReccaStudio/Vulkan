@@ -88,7 +88,7 @@ public:
 		enabledDeviceDescriptorBufferFeaturesEXT.descriptorBuffer = VK_TRUE;
 		enabledDeviceDescriptorBufferFeaturesEXT.pNext = &enabledBufferDeviceAddresFeatures;
 		
-		deviceCreatepNextChain = &enabledDeviceDescriptorBufferFeaturesEXT;
+		pDeviceCreateNextChain = &enabledDeviceDescriptorBufferFeaturesEXT;
 	}
 
 	~VulkanExample()
@@ -109,7 +109,7 @@ public:
 	virtual void getEnabledFeatures()
 	{
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		};
 	}
 

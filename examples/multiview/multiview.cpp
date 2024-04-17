@@ -72,7 +72,7 @@ public:
 		// Enable required extension features
 		physicalDeviceMultiviewFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR;
 		physicalDeviceMultiviewFeatures.multiview = VK_TRUE;
-		deviceCreatepNextChain = &physicalDeviceMultiviewFeatures;
+		pDeviceCreateNextChain = &physicalDeviceMultiviewFeatures;
 	}
 
 	~VulkanExample()

@@ -131,7 +131,7 @@ public:
 	{
 		// Enable anisotropic filtering if supported
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		}
 	};
 

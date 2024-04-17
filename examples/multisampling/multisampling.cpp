@@ -86,11 +86,11 @@ public:
 	{
 		// Enable sample rate shading filtering if supported
 		if (deviceFeatures.sampleRateShading) {
-			enabledFeatures.sampleRateShading = VK_TRUE;
+			curEnabledDeviceFeatures.sampleRateShading = VK_TRUE;
 		}
 		// Enable anisotropic filtering if supported
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		}
 	}
 

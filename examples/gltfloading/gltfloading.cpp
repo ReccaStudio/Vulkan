@@ -435,7 +435,7 @@ public:
 	{
 		// Fill mode non solid is required for wireframe display
 		if (deviceFeatures.fillModeNonSolid) {
-			enabledFeatures.fillModeNonSolid = VK_TRUE;
+			curEnabledDeviceFeatures.fillModeNonSolid = VK_TRUE;
 		};
 	}
 

@@ -111,12 +111,12 @@ protected:
 	// Stores all available memory (type) properties for the physical device
 	VkPhysicalDeviceMemoryProperties deviceMemoryProperties{};
 	/** @brief Set of physical device features to be enabled for this example (must be set in the derived constructor) */
-	VkPhysicalDeviceFeatures enabledFeatures{};
+	VkPhysicalDeviceFeatures curEnabledDeviceFeatures{};
 	/** @brief Set of device extensions to be enabled for this example (must be set in the derived constructor) */
 	std::vector<const char*> enabledDeviceExtensions;
 	std::vector<const char*> enabledInstanceExtensions;
 	/** @brief Optional pNext structure for passing extension structures to device creation */
-	void* deviceCreatepNextChain = nullptr;
+	void* pDeviceCreateNextChain = nullptr;
 	/** @brief Logical device, application's view of the physical device (GPU) */
 	VkDevice device{ VK_NULL_HANDLE };
 	// Handle to the device graphics queue that command buffers are submitted to

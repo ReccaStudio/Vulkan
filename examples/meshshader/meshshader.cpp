@@ -55,7 +55,7 @@ public:
 		enabledMeshShaderFeatures.meshShader = VK_TRUE;
 		enabledMeshShaderFeatures.taskShader = VK_TRUE;
 
-		deviceCreatepNextChain = &enabledMeshShaderFeatures;
+		pDeviceCreateNextChain = &enabledMeshShaderFeatures;
 	}
 
 	~VulkanExample()

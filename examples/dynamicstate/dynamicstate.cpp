@@ -105,7 +105,7 @@ public:
 			enabledDeviceExtensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME);
 			extendedDynamicStateFeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
 			extendedDynamicStateFeaturesEXT.extendedDynamicState = VK_TRUE;
-			deviceCreatepNextChain = &extendedDynamicStateFeaturesEXT;
+			pDeviceCreateNextChain = &extendedDynamicStateFeaturesEXT;
 		}
 		if (vulkanDevice->extensionSupported(VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME)) {
 			enabledDeviceExtensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME);
@@ -115,7 +115,7 @@ public:
 				extendedDynamicStateFeaturesEXT.pNext = &extendedDynamicState2FeaturesEXT;
 			}
 			else {
-				deviceCreatepNextChain = &extendedDynamicState2FeaturesEXT;
+				pDeviceCreateNextChain = &extendedDynamicState2FeaturesEXT;
 			}
 		}
 		if (vulkanDevice->extensionSupported(VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME)) {
@@ -127,7 +127,7 @@ public:
 				extendedDynamicState2FeaturesEXT.pNext = &extendedDynamicState3FeaturesEXT;
 			}
 			else {
-				deviceCreatepNextChain = &extendedDynamicState3FeaturesEXT;
+				pDeviceCreateNextChain = &extendedDynamicState3FeaturesEXT;
 			}
 
 		}

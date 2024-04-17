@@ -171,9 +171,9 @@ VulkanExample::~VulkanExample()
 void VulkanExample::getEnabledFeatures()
 {
 	if (deviceFeatures.sparseBinding && deviceFeatures.sparseResidencyImage2D) {
-		enabledFeatures.shaderResourceResidency = VK_TRUE;
-		enabledFeatures.sparseBinding = VK_TRUE;
-		enabledFeatures.sparseResidencyImage2D = VK_TRUE;
+		curEnabledDeviceFeatures.shaderResourceResidency = VK_TRUE;
+		curEnabledDeviceFeatures.sparseBinding = VK_TRUE;
+		curEnabledDeviceFeatures.sparseResidencyImage2D = VK_TRUE;
 	}
 	else {
 		std::cout << "Sparse binding not supported" << std::endl;

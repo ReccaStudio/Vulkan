@@ -58,7 +58,7 @@ public:
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -1.0f));
 		enableExtensions();
 		// Buffer device address requires the 64-bit integer feature to be enabled
-		enabledFeatures.shaderInt64 = VK_TRUE;
+		curEnabledDeviceFeatures.shaderInt64 = VK_TRUE;
 	}
 
 	~VulkanExample()
@@ -666,7 +666,7 @@ public:
 		enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
 		enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
 
-		deviceCreatepNextChain = &enabledAccelerationStructureFeatures;
+		pDeviceCreateNextChain = &enabledAccelerationStructureFeatures;
 	}
 
 	void loadAssets()

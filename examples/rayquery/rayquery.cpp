@@ -428,7 +428,7 @@ public:
 		enabledRayQueryFeatures.rayQuery = VK_TRUE;
 		enabledRayQueryFeatures.pNext = &enabledAccelerationStructureFeatures;
 
-		deviceCreatepNextChain = &enabledRayQueryFeatures;
+		pDeviceCreateNextChain = &enabledRayQueryFeatures;
 	}
 
 	void draw()

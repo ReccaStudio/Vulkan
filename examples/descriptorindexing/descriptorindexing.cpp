@@ -65,7 +65,7 @@ public:
 		physicalDeviceDescriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
 		physicalDeviceDescriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
 
-		deviceCreatepNextChain = &physicalDeviceDescriptorIndexingFeatures;
+		pDeviceCreateNextChain = &physicalDeviceDescriptorIndexingFeatures;
 		
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 		// SRS - on macOS set environment variable to configure MoltenVK for using Metal argument buffers (needed for descriptor indexing)

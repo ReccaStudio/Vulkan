@@ -289,44 +289,64 @@ VulkanExampleBase::VulkanExampleBase()
 		std::cin.get();
 		exit(0);
 	}
-	if (commandLineParser.isSet("validation")) {
+
+	if (commandLineParser.isSet("validation"))
+	{
 		settings.validation = true;
 	}
-	if (commandLineParser.isSet("vsync")) {
+
+	if (commandLineParser.isSet("vsync"))
+	{
 		settings.vsync = true;
 	}
-	if (commandLineParser.isSet("height")) {
+
+	if (commandLineParser.isSet("height"))
+	{
 		height = commandLineParser.getValueAsInt("height", height);
 	}
-	if (commandLineParser.isSet("width")) {
+	if (commandLineParser.isSet("width"))
+	{
 		width = commandLineParser.getValueAsInt("width", width);
 	}
-	if (commandLineParser.isSet("fullscreen")) {
+
+	if (commandLineParser.isSet("fullscreen"))
+	{
 		settings.fullscreen = true;
 	}
-	if (commandLineParser.isSet("shaders")) {
+
+	if (commandLineParser.isSet("shaders"))
+	{
 		std::string value = commandLineParser.getValueAsString("shaders", "glsl");
-		if ((value != "glsl") && (value != "hlsl")) {
+		if ((value!="glsl") &&(value!="hlsl"))
+		{
 			std::cerr << "Shader type must be one of 'glsl' or 'hlsl'\n";
 		}
-		else {
+		else
+		{
 			shaderDir = value;
 		}
-	}
-	if (commandLineParser.isSet("benchmark")) {
+	}//if shaders
+
+	if (commandLineParser.isSet("benchmark"))
+	{
 		benchmark.active = true;
 		vks::tools::errorModeSilent = true;
 	}
-	if (commandLineParser.isSet("benchmarkwarmup")) {
+
+	if (commandLineParser.isSet("benchmarkwarmup"))
+	{
 		benchmark.warmup = commandLineParser.getValueAsInt("benchmarkwarmup", 0);
 	}
-	if (commandLineParser.isSet("benchmarkruntime")) {
+	if (commandLineParser.isSet("benchmarkruntime"))
+	{
 		benchmark.duration = commandLineParser.getValueAsInt("benchmarkruntime", benchmark.duration);
 	}
-	if (commandLineParser.isSet("benchmarkresultfile")) {
+	if (commandLineParser.isSet("benchmarkresultfile"))
+	{
 		benchmark.filename = commandLineParser.getValueAsString("benchmarkresultfile", benchmark.filename);
 	}
-	if (commandLineParser.isSet("benchmarkresultframes")) {
+	if (commandLineParser.isSet("benchmarkresultframes"))
+	{
 		benchmark.outputFrameTimes = true;
 	}
 	if (commandLineParser.isSet("benchmarkframes")) {
@@ -475,9 +495,10 @@ bool VulkanExampleBase::initVulkanSetting()
 	}
 
 	// Enumerate devices
-	std::vector<VkPhysicalDevice> physicalDevices(gpuCount);
-	err = vkEnumeratePhysicalDevices(instance, &gpuCount, physicalDevices.data());
-	if (err) {
+	std::vector<VkPhysicalDevice> tempPhysicalDevices(gpuCount);
+	err = vkEnumeratePhysicalDevices(instance, &gpuCount, tempPhysicalDevices.data());
+	if (err)
+	{
 		vks::tools::exitFatal("Could not enumerate physical devices : \n" + vks::tools::errorString(err), err);
 		return false;
 	}
@@ -505,7 +526,7 @@ bool VulkanExampleBase::initVulkanSetting()
 		for (uint32_t i = 0;i<gpuCount;++i)
 		{
 			VkPhysicalDeviceProperties deviceProperties;
-			vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProperties);
+			vkGetPhysicalDeviceProperties(tempPhysicalDevices[i], &deviceProperties);
 			std::cout << "Device [" << i << "] : " << deviceProperties.deviceName << std::endl;
 			std::cout << " Type: " << vks::tools::physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
 			std::cout << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
@@ -514,7 +535,7 @@ bool VulkanExampleBase::initVulkanSetting()
 
 #endif
 
-	physicalDevice = physicalDevices[selectedDevice];
+	physicalDevice = tempPhysicalDevices[selectedDevice];
 
 	// Store properties (including limits), features and memory properties of the physical device (so that examples can check against them)
 	vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
@@ -532,8 +553,9 @@ bool VulkanExampleBase::initVulkanSetting()
 	// Derived examples can enable extensions based on the list of supported extensions read from the physical device
 	getEnabledExtensions();
 
-	VkResult res = vulkanDevice->createLogicalDevice(enabledFeatures, enabledDeviceExtensions, deviceCreatepNextChain);
-	if (res != VK_SUCCESS) {
+	VkResult res = vulkanDevice->createLogicalDevice(curEnabledDeviceFeatures, enabledDeviceExtensions, pDeviceCreateNextChain);
+	if (res != VK_SUCCESS)
+    {
 		vks::tools::exitFatal("Could not create Vulkan device: \n" + vks::tools::errorString(res), res);
 		return false;
 	}
@@ -559,6 +581,7 @@ bool VulkanExampleBase::initVulkanSetting()
 
 	// Create synchronization objects
 	VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
+	
 	// Create a semaphore used to synchronize image presentation
 	// Ensures that the image is displayed before we start submitting new commands to the queue
 	VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete));
@@ -586,7 +609,7 @@ void VulkanExampleBase::setupConsole(std::string title)
 {
 	AllocConsole();
 	AttachConsole(GetCurrentProcessId());
-	FILE *stream;
+	FILE* stream;
 	freopen_s(&stream, "CONIN$", "r", stdin);
 	freopen_s(&stream, "CONOUT$", "w+", stdout);
 	freopen_s(&stream, "CONOUT$", "w+", stderr);
@@ -697,18 +720,8 @@ HWND VulkanExampleBase::setupWindow(HINSTANCE hinstance, WNDPROC wndproc)
 	AdjustWindowRectEx(&windowRect, dwStyle, FALSE, dwExStyle);
 
 	std::string windowTitle = getWindowTitle();
-	window = CreateWindowEx(0,
-		appName.c_str(),
-		windowTitle.c_str(),
-		dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
-		0,
-		0,
-		windowRect.right - windowRect.left,
-		windowRect.bottom - windowRect.top,
-		NULL,
-		NULL,
-		hinstance,
-		NULL);
+	window = CreateWindowEx(0, appName.c_str(), windowTitle.c_str(), dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0,
+		windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hinstance, NULL);
 
 	if (!settings.fullscreen)
 	{

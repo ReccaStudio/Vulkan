@@ -515,7 +515,7 @@ public:
 		enabledRayTracingPositionFetchFeatures.rayTracingPositionFetch = VK_TRUE;
 		enabledRayTracingPositionFetchFeatures.pNext = &enabledAccelerationStructureFeatures;
 
-		deviceCreatepNextChain = &enabledRayTracingPositionFetchFeatures;
+		pDeviceCreateNextChain = &enabledRayTracingPositionFetchFeatures;
 	}
 
 	void prepareForRendering()

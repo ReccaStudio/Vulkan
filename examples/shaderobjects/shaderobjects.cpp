@@ -95,7 +95,7 @@ public:
 		enabledDynamicRenderingFeaturesKHR.dynamicRendering = VK_TRUE;
 		enabledDynamicRenderingFeaturesKHR.pNext = &enabledShaderObjectFeaturesEXT;
 
-		deviceCreatepNextChain = &enabledDynamicRenderingFeaturesKHR;
+		pDeviceCreateNextChain = &enabledDynamicRenderingFeaturesKHR;
 	}
 
 	~VulkanExample()

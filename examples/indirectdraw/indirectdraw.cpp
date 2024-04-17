@@ -115,11 +115,11 @@ public:
 	{
 		// Example uses multi draw indirect if available
 		if (deviceFeatures.multiDrawIndirect) {
-			enabledFeatures.multiDrawIndirect = VK_TRUE;
+			curEnabledDeviceFeatures.multiDrawIndirect = VK_TRUE;
 		}
 		// Enable anisotropic filtering if supported
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		}
 	};
 

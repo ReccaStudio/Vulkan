@@ -87,7 +87,7 @@ public:
 		camera.setRotationSpeed(0.5f);
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 		// The scene shader uses a clipping plane, so this feature has to be enabled
-		enabledFeatures.shaderClipDistance = VK_TRUE;
+		curEnabledDeviceFeatures.shaderClipDistance = VK_TRUE;
 	}
 
 	~VulkanExample()

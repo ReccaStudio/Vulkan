@@ -77,13 +77,13 @@ public:
 	{
 		// This sample requires support for cube map arrays
 		if (deviceFeatures.imageCubeArray) {
-			enabledFeatures.imageCubeArray = VK_TRUE;
+			curEnabledDeviceFeatures.imageCubeArray = VK_TRUE;
 		} else {
 			vks::tools::exitFatal("Selected GPU does not support cube map arrays!", VK_ERROR_FEATURE_NOT_PRESENT);
 		}
-		enabledFeatures.imageCubeArray = VK_TRUE;
+		curEnabledDeviceFeatures.imageCubeArray = VK_TRUE;
 		if (deviceFeatures.samplerAnisotropy) {
-			enabledFeatures.samplerAnisotropy = VK_TRUE;
+			curEnabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		}
 	};
 

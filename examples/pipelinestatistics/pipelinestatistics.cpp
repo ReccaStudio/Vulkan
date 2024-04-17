@@ -71,16 +71,16 @@ public:
 	{
 		// Support for pipeline statistics is optional
 		if (deviceFeatures.pipelineStatisticsQuery) {
-			enabledFeatures.pipelineStatisticsQuery = VK_TRUE;
+			curEnabledDeviceFeatures.pipelineStatisticsQuery = VK_TRUE;
 		}
 		else {
 			vks::tools::exitFatal("Selected GPU does not support pipeline statistics!", VK_ERROR_FEATURE_NOT_PRESENT);
 		}
 		if (deviceFeatures.fillModeNonSolid) {
-			enabledFeatures.fillModeNonSolid = VK_TRUE;
+			curEnabledDeviceFeatures.fillModeNonSolid = VK_TRUE;
 		}
 		if (deviceFeatures.tessellationShader) {
-			enabledFeatures.tessellationShader = VK_TRUE;
+			curEnabledDeviceFeatures.tessellationShader = VK_TRUE;
 		}
 	}
 

@@ -144,7 +144,7 @@ namespace vkglTF
 		struct UniformBlock {
 			glm::mat4 matrix;
 			glm::mat4 jointMatrix[64]{};
-			float jointcount{ 0 };
+			float jointCount{ 0 };
 		} uniformBlock;
 
 		Mesh(vks::VulkanDevice* device, glm::mat4 matrix);
@@ -164,7 +164,8 @@ namespace vkglTF
 	/*
 		glTF node
 	*/
-	struct Node {
+	struct Node
+	{
 		Node* parent;
 		uint32_t index;
 		std::vector<Node*> children;
@@ -176,6 +177,7 @@ namespace vkglTF
 		glm::vec3 translation{};
 		glm::vec3 scale{ 1.0f };
 		glm::quat rotation{};
+
 		glm::mat4 localMatrix();
 		glm::mat4 getMatrix();
 		void update();

@@ -37,13 +37,13 @@ VulkanExample::~VulkanExample()
 
 void VulkanExample::getEnabledFeatures()
 {
-	enabledFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
+	curEnabledDeviceFeatures.samplerAnisotropy = deviceFeatures.samplerAnisotropy;
 	// POI
 	enabledPhysicalDeviceShadingRateImageFeaturesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR;
 	enabledPhysicalDeviceShadingRateImageFeaturesKHR.attachmentFragmentShadingRate = VK_TRUE;
 	enabledPhysicalDeviceShadingRateImageFeaturesKHR.pipelineFragmentShadingRate = VK_FALSE;
 	enabledPhysicalDeviceShadingRateImageFeaturesKHR.primitiveFragmentShadingRate = VK_FALSE;
-	deviceCreatepNextChain = &enabledPhysicalDeviceShadingRateImageFeaturesKHR;
+	pDeviceCreateNextChain = &enabledPhysicalDeviceShadingRateImageFeaturesKHR;
 }
 
 /*

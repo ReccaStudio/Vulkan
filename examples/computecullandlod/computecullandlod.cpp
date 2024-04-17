@@ -122,7 +122,7 @@ public:
 	{
 		// Enable multi draw indirect if supported
 		if (deviceFeatures.multiDrawIndirect) {
-			enabledFeatures.multiDrawIndirect = VK_TRUE;
+			curEnabledDeviceFeatures.multiDrawIndirect = VK_TRUE;
 		}
 	}
 

@@ -99,7 +99,7 @@ public:
 	{
 		// The linked lists are built in a fragment shader using atomic stores, so the sample won't work without that feature available
 		if (deviceFeatures.fragmentStoresAndAtomics) {
-			enabledFeatures.fragmentStoresAndAtomics = VK_TRUE;
+			curEnabledDeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
 		} else {
 			vks::tools::exitFatal("Selected GPU does not support stores and atomic operations in the fragment stage", VK_ERROR_FEATURE_NOT_PRESENT);
 		}

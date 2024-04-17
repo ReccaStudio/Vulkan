@@ -30,7 +30,7 @@ struct VulkanDevice
 	/** @brief Features of the physical device that an application can use to check if a feature is supported */
 	VkPhysicalDeviceFeatures features;
 	/** @brief Features that have been enabled for use on the physical device */
-	VkPhysicalDeviceFeatures enabledFeatures;
+	VkPhysicalDeviceFeatures curEnabledDeviceFeatures;
 	/** @brief Memory types and heaps of the physical device */
 	VkPhysicalDeviceMemoryProperties memoryProperties;
 	/** @brief Queue family properties of the physical device */
