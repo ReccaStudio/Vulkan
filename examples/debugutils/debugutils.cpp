@@ -259,7 +259,7 @@ public:
 		assert(validDepthFormat);
 
 		// Color attachment
-		VkImageCreateInfo image = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo image = vks::initializers::GenImageCreateInfo();
 		image.imageType = VK_IMAGE_TYPE_2D;
 		image.format = colorFormat;
 		image.extent.width = offscreenPass.width;
@@ -272,17 +272,17 @@ public:
 		// We will sample directly from the color attachment
 		image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 
 		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.color.image));
 		vkGetImageMemoryRequirements(device, offscreenPass.color.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.color.memory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.color.image, offscreenPass.color.memory, 0));
 
-		VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo colorImageView = vks::initializers::GenImageViewCreateInfo();
 		colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		colorImageView.format = colorFormat;
 		colorImageView.subresourceRange = {};
@@ -295,7 +295,7 @@ public:
 		VK_CHECK_RESULT(vkCreateImageView(device, &colorImageView, nullptr, &offscreenPass.color.view));
 
 		// Create sampler to sample from the attachment in the fragment shader
-		VkSamplerCreateInfo samplerInfo = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo samplerInfo = vks::initializers::GenSamplerCreateInfo();
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -316,11 +316,11 @@ public:
 		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.depth.image));
 		vkGetImageMemoryRequirements(device, offscreenPass.depth.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.depth.memory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.depth.image, offscreenPass.depth.memory, 0));
 
-		VkImageViewCreateInfo depthStencilView = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo depthStencilView = vks::initializers::GenImageViewCreateInfo();
 		depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		depthStencilView.format = fbDepthFormat;
 		depthStencilView.flags = 0;
@@ -399,7 +399,7 @@ public:
 		attachments[0] = offscreenPass.color.view;
 		attachments[1] = offscreenPass.depth.view;
 
-		VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::framebufferCreateInfo();
+		VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::GenFramebufferCreateInfo();
 		fbufCreateInfo.renderPass = offscreenPass.renderPass;
 		fbufCreateInfo.attachmentCount = 2;
 		fbufCreateInfo.pAttachments = attachments;
@@ -464,10 +464,10 @@ public:
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				VkViewport viewport = vks::initializers::viewport((float)offscreenPass.width, (float)offscreenPass.height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)offscreenPass.width, (float)offscreenPass.height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(offscreenPass.width, offscreenPass.height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(offscreenPass.width, offscreenPass.height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
@@ -503,10 +503,10 @@ public:
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(wireframe ? width / 2 : width, height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(wireframe ? width / 2 : width, height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
@@ -577,9 +577,9 @@ public:
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// Binding 0 : Vertex shader uniform buffer
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
 			// Binding 1 : Fragment shader combined sampler
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -702,7 +702,7 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Vertex shader uniform buffer block
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffer,

@@ -173,10 +173,10 @@ public:
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width,	(float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width,	(float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width,	height,	0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width,	height,	0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			// Skybox
@@ -238,11 +238,11 @@ public:
 
 		// Descriptor set layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 3),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 4),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 3),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 4),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = 	vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -350,7 +350,7 @@ public:
 		const int32_t dim = 512;
 
 		// Image
-		VkImageCreateInfo imageCI = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageCI = vks::initializers::GenImageCreateInfo();
 		imageCI.imageType = VK_IMAGE_TYPE_2D;
 		imageCI.format = format;
 		imageCI.extent.width = dim;
@@ -362,15 +362,15 @@ public:
 		imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 		imageCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		VK_CHECK_RESULT(vkCreateImage(device, &imageCI, nullptr, &textures.lutBrdf.image));
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 		vkGetImageMemoryRequirements(device, textures.lutBrdf.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &textures.lutBrdf.deviceMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, textures.lutBrdf.image, textures.lutBrdf.deviceMemory, 0));
 		// Image view
-		VkImageViewCreateInfo viewCI = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo viewCI = vks::initializers::GenImageViewCreateInfo();
 		viewCI.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		viewCI.format = format;
 		viewCI.subresourceRange = {};
@@ -380,7 +380,7 @@ public:
 		viewCI.image = textures.lutBrdf.image;
 		VK_CHECK_RESULT(vkCreateImageView(device, &viewCI, nullptr, &textures.lutBrdf.view));
 		// Sampler
-		VkSamplerCreateInfo samplerCI = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo samplerCI = vks::initializers::GenSamplerCreateInfo();
 		samplerCI.magFilter = VK_FILTER_LINEAR;
 		samplerCI.minFilter = VK_FILTER_LINEAR;
 		samplerCI.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -444,7 +444,7 @@ public:
 		VkRenderPass renderpass;
 		VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassCI, nullptr, &renderpass));
 
-		VkFramebufferCreateInfo framebufferCI = vks::initializers::framebufferCreateInfo();
+		VkFramebufferCreateInfo framebufferCI = vks::initializers::GenFramebufferCreateInfo();
 		framebufferCI.renderPass = renderpass;
 		framebufferCI.attachmentCount = 1;
 		framebufferCI.pAttachments = &textures.lutBrdf.view;
@@ -520,16 +520,16 @@ public:
 		renderPassBeginInfo.pClearValues = clearValues;
 		renderPassBeginInfo.framebuffer = framebuffer;
 
-		VkCommandBuffer cmdBuf = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer cmdBuf = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 		vkCmdBeginRenderPass(cmdBuf, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-		VkViewport viewport = vks::initializers::viewport((float)dim, (float)dim, 0.0f, 1.0f);
-		VkRect2D scissor = vks::initializers::rect2D(dim, dim, 0, 0);
+		VkViewport viewport = vks::initializers::GenViewport((float)dim, (float)dim, 0.0f, 1.0f);
+		VkRect2D scissor = vks::initializers::GenRect2D(dim, dim, 0, 0);
 		vkCmdSetViewport(cmdBuf, 0, 1, &viewport);
 		vkCmdSetScissor(cmdBuf, 0, 1, &scissor);
 		vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 		vkCmdDraw(cmdBuf, 3, 1, 0, 0);
 		vkCmdEndRenderPass(cmdBuf);
-		vulkanDevice->flushCommandBuffer(cmdBuf, graphicQueue);
+		vulkanDevice->FlushCommandBuffer(cmdBuf, graphicQueue);
 
 		vkQueueWaitIdle(graphicQueue);
 
@@ -556,7 +556,7 @@ public:
 
 		// Pre-filtered cube map
 		// Image
-		VkImageCreateInfo imageCI = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageCI = vks::initializers::GenImageCreateInfo();
 		imageCI.imageType = VK_IMAGE_TYPE_2D;
 		imageCI.format = format;
 		imageCI.extent.width = dim;
@@ -569,15 +569,15 @@ public:
 		imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 		imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 		VK_CHECK_RESULT(vkCreateImage(device, &imageCI, nullptr, &textures.irradianceCube.image));
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 		vkGetImageMemoryRequirements(device, textures.irradianceCube.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &textures.irradianceCube.deviceMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, textures.irradianceCube.image, textures.irradianceCube.deviceMemory, 0));
 		// Image view
-		VkImageViewCreateInfo viewCI = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo viewCI = vks::initializers::GenImageViewCreateInfo();
 		viewCI.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
 		viewCI.format = format;
 		viewCI.subresourceRange = {};
@@ -587,7 +587,7 @@ public:
 		viewCI.image = textures.irradianceCube.image;
 		VK_CHECK_RESULT(vkCreateImageView(device, &viewCI, nullptr, &textures.irradianceCube.view));
 		// Sampler
-		VkSamplerCreateInfo samplerCI = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo samplerCI = vks::initializers::GenSamplerCreateInfo();
 		samplerCI.magFilter = VK_FILTER_LINEAR;
 		samplerCI.minFilter = VK_FILTER_LINEAR;
 		samplerCI.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -660,7 +660,7 @@ public:
 		// Offscreen framebuffer
 		{
 			// Color attachment
-			VkImageCreateInfo imageCreateInfo = vks::initializers::imageCreateInfo();
+			VkImageCreateInfo imageCreateInfo = vks::initializers::GenImageCreateInfo();
 			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 			imageCreateInfo.format = format;
 			imageCreateInfo.extent.width = dim;
@@ -675,15 +675,15 @@ public:
 			imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			VK_CHECK_RESULT(vkCreateImage(device, &imageCreateInfo, nullptr, &offscreen.image));
 
-			VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+			VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 			VkMemoryRequirements memReqs;
 			vkGetImageMemoryRequirements(device, offscreen.image, &memReqs);
 			memAlloc.allocationSize = memReqs.size;
-			memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreen.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, offscreen.image, offscreen.memory, 0));
 
-			VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+			VkImageViewCreateInfo colorImageView = vks::initializers::GenImageViewCreateInfo();
 			colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			colorImageView.format = format;
 			colorImageView.flags = 0;
@@ -696,7 +696,7 @@ public:
 			colorImageView.image = offscreen.image;
 			VK_CHECK_RESULT(vkCreateImageView(device, &colorImageView, nullptr, &offscreen.view));
 
-			VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::framebufferCreateInfo();
+			VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::GenFramebufferCreateInfo();
 			fbufCreateInfo.renderPass = renderpass;
 			fbufCreateInfo.attachmentCount = 1;
 			fbufCreateInfo.pAttachments = &offscreen.view;
@@ -705,20 +705,20 @@ public:
 			fbufCreateInfo.layers = 1;
 			VK_CHECK_RESULT(vkCreateFramebuffer(device, &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 
-			VkCommandBuffer layoutCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			VkCommandBuffer layoutCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 			vks::tools::setImageLayout(
 				layoutCmd,
 				offscreen.image,
 				VK_IMAGE_ASPECT_COLOR_BIT,
 				VK_IMAGE_LAYOUT_UNDEFINED,
 				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			vulkanDevice->flushCommandBuffer(layoutCmd, graphicQueue, true);
+			vulkanDevice->FlushCommandBuffer(layoutCmd, graphicQueue, true);
 		}
 
 		// Descriptors
 		VkDescriptorSetLayout descriptorsetlayout;
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
@@ -812,10 +812,10 @@ public:
 			glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 		};
 
-		VkCommandBuffer cmdBuf = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer cmdBuf = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-		VkViewport viewport = vks::initializers::viewport((float)dim, (float)dim, 0.0f, 1.0f);
-		VkRect2D scissor = vks::initializers::rect2D(dim, dim, 0, 0);
+		VkViewport viewport = vks::initializers::GenViewport((float)dim, (float)dim, 0.0f, 1.0f);
+		VkRect2D scissor = vks::initializers::GenRect2D(dim, dim, 0, 0);
 
 		vkCmdSetViewport(cmdBuf, 0, 1, &viewport);
 		vkCmdSetScissor(cmdBuf, 0, 1, &scissor);
@@ -907,7 +907,7 @@ public:
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			subresourceRange);
 
-		vulkanDevice->flushCommandBuffer(cmdBuf, graphicQueue);
+		vulkanDevice->FlushCommandBuffer(cmdBuf, graphicQueue);
 
 		vkDestroyRenderPass(device, renderpass, nullptr);
 		vkDestroyFramebuffer(device, offscreen.framebuffer, nullptr);
@@ -936,7 +936,7 @@ public:
 
 		// Pre-filtered cube map
 		// Image
-		VkImageCreateInfo imageCI = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageCI = vks::initializers::GenImageCreateInfo();
 		imageCI.imageType = VK_IMAGE_TYPE_2D;
 		imageCI.format = format;
 		imageCI.extent.width = dim;
@@ -949,15 +949,15 @@ public:
 		imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 		imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 		VK_CHECK_RESULT(vkCreateImage(device, &imageCI, nullptr, &textures.prefilteredCube.image));
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 		vkGetImageMemoryRequirements(device, textures.prefilteredCube.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &textures.prefilteredCube.deviceMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, textures.prefilteredCube.image, textures.prefilteredCube.deviceMemory, 0));
 		// Image view
-		VkImageViewCreateInfo viewCI = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo viewCI = vks::initializers::GenImageViewCreateInfo();
 		viewCI.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
 		viewCI.format = format;
 		viewCI.subresourceRange = {};
@@ -967,7 +967,7 @@ public:
 		viewCI.image = textures.prefilteredCube.image;
 		VK_CHECK_RESULT(vkCreateImageView(device, &viewCI, nullptr, &textures.prefilteredCube.view));
 		// Sampler
-		VkSamplerCreateInfo samplerCI = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo samplerCI = vks::initializers::GenSamplerCreateInfo();
 		samplerCI.magFilter = VK_FILTER_LINEAR;
 		samplerCI.minFilter = VK_FILTER_LINEAR;
 		samplerCI.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -1040,7 +1040,7 @@ public:
 		// Offfscreen framebuffer
 		{
 			// Color attachment
-			VkImageCreateInfo imageCreateInfo = vks::initializers::imageCreateInfo();
+			VkImageCreateInfo imageCreateInfo = vks::initializers::GenImageCreateInfo();
 			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 			imageCreateInfo.format = format;
 			imageCreateInfo.extent.width = dim;
@@ -1055,15 +1055,15 @@ public:
 			imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			VK_CHECK_RESULT(vkCreateImage(device, &imageCreateInfo, nullptr, &offscreen.image));
 
-			VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+			VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 			VkMemoryRequirements memReqs;
 			vkGetImageMemoryRequirements(device, offscreen.image, &memReqs);
 			memAlloc.allocationSize = memReqs.size;
-			memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreen.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, offscreen.image, offscreen.memory, 0));
 
-			VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+			VkImageViewCreateInfo colorImageView = vks::initializers::GenImageViewCreateInfo();
 			colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			colorImageView.format = format;
 			colorImageView.flags = 0;
@@ -1076,7 +1076,7 @@ public:
 			colorImageView.image = offscreen.image;
 			VK_CHECK_RESULT(vkCreateImageView(device, &colorImageView, nullptr, &offscreen.view));
 
-			VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::framebufferCreateInfo();
+			VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::GenFramebufferCreateInfo();
 			fbufCreateInfo.renderPass = renderpass;
 			fbufCreateInfo.attachmentCount = 1;
 			fbufCreateInfo.pAttachments = &offscreen.view;
@@ -1085,20 +1085,20 @@ public:
 			fbufCreateInfo.layers = 1;
 			VK_CHECK_RESULT(vkCreateFramebuffer(device, &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 
-			VkCommandBuffer layoutCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			VkCommandBuffer layoutCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 			vks::tools::setImageLayout(
 				layoutCmd,
 				offscreen.image,
 				VK_IMAGE_ASPECT_COLOR_BIT,
 				VK_IMAGE_LAYOUT_UNDEFINED,
 				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			vulkanDevice->flushCommandBuffer(layoutCmd, graphicQueue, true);
+			vulkanDevice->FlushCommandBuffer(layoutCmd, graphicQueue, true);
 		}
 
 		// Descriptors
 		VkDescriptorSetLayout descriptorsetlayout;
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
@@ -1191,10 +1191,10 @@ public:
 			glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 		};
 
-		VkCommandBuffer cmdBuf = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer cmdBuf = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-		VkViewport viewport = vks::initializers::viewport((float)dim, (float)dim, 0.0f, 1.0f);
-		VkRect2D scissor = vks::initializers::rect2D(dim, dim, 0, 0);
+		VkViewport viewport = vks::initializers::GenViewport((float)dim, (float)dim, 0.0f, 1.0f);
+		VkRect2D scissor = vks::initializers::GenRect2D(dim, dim, 0, 0);
 
 		vkCmdSetViewport(cmdBuf, 0, 1, &viewport);
 		vkCmdSetScissor(cmdBuf, 0, 1, &scissor);
@@ -1287,7 +1287,7 @@ public:
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			subresourceRange);
 
-		vulkanDevice->flushCommandBuffer(cmdBuf, graphicQueue);
+		vulkanDevice->FlushCommandBuffer(cmdBuf, graphicQueue);
 
 		vkDestroyRenderPass(device, renderpass, nullptr);
 		vkDestroyFramebuffer(device, offscreen.framebuffer, nullptr);
@@ -1308,21 +1308,21 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Object vertex shader uniform buffer
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffers.object,
 			sizeof(uboMatrices)));
 
 		// Skybox vertex shader uniform buffer
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffers.skybox,
 			sizeof(uboMatrices)));
 
 		// Shared parameter uniform buffer
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffers.params,

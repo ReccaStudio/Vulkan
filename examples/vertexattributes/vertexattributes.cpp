@@ -225,8 +225,8 @@ void VulkanExample::buildCommandBuffersForMainRendering()
 	renderPassBeginInfo.clearValueCount = 2;
 	renderPassBeginInfo.pClearValues = clearValues;
 
-	const VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-	const VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+	const VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
+	const VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 
 	for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
 	{
@@ -339,11 +339,11 @@ void VulkanExample::uploadVertexData()
 	// Anonymous functions to simplify buffer creation
 	// Create a staging buffer used as a source for copies
 	auto createStagingBuffer = [this](vks::Buffer& buffer, void* data, VkDeviceSize size) {
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, size, data));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, size, data));
 	};
 	// Create a device local buffer used as a target for copies
 	auto createDeviceBuffer = [this](vks::Buffer& buffer, VkDeviceSize size, VkBufferUsageFlags usageFlags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) {
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(usageFlags | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer, size));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(usageFlags | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer, size));
 	};
 
 	VkCommandBuffer copyCmd;
@@ -359,10 +359,10 @@ void VulkanExample::uploadVertexData()
 	createDeviceBuffer(interleavedVertexBuffer, vertexStaging.size);
 
 	// Copy data from staging buffer (host) do device local buffer (gpu)
-	copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	copyRegion.size = vertexBufferSize;
 	vkCmdCopyBuffer(copyCmd, vertexStaging.buffer, interleavedVertexBuffer.buffer, 1, &copyRegion);
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 	vertexStaging.destroy();
 
 	/*
@@ -389,12 +389,12 @@ void VulkanExample::uploadVertexData()
 	};
 
 	// Copy data from staging buffer (host) do device local buffer (gpu)
-	copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	for (size_t i = 0; i < attributeBuffers.size(); i++) {
 		copyRegion.size = attributeBuffers[i].size;
 		vkCmdCopyBuffer(copyCmd, stagingBuffers[i].buffer, attributeBuffers[i].buffer, 1, &copyRegion);
 	}
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 	for (size_t i = 0; i < 4; i++) {
 		stagingBuffers[i].destroy();
@@ -409,10 +409,10 @@ void VulkanExample::uploadVertexData()
 	createStagingBuffer(indexStaging, indexBuffer.data(), indexBufferSize);
 	createDeviceBuffer(indices, indexStaging.size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 	// Copy data from staging buffer (host) do device local buffer (gpu)
-	copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	copyRegion.size = indexBufferSize;
 	vkCmdCopyBuffer(copyCmd, indexStaging.buffer, indices.buffer, 1, &copyRegion);
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 	// Free staging resources
 	indexStaging.destroy();
 }
@@ -436,16 +436,16 @@ void VulkanExample::setupDescriptors()
 	VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 	// Descriptor set layout for passing matrices
 	std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-		vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0)
+		vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0)
 	};
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings.data(), static_cast<uint32_t>(setLayoutBindings.size()));
 	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.matrices));
 	// Descriptor set layout for passing material textures
 	setLayoutBindings = {
 		// Color map
-		vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+		vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 		// Normal map
-		vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+		vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 	};
 	descriptorSetLayoutCI.pBindings = setLayoutBindings.data();
 	descriptorSetLayoutCI.bindingCount = 2;
@@ -546,7 +546,7 @@ void VulkanExample::preparePipelines()
 
 void VulkanExample::prepareUniformBuffers()
 {
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&shaderData.buffer,

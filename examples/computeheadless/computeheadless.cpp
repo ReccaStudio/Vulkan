@@ -82,10 +82,10 @@ public:
 
 	VkDebugReportCallbackEXT debugReportCallback{};
 
-	VkResult createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer *buffer, VkDeviceMemory *memory, VkDeviceSize size, void *data = nullptr)
+	VkResult CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer *buffer, VkDeviceMemory *memory, VkDeviceSize size, void *data = nullptr)
 	{
 		// Create the buffer handle
-		VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo(usageFlags, size);
+		VkBufferCreateInfo bufferCreateInfo = vks::initializers::GenBufferCreateInfo(usageFlags, size);
 		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		VK_CHECK_RESULT(vkCreateBuffer(device, &bufferCreateInfo, nullptr, buffer));
 
@@ -93,7 +93,7 @@ public:
 		VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
 		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &deviceMemoryProperties);
 		VkMemoryRequirements memReqs;
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		vkGetBufferMemoryRequirements(device, *buffer, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
 		// Find a memory type index that fits the properties of the buffer
@@ -311,7 +311,7 @@ public:
 
 		// Copy input data to VRAM using a staging buffer
 		{
-			createBuffer(
+			CreateBuffer(
 				VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
 				&hostBuffer,
@@ -329,7 +329,7 @@ public:
 			vkFlushMappedMemoryRanges(device, 1, &mappedRange);
 			vkUnmapMemory(device, hostMemory);
 
-			createBuffer(
+			CreateBuffer(
 				VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 				&deviceBuffer,
@@ -337,7 +337,7 @@ public:
 				bufferSize);
 
 			// Copy to staging buffer
-			VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+			VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::GenCommandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 			VkCommandBuffer copyCmd;
 			VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, &copyCmd));
 			VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
@@ -348,10 +348,10 @@ public:
 			vkCmdCopyBuffer(copyCmd, hostBuffer, deviceBuffer, 1, &copyRegion);
 			VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
 
-			VkSubmitInfo submitInfo = vks::initializers::submitInfo();
+			VkSubmitInfo submitInfo = vks::initializers::GenSubmitInfo();
 			submitInfo.commandBufferCount = 1;
 			submitInfo.pCommandBuffers = &copyCmd;
-			VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
+			VkFenceCreateInfo fenceInfo = vks::initializers::GenFenceCreateInfo(VK_FLAGS_NONE);
 			VkFence fence;
 			VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &fence));
 
@@ -376,7 +376,7 @@ public:
 			VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 
 			std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-				vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT, 0),
+				vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT, 0),
 			};
 			VkDescriptorSetLayoutCreateInfo descriptorLayout =
 				vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
@@ -434,11 +434,11 @@ public:
 
 			// Create a command buffer for compute operations
 			VkCommandBufferAllocateInfo cmdBufAllocateInfo =
-				vks::initializers::commandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+				vks::initializers::GenCommandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 			VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, &commandBuffer));
 
 			// Fence for compute CB sync
-			VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
+			VkFenceCreateInfo fenceCreateInfo = vks::initializers::GenFenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 			VK_CHECK_RESULT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence));
 		}
 
@@ -517,7 +517,7 @@ public:
 			// Submit compute work
 			vkResetFences(device, 1, &fence);
 			const VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			VkSubmitInfo computeSubmitInfo = vks::initializers::submitInfo();
+			VkSubmitInfo computeSubmitInfo = vks::initializers::GenSubmitInfo();
 			computeSubmitInfo.pWaitDstStageMask = &waitStageMask;
 			computeSubmitInfo.commandBufferCount = 1;
 			computeSubmitInfo.pCommandBuffers = &commandBuffer;

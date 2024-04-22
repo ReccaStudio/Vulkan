@@ -147,10 +147,10 @@ public:
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			VkDeviceSize offsets[1] = { 0 };
@@ -219,11 +219,11 @@ public:
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// Binding 0: Vertex shader uniform buffer
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
 			// Binding 1: Fragment shader combined sampler (plants texture array)
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 			// Binding 1: Fragment shader combined sampler (ground texture)
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -368,20 +368,20 @@ public:
 		}
 
 		vks::Buffer stagingBuffer;
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffer,
 			indirectCommands.size() * sizeof(VkDrawIndexedIndirectCommand),
 			indirectCommands.data()));
 
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&indirectCommandsBuffer,
 			stagingBuffer.size));
 
-		vulkanDevice->copyBuffer(&stagingBuffer, &indirectCommandsBuffer, graphicQueue);
+		vulkanDevice->CopyBuffer(&stagingBuffer, &indirectCommandsBuffer, graphicQueue);
 
 		stagingBuffer.destroy();
 	}
@@ -405,27 +405,27 @@ public:
 		}
 
 		vks::Buffer stagingBuffer;
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffer,
 			instanceData.size() * sizeof(InstanceData),
 			instanceData.data()));
 
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&instanceBuffer,
 			stagingBuffer.size));
 
-		vulkanDevice->copyBuffer(&stagingBuffer, &instanceBuffer, graphicQueue);
+		vulkanDevice->CopyBuffer(&stagingBuffer, &instanceBuffer, graphicQueue);
 
 		stagingBuffer.destroy();
 	}
 
 	void prepareUniformBuffers()
 	{
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uniformData)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uniformData)));
 		VK_CHECK_RESULT(uniformBuffer.map());
 	}
 

@@ -115,7 +115,7 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Create an uniform buffer for a render pass.
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &renderPassUniformBuffer, sizeof(RenderPassUniformData)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &renderPassUniformBuffer, sizeof(RenderPassUniformData)));
 		VK_CHECK_RESULT(renderPassUniformBuffer.map());
 	}
 
@@ -133,7 +133,7 @@ public:
 		VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassInfo, nullptr, &geometryPass.renderPass));
 
 		// Geometry frame buffer doesn't need any output attachment.
-		VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::framebufferCreateInfo();
+		VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::GenFramebufferCreateInfo();
 		fbufCreateInfo.renderPass = geometryPass.renderPass;
 		fbufCreateInfo.attachmentCount = 0;
 		fbufCreateInfo.width = width;
@@ -145,14 +145,14 @@ public:
 		// Create a buffer for GeometrySBO
 		vks::Buffer stagingBuffer;
 	
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffer,
 			sizeof(geometrySBO)));
 		VK_CHECK_RESULT(stagingBuffer.map());
 
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&geometryPass.geometry,
@@ -164,11 +164,11 @@ public:
 		memcpy(stagingBuffer.mappedData, &geometrySBO, sizeof(geometrySBO));
 
 		// Copy data to device
-		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 		VkBufferCopy copyRegion = {};
 		copyRegion.size = sizeof(geometrySBO);
 		vkCmdCopyBuffer(copyCmd, stagingBuffer.buffer, geometryPass.geometry.buffer, 1, &copyRegion);
-		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+		vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 		stagingBuffer.destroy();
 		
@@ -176,7 +176,7 @@ public:
 		// This image will track the head index of each fragment.
 		geometryPass.headIndex.device = vulkanDevice;
 
-		VkImageCreateInfo imageInfo = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageInfo = vks::initializers::GenImageCreateInfo();
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
 		imageInfo.format = VK_FORMAT_R32_UINT;
 		imageInfo.extent.width = width;
@@ -200,14 +200,14 @@ public:
 		VkMemoryRequirements memReqs;
 		vkGetImageMemoryRequirements(device, geometryPass.headIndex.image, &memReqs);
 
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &geometryPass.headIndex.deviceMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, geometryPass.headIndex.image, geometryPass.headIndex.deviceMemory, 0));
 
-		VkImageViewCreateInfo imageViewInfo = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo imageViewInfo = vks::initializers::GenImageViewCreateInfo();
 		imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		imageViewInfo.format = VK_FORMAT_R32_UINT;
 		imageViewInfo.flags = 0;
@@ -229,14 +229,14 @@ public:
 		geometryPass.headIndex.sampler = VK_NULL_HANDLE;
 
 		// Create a buffer for LinkedListSBO
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&geometryPass.linkedList,
 			sizeof(Node) * geometrySBO.maxNodeCount));
 
 		// Change HeadIndex image's layout from UNDEFINED to GENERAL
-		VkCommandBufferAllocateInfo cmdBufAllocInfo = vks::initializers::commandBufferAllocateInfo(cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+		VkCommandBufferAllocateInfo cmdBufAllocInfo = vks::initializers::GenCommandBufferAllocateInfo(cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
 		VkCommandBuffer cmdBuf;
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocInfo, &cmdBuf));
@@ -257,7 +257,7 @@ public:
 
 		VK_CHECK_RESULT(vkEndCommandBuffer(cmdBuf));
 
-		VkSubmitInfo submitInfo = vks::initializers::submitInfo();
+		VkSubmitInfo submitInfo = vks::initializers::GenSubmitInfo();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &cmdBuf;
 
@@ -282,13 +282,13 @@ public:
 		// Create a geometry descriptor set layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// renderPassUniformData
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 			// AtomicSBO
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 			// headIndexImage
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
 			// LinkedListSBO
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 3),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 3),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutCI, nullptr, &descriptorSetLayouts.geometry));
@@ -296,9 +296,9 @@ public:
 		// Create a color descriptor set layout
 		setLayoutBindings = {
 			// headIndexImage
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 			// LinkedListSBO
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 		};
 		descriptorLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutCI, nullptr, &descriptorSetLayouts.color));
@@ -424,8 +424,8 @@ public:
 		renderPassBeginInfo.renderArea.extent.width = width;
 		renderPassBeginInfo.renderArea.extent.height = height;
 		
-		VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-		VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+		VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
+		VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 
 		for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
 		{

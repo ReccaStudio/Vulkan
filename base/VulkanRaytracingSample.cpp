@@ -160,7 +160,7 @@ VulkanRaytracingSample::ScratchBuffer VulkanRaytracingSample::createScratchBuffe
 	memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	memoryAllocateInfo.pNext = &memoryAllocateFlagsInfo;
 	memoryAllocateInfo.allocationSize = memoryRequirements.size;
-	memoryAllocateInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	memoryAllocateInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	VK_CHECK_RESULT(vkAllocateMemory(vulkanDevice->logicalDevice, &memoryAllocateInfo, nullptr, &scratchBuffer.memory));
 	VK_CHECK_RESULT(vkBindBufferMemory(vulkanDevice->logicalDevice, scratchBuffer.handle, scratchBuffer.memory, 0));
 	// Buffer device address
@@ -198,7 +198,7 @@ void VulkanRaytracingSample::createAccelerationStructure(AccelerationStructure& 
 	memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	memoryAllocateInfo.pNext = &memoryAllocateFlagsInfo;
 	memoryAllocateInfo.allocationSize = memoryRequirements.size;
-	memoryAllocateInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	memoryAllocateInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	VK_CHECK_RESULT(vkAllocateMemory(vulkanDevice->logicalDevice, &memoryAllocateInfo, nullptr, &accelerationStructure.memory));
 	VK_CHECK_RESULT(vkBindBufferMemory(vulkanDevice->logicalDevice, accelerationStructure.buffer, accelerationStructure.memory, 0));
 	// Acceleration structure
@@ -240,7 +240,7 @@ void VulkanRaytracingSample::createStorageImage(VkFormat format, VkExtent3D exte
 		storageImage = {};
 	}
 
-	VkImageCreateInfo image = vks::initializers::imageCreateInfo();
+	VkImageCreateInfo image = vks::initializers::GenImageCreateInfo();
 	image.imageType = VK_IMAGE_TYPE_2D;
 	image.format = format;
 	image.extent = extent;
@@ -254,13 +254,13 @@ void VulkanRaytracingSample::createStorageImage(VkFormat format, VkExtent3D exte
 
 	VkMemoryRequirements memReqs;
 	vkGetImageMemoryRequirements(vulkanDevice->logicalDevice, storageImage.image, &memReqs);
-	VkMemoryAllocateInfo memoryAllocateInfo = vks::initializers::memoryAllocateInfo();
+	VkMemoryAllocateInfo memoryAllocateInfo = vks::initializers::GenMemoryAllocateInfo();
 	memoryAllocateInfo.allocationSize = memReqs.size;
-	memoryAllocateInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	memoryAllocateInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	VK_CHECK_RESULT(vkAllocateMemory(vulkanDevice->logicalDevice, &memoryAllocateInfo, nullptr, &storageImage.memory));
 	VK_CHECK_RESULT(vkBindImageMemory(vulkanDevice->logicalDevice, storageImage.image, storageImage.memory, 0));
 
-	VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+	VkImageViewCreateInfo colorImageView = vks::initializers::GenImageViewCreateInfo();
 	colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 	colorImageView.format = format;
 	colorImageView.subresourceRange = {};
@@ -272,12 +272,12 @@ void VulkanRaytracingSample::createStorageImage(VkFormat format, VkExtent3D exte
 	colorImageView.image = storageImage.image;
 	VK_CHECK_RESULT(vkCreateImageView(vulkanDevice->logicalDevice, &colorImageView, nullptr, &storageImage.view));
 
-	VkCommandBuffer cmdBuffer = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	VkCommandBuffer cmdBuffer = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	vks::tools::setImageLayout(cmdBuffer, storageImage.image,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_GENERAL,
 		{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-	vulkanDevice->flushCommandBuffer(cmdBuffer, graphicQueue);
+	vulkanDevice->FlushCommandBuffer(cmdBuffer, graphicQueue);
 }
 
 void VulkanRaytracingSample::deleteStorageImage()
@@ -327,7 +327,7 @@ VkStridedDeviceAddressRegionKHR VulkanRaytracingSample::getSbtEntryStridedDevice
 void VulkanRaytracingSample::createShaderBindingTable(ShaderBindingTable& shaderBindingTable, uint32_t handleCount)
 {
 	// Create buffer to hold all shader handles for the SBT
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 		VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
 		&shaderBindingTable, 

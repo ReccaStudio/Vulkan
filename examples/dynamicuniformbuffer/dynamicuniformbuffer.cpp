@@ -136,10 +136,10 @@ public:
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -190,14 +190,14 @@ public:
 		// Create buffers
 		// For the sake of simplicity we won't stage the vertex data to the gpu memory
 		// Vertex buffer
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&vertexBuffer,
 			vertices.size() * sizeof(Vertex),
 			vertices.data()));
 		// Index buffer
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&indexBuffer,
@@ -218,9 +218,9 @@ public:
 
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
 			// Dynamic uniform buffer
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT, 1)
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT, 1)
 		};
 
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
@@ -312,14 +312,14 @@ public:
 		// Vertex shader uniform buffer block
 
 		// Static shared uniform buffer object with projection and view matrix
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffers.view,
 			sizeof(uboVS)));
 
 		// Uniform buffer object with per-object matrices
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
 			&uniformBuffers.dynamic,
@@ -394,7 +394,7 @@ public:
 		memcpy(uniformBuffers.dynamic.mappedData, uboDataDynamic.model, uniformBuffers.dynamic.size);
 		// Flush to make changes visible to the host
 		VkMappedMemoryRange memoryRange = vks::initializers::mappedMemoryRange();
-		memoryRange.memory = uniformBuffers.dynamic.memory;
+		memoryRange.memory = uniformBuffers.dynamic.deviceMemory;
 		memoryRange.size = uniformBuffers.dynamic.size;
 		vkFlushMappedMemoryRanges(device, 1, &memoryRange);
 	}

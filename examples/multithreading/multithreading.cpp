@@ -139,7 +139,7 @@ public:
 		// we don't use the per-framebuffer command buffers from the
 		// base class, and create a single primary command buffer instead
 		VkCommandBufferAllocateInfo cmdBufAllocateInfo =
-			vks::initializers::commandBufferAllocateInfo(
+			vks::initializers::GenCommandBufferAllocateInfo(
 				cmdPool,
 				VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 				1);
@@ -160,7 +160,7 @@ public:
 			ThreadData *thread = &threadData[i];
 
 			// Create one command pool for each thread
-			VkCommandPoolCreateInfo cmdPoolInfo = vks::initializers::commandPoolCreateInfo();
+			VkCommandPoolCreateInfo cmdPoolInfo = vks::initializers::GenCommandPoolCreateInfo();
 			cmdPoolInfo.queueFamilyIndex = swapChain.queueNodeIndex;
 			cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &thread->commandPool));
@@ -169,7 +169,7 @@ public:
 			thread->commandBuffer.resize(numObjectsPerThread);
 			// Generate secondary command buffers for each thread
 			VkCommandBufferAllocateInfo secondaryCmdBufAllocateInfo =
-				vks::initializers::commandBufferAllocateInfo(
+				vks::initializers::GenCommandBufferAllocateInfo(
 					thread->commandPool,
 					VK_COMMAND_BUFFER_LEVEL_SECONDARY,
 					static_cast<uint32_t>(thread->commandBuffer.size()));
@@ -217,10 +217,10 @@ public:
 
 		VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &commandBufferBeginInfo));
 
-		VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+		VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 		vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
 
-		VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+		VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 		vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
 
 		vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.phong);
@@ -270,8 +270,8 @@ public:
 		commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
 		commandBufferBeginInfo.pInheritanceInfo = &inheritanceInfo;
 
-		VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-		VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+		VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
+		VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 
 		/*
 			Background
@@ -466,7 +466,7 @@ public:
 	{
 		VulkanExampleBase::prepareForRendering();
 		// Create a fence for synchronization
-		VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
+		VkFenceCreateInfo fenceCreateInfo = vks::initializers::GenFenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 		vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence);
 		loadAssets();
 		preparePipelines();

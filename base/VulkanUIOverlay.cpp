@@ -88,7 +88,7 @@ namespace vks
 		style.ScaleAllSizes(scale);
 
 		// Create target image for copy
-		VkImageCreateInfo imageInfo = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageInfo = vks::initializers::GenImageCreateInfo();
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
 		imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
 		imageInfo.extent.width = texWidth;
@@ -104,14 +104,14 @@ namespace vks
 		VK_CHECK_RESULT(vkCreateImage(device->logicalDevice, &imageInfo, nullptr, &fontImage));
 		VkMemoryRequirements memReqs;
 		vkGetImageMemoryRequirements(device->logicalDevice, fontImage, &memReqs);
-		VkMemoryAllocateInfo memAllocInfo = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAllocInfo = vks::initializers::GenMemoryAllocateInfo();
 		memAllocInfo.allocationSize = memReqs.size;
-		memAllocInfo.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAllocInfo.memoryTypeIndex = device->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &fontMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device->logicalDevice, fontImage, fontMemory, 0));
 
 		// Image view
-		VkImageViewCreateInfo viewInfo = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo viewInfo = vks::initializers::GenImageViewCreateInfo();
 		viewInfo.image = fontImage;
 		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
@@ -123,7 +123,7 @@ namespace vks
 		// Staging buffers for font data upload
 		vks::Buffer stagingBuffer;
 
-		VK_CHECK_RESULT(device->createBuffer(
+		VK_CHECK_RESULT(device->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffer,
@@ -134,7 +134,7 @@ namespace vks
 		stagingBuffer.unmap();
 
 		// Copy buffer data to font image
-		VkCommandBuffer copyCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer copyCmd = device->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
 		// Prepare for transfer
 		vks::tools::setImageLayout(
@@ -173,12 +173,12 @@ namespace vks
 			VK_PIPELINE_STAGE_TRANSFER_BIT,
 			VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
-		device->flushCommandBuffer(copyCmd, queue, true);
+		device->FlushCommandBuffer(copyCmd, queue, true);
 
 		stagingBuffer.destroy();
 
 		// Font texture Sampler
-		VkSamplerCreateInfo samplerInfo = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo samplerInfo = vks::initializers::GenSamplerCreateInfo();
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -197,7 +197,7 @@ namespace vks
 
 		// Descriptor set layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device->logicalDevice, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -331,7 +331,7 @@ namespace vks
 		if ((vertexBuffer.buffer == VK_NULL_HANDLE) || (vertexCount != imDrawData->TotalVtxCount)) {
 			vertexBuffer.unmap();
 			vertexBuffer.destroy();
-			VK_CHECK_RESULT(device->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &vertexBuffer, vertexBufferSize));
+			VK_CHECK_RESULT(device->CreateBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &vertexBuffer, vertexBufferSize));
 			vertexCount = imDrawData->TotalVtxCount;
 			vertexBuffer.unmap();
 			vertexBuffer.map();
@@ -342,7 +342,7 @@ namespace vks
 		if ((indexBuffer.buffer == VK_NULL_HANDLE) || (indexCount < imDrawData->TotalIdxCount)) {
 			indexBuffer.unmap();
 			indexBuffer.destroy();
-			VK_CHECK_RESULT(device->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &indexBuffer, indexBufferSize));
+			VK_CHECK_RESULT(device->CreateBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &indexBuffer, indexBufferSize));
 			indexCount = imDrawData->TotalIdxCount;
 			indexBuffer.map();
 			updateCmdBuffers = true;

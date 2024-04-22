@@ -22,19 +22,14 @@ namespace vks
 	*/
 	VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset)
 	{
-		return vkMapMemory(device, memory, offset, size, 0, &mappedData);
+		return vkMapMemory(device, deviceMemory, offset, size, 0, &mappedData);
 	}
 
-	/**
-	* Unmap a mapped memory range
-	*
-	* @note Does not return a result as vkUnmapMemory can't fail
-	*/
 	void Buffer::unmap()
 	{
 		if (mappedData)
 		{
-			vkUnmapMemory(device, memory);
+			vkUnmapMemory(device, deviceMemory);
 			mappedData = nullptr;
 		}
 	}
@@ -48,7 +43,7 @@ namespace vks
 	*/
 	VkResult Buffer::bind(VkDeviceSize offset)
 	{
-		return vkBindBufferMemory(device, buffer, memory, offset);
+		return vkBindBufferMemory(device,buffer,deviceMemory,offset);
 	}
 
 	/**
@@ -72,7 +67,7 @@ namespace vks
 	* @param size Size of the data to copy in machine units
 	*
 	*/
-	void Buffer::copyTo(void* data, VkDeviceSize size)
+	void Buffer::copyFromData(void * data, VkDeviceSize size)
 	{
 		assert(mappedData);
 		memcpy(mappedData, data, size);
@@ -92,10 +87,11 @@ namespace vks
 	{
 		VkMappedMemoryRange mappedRange = {};
 		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-		mappedRange.memory = memory;
+		mappedRange.memory = deviceMemory;
 		mappedRange.offset = offset;
 		mappedRange.size = size;
-		return vkFlushMappedMemoryRanges(device, 1, &mappedRange);
+
+		return vkFlushMappedMemoryRanges(device,1,&mappedRange);
 	}
 
 	/**
@@ -112,9 +108,10 @@ namespace vks
 	{
 		VkMappedMemoryRange mappedRange = {};
 		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-		mappedRange.memory = memory;
+		mappedRange.memory = deviceMemory;
 		mappedRange.offset = offset;
 		mappedRange.size = size;
+
 		return vkInvalidateMappedMemoryRanges(device, 1, &mappedRange);
 	}
 
@@ -127,9 +124,11 @@ namespace vks
 		{
 			vkDestroyBuffer(device, buffer, nullptr);
 		}
-		if (memory)
+
+		if (deviceMemory)
 		{
-			vkFreeMemory(device, memory, nullptr);
+			vkFreeMemory(device, deviceMemory, nullptr);
 		}
 	}
-};
+
+}// namespace vks

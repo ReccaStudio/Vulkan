@@ -11,9 +11,11 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+#include <array>
 #include "vulkan/vulkan.h"
 #include "VulkanDevice.h"
 #include "VulkanTools.h"
+#include "vulkan/vulkan_core.h"
 
 namespace vks
 {
@@ -24,7 +26,7 @@ namespace vks
 	{
 		VkImage image;
 		VkDeviceMemory memory;
-		VkImageView view;
+		VkImageView imageView;
 		VkFormat format;
 		VkImageSubresourceRange subresourceRange;
 		VkAttachmentDescription description;
@@ -32,9 +34,9 @@ namespace vks
 		/**
 		* @brief Returns true if the attachment has a depth component
 		*/
-		bool hasDepth()
+		bool HasDepth()
 		{
-			std::vector<VkFormat> formats = 
+			std::vector<VkFormat> formats =
 			{
 				VK_FORMAT_D16_UNORM,
 				VK_FORMAT_X8_D24_UNORM_PACK32,
@@ -43,32 +45,33 @@ namespace vks
 				VK_FORMAT_D24_UNORM_S8_UINT,
 				VK_FORMAT_D32_SFLOAT_S8_UINT,
 			};
+
 			return std::find(formats.begin(), formats.end(), format) != std::end(formats);
 		}
 
 		/**
 		* @brief Returns true if the attachment has a stencil component
 		*/
-		bool hasStencil()
+		bool HasStencil()
 		{
-			std::vector<VkFormat> formats = 
+			std::vector<VkFormat> formats =
 			{
 				VK_FORMAT_S8_UINT,
 				VK_FORMAT_D16_UNORM_S8_UINT,
 				VK_FORMAT_D24_UNORM_S8_UINT,
 				VK_FORMAT_D32_SFLOAT_S8_UINT,
 			};
+
 			return std::find(formats.begin(), formats.end(), format) != std::end(formats);
 		}
 
-		/**
+        /**
 		* @brief Returns true if the attachment is a depth and/or stencil attachment
 		*/
-		bool isDepthStencil()
+		bool IsDepthStencil()
 		{
-			return(hasDepth() || hasStencil());
+			return (HasDepth() || HasStencil());
 		}
-
 	};
 
 	/**
@@ -80,7 +83,7 @@ namespace vks
 		uint32_t layerCount;
 		VkFormat format;
 		VkImageUsageFlags usage;
-		VkSampleCountFlagBits imageSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		VkSampleCountFlagBits imageSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
 	};
 
 	/**
@@ -89,7 +92,7 @@ namespace vks
 	struct Framebuffer
 	{
 	private:
-		vks::VulkanDevice *vulkanDevice;
+		vks::VulkanDevice * vulkanDevice;
 	public:
 		uint32_t width, height;
 		VkFramebuffer framebuffer;
@@ -117,9 +120,10 @@ namespace vks
 			for (auto attachment : attachments)
 			{
 				vkDestroyImage(vulkanDevice->logicalDevice, attachment.image, nullptr);
-				vkDestroyImageView(vulkanDevice->logicalDevice, attachment.view, nullptr);
+				vkDestroyImageView(vulkanDevice->logicalDevice, attachment.imageView, nullptr);
 				vkFreeMemory(vulkanDevice->logicalDevice, attachment.memory, nullptr);
 			}
+
 			vkDestroySampler(vulkanDevice->logicalDevice, sampler, nullptr);
 			vkDestroyRenderPass(vulkanDevice->logicalDevice, renderPass, nullptr);
 			vkDestroyFramebuffer(vulkanDevice->logicalDevice, framebuffer, nullptr);
@@ -132,30 +136,29 @@ namespace vks
 		*
 		* @return Index of the new attachment
 		*/
-		uint32_t addAttachment(vks::AttachmentCreateInfo createinfo)
+		uint32_t AddAttachment(vks::AttachmentCreateInfo createInfo)
 		{
 			vks::FramebufferAttachment attachment;
-
-			attachment.format = createinfo.format;
+			attachment.format = createInfo.format;
 
 			VkImageAspectFlags aspectMask = VK_FLAGS_NONE;
 
 			// Select aspect mask and layout depending on usage
 
 			// Color attachment
-			if (createinfo.usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+			if (createInfo.usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
 			{
 				aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			}
 
 			// Depth (and/or stencil) attachment
-			if (createinfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+			if (createInfo.usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
 			{
-				if (attachment.hasDepth())
+				if (attachment.HasDepth())
 				{
 					aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 				}
-				if (attachment.hasStencil())
+				if (attachment.HasStencil())
 				{
 					aspectMask = aspectMask | VK_IMAGE_ASPECT_STENCIL_BIT;
 				}
@@ -163,54 +166,54 @@ namespace vks
 
 			assert(aspectMask > 0);
 
-			VkImageCreateInfo image = vks::initializers::imageCreateInfo();
-			image.imageType = VK_IMAGE_TYPE_2D;
-			image.format = createinfo.format;
-			image.extent.width = createinfo.width;
-			image.extent.height = createinfo.height;
-			image.extent.depth = 1;
-			image.mipLevels = 1;
-			image.arrayLayers = createinfo.layerCount;
-			image.samples = createinfo.imageSampleCount;
-			image.tiling = VK_IMAGE_TILING_OPTIMAL;
-			image.usage = createinfo.usage;
+			VkImageCreateInfo imageCreateInfo = vks::initializers::GenImageCreateInfo();
+			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+			imageCreateInfo.format = createInfo.format;
+			imageCreateInfo.extent.width = createInfo.width;
+			imageCreateInfo.extent.height = createInfo.height;
+			imageCreateInfo.extent.depth = 1;
+			imageCreateInfo.mipLevels = 1;
+			imageCreateInfo.arrayLayers = createInfo.layerCount;
+			imageCreateInfo.samples = createInfo.imageSampleCount;
+			imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+			imageCreateInfo.usage = createInfo.usage;
 
-			VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+			VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 			VkMemoryRequirements memReqs;
 
 			// Create image for this attachment
-			VK_CHECK_RESULT(vkCreateImage(vulkanDevice->logicalDevice, &image, nullptr, &attachment.image));
+			VK_CHECK_RESULT(vkCreateImage(vulkanDevice->logicalDevice, &imageCreateInfo, nullptr, &attachment.image));
 			vkGetImageMemoryRequirements(vulkanDevice->logicalDevice, attachment.image, &memReqs);
 			memAlloc.allocationSize = memReqs.size;
-			memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(vulkanDevice->logicalDevice, &memAlloc, nullptr, &attachment.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(vulkanDevice->logicalDevice, attachment.image, attachment.memory, 0));
 
 			attachment.subresourceRange = {};
 			attachment.subresourceRange.aspectMask = aspectMask;
 			attachment.subresourceRange.levelCount = 1;
-			attachment.subresourceRange.layerCount = createinfo.layerCount;
+			attachment.subresourceRange.layerCount = createInfo.layerCount;
 
-			VkImageViewCreateInfo imageView = vks::initializers::imageViewCreateInfo();
-			imageView.viewType = (createinfo.layerCount == 1) ? VK_IMAGE_VIEW_TYPE_2D : VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-			imageView.format = createinfo.format;
-			imageView.subresourceRange = attachment.subresourceRange;
-			imageView.subresourceRange.aspectMask = (attachment.hasDepth()) ? VK_IMAGE_ASPECT_DEPTH_BIT : aspectMask;
-			imageView.image = attachment.image;
-			VK_CHECK_RESULT(vkCreateImageView(vulkanDevice->logicalDevice, &imageView, nullptr, &attachment.view));
+			VkImageViewCreateInfo imageViewCreateInfo = vks::initializers::GenImageViewCreateInfo();
+			imageViewCreateInfo.viewType = (createInfo.layerCount == 1) ? VK_IMAGE_VIEW_TYPE_2D : VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+			imageViewCreateInfo.format = createInfo.format;
+			imageViewCreateInfo.subresourceRange = attachment.subresourceRange;
+			imageViewCreateInfo.subresourceRange.aspectMask = (attachment.HasDepth()) ? VK_IMAGE_ASPECT_DEPTH_BIT : aspectMask;
+			imageViewCreateInfo.image = attachment.image;
+			VK_CHECK_RESULT(vkCreateImageView(vulkanDevice->logicalDevice, &imageViewCreateInfo, nullptr, &attachment.imageView));
 
 			// Fill attachment description
 			attachment.description = {};
-			attachment.description.samples = createinfo.imageSampleCount;
+			attachment.description.samples = createInfo.imageSampleCount;
 			attachment.description.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			attachment.description.storeOp = (createinfo.usage & VK_IMAGE_USAGE_SAMPLED_BIT) ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			attachment.description.storeOp = (createInfo.usage & VK_IMAGE_USAGE_SAMPLED_BIT) ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			attachment.description.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			attachment.description.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			attachment.description.format = createinfo.format;
+			attachment.description.format = createInfo.format;
 			attachment.description.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			// Final layout
 			// If not, final layout depends on attachment type
-			if (attachment.hasDepth() || attachment.hasStencil())
+			if (attachment.HasDepth() || attachment.HasStencil())
 			{
 				attachment.description.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 			}
@@ -218,36 +221,26 @@ namespace vks
 			{
 				attachment.description.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
-
 			attachments.push_back(attachment);
 
 			return static_cast<uint32_t>(attachments.size() - 1);
 		}
 
-		/**
-		* Creates a default sampler for sampling from any of the framebuffer attachments
-		* Applications are free to create their own samplers for different use cases 
-		*
-		* @param magFilter Magnification filter for lookups
-		* @param minFilter Minification filter for lookups
-		* @param adressMode Addressing mode for the U,V and W coordinates
-		*
-		* @return VkResult for the sampler creation
-		*/
-		VkResult createSampler(VkFilter magFilter, VkFilter minFilter, VkSamplerAddressMode adressMode)
+		VkResult CreateSampler(VkFilter magFilter, VkFilter minFilter, VkSamplerAddressMode addressMode)
 		{
-			VkSamplerCreateInfo samplerInfo = vks::initializers::samplerCreateInfo();
+			VkSamplerCreateInfo samplerInfo = vks::initializers::GenSamplerCreateInfo();
 			samplerInfo.magFilter = magFilter;
 			samplerInfo.minFilter = minFilter;
 			samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-			samplerInfo.addressModeU = adressMode;
-			samplerInfo.addressModeV = adressMode;
-			samplerInfo.addressModeW = adressMode;
+			samplerInfo.addressModeU = addressMode;
+			samplerInfo.addressModeV = addressMode;
+			samplerInfo.addressModeW = addressMode;
 			samplerInfo.mipLodBias = 0.0f;
 			samplerInfo.maxAnisotropy = 1.0f;
 			samplerInfo.minLod = 0.0f;
 			samplerInfo.maxLod = 1.0f;
 			samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+
 			return vkCreateSampler(vulkanDevice->logicalDevice, &samplerInfo, nullptr, &sampler);
 		}
 
@@ -256,25 +249,24 @@ namespace vks
 		*
 		* @return VK_SUCCESS if all resources have been created successfully
 		*/
-		VkResult createRenderPass()
+		VkResult CreateRenderPass()
 		{
 			std::vector<VkAttachmentDescription> attachmentDescriptions;
-			for (auto& attachment : attachments)
+			for (auto& attachment:attachments)
 			{
 				attachmentDescriptions.push_back(attachment.description);
-			};
+			}
 
 			// Collect attachment references
 			std::vector<VkAttachmentReference> colorReferences;
 			VkAttachmentReference depthReference = {};
-			bool hasDepth = false; 
+			bool hasDepth = false;
 			bool hasColor = false;
 
 			uint32_t attachmentIndex = 0;
-
 			for (auto& attachment : attachments)
 			{
-				if (attachment.isDepthStencil())
+				if (attachment.IsDepthStencil())
 				{
 					// Only one depth attachment allowed
 					assert(!hasDepth);
@@ -305,7 +297,7 @@ namespace vks
 
 			// Use subpass dependencies for attachment layout transitions
 			std::array<VkSubpassDependency, 2> dependencies;
-
+			
 			dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			dependencies[0].dstSubpass = 0;
 			dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -336,10 +328,10 @@ namespace vks
 			std::vector<VkImageView> attachmentViews;
 			for (auto attachment : attachments)
 			{
-				attachmentViews.push_back(attachment.view);
+				attachmentViews.push_back(attachment.imageView);
 			}
 
-			// Find. max number of layers across attachments
+			// Find max number of layers across attachments
 			uint32_t maxLayers = 0;
 			for (auto attachment : attachments)
 			{
@@ -361,5 +353,6 @@ namespace vks
 
 			return VK_SUCCESS;
 		}
-	};
+
+	};//Framebuffer
 }

@@ -116,14 +116,14 @@ public:
 		ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
 		ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
 
-		VkMemoryAllocateInfo memAllocInfo = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAllocInfo = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 
 		// Create a host-visible staging buffer that contains the raw image data
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingMemory;
 
-		VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo();
+		VkBufferCreateInfo bufferCreateInfo = vks::initializers::GenBufferCreateInfo();
 		bufferCreateInfo.size = ktxTextureSize;
 		// This buffer is used as a transfer source for the buffer copy
 		bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
@@ -135,7 +135,7 @@ public:
 		vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
 		memAllocInfo.allocationSize = memReqs.size;
 		// Get memory type index for a host visible buffer
-		memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &stagingMemory));
 		VK_CHECK_RESULT(vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0));
 
@@ -146,7 +146,7 @@ public:
 		vkUnmapMemory(device, stagingMemory);
 
 		// Create optimal tiled target image
-		VkImageCreateInfo imageCreateInfo = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageCreateInfo = vks::initializers::GenImageCreateInfo();
 		imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 		imageCreateInfo.format = format;
 		imageCreateInfo.mipLevels = cubeMap.mipLevels;
@@ -166,12 +166,12 @@ public:
 		vkGetImageMemoryRequirements(device, cubeMap.image, &memReqs);
 
 		memAllocInfo.allocationSize = memReqs.size;
-		memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &cubeMap.deviceMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, cubeMap.image, cubeMap.deviceMemory, 0));
 
-		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
 		// Setup buffer copy regions for each face including all of its miplevels
 		std::vector<VkBufferImageCopy> bufferCopyRegions;
@@ -232,10 +232,10 @@ public:
 			cubeMap.imageLayout,
 			subresourceRange);
 
-		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+		vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 		// Create sampler
-		VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo sampler = vks::initializers::GenSamplerCreateInfo();
 		sampler.magFilter = VK_FILTER_LINEAR;
 		sampler.minFilter = VK_FILTER_LINEAR;
 		sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -256,7 +256,7 @@ public:
 		VK_CHECK_RESULT(vkCreateSampler(device, &sampler, nullptr, &cubeMap.sampler));
 
 		// Create image view
-		VkImageViewCreateInfo view = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo view = vks::initializers::GenImageViewCreateInfo();
 		// Cube map view type
 		view.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
 		view.format = format;
@@ -300,10 +300,10 @@ public:
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width,	(float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width,	(float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width,	height,	0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width,	height,	0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
@@ -356,9 +356,9 @@ public:
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// Binding 0 : Vertex shader uniform buffer
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 			// Binding 1 : Fragment shader image sampler
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -429,7 +429,7 @@ public:
 	// Prepare and initialize uniform buffer containing shader uniforms
 	void prepareUniformBuffers()
 	{
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uboVS)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uboVS)));
 		VK_CHECK_RESULT(uniformBuffer.map());
 	}
 

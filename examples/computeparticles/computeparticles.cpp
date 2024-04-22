@@ -157,10 +157,10 @@ public:
 			// Draw the particle system using the update vertex buffer
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphics.pipeline);
@@ -295,14 +295,14 @@ public:
 
 		vks::Buffer stagingBuffer;
 
-		vulkanDevice->createBuffer(
+		vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffer,
 			storageBufferSize,
 			particleBuffer.data());
 
-		vulkanDevice->createBuffer(
+		vulkanDevice->CreateBuffer(
 			// The SSBO will be used as a storage buffer for the compute pipeline and as a vertex buffer in the graphics pipeline
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -310,7 +310,7 @@ public:
 			storageBufferSize);
 
 		// Copy from staging buffer to storage buffer
-		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 		VkBufferCopy copyRegion = {};
 		copyRegion.size = storageBufferSize;
 		vkCmdCopyBuffer(copyCmd, stagingBuffer.buffer, storageBuffer.buffer, 1, &copyRegion);
@@ -339,7 +339,7 @@ public:
 				1, &buffer_barrier,
 				0, nullptr);
 		}
-		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+		vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 		stagingBuffer.destroy();
 	}
@@ -364,9 +364,9 @@ public:
 		// Descriptor set layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// Binding 0 : Particle color map
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 			// Binding 1 : Particle gradient ramp
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &graphics.descriptorSetLayout));
@@ -452,11 +452,11 @@ public:
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &graphics.pipeline));
 
 		// Semaphore for compute & graphics sync
-		VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
+		VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::GenSemaphoreCreateInfo();
 		VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &graphics.semaphore));
 		
 		// Signal the semaphore
-		VkSubmitInfo submitInfo = vks::initializers::submitInfo();
+		VkSubmitInfo submitInfo = vks::initializers::GenSubmitInfo();
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &graphics.semaphore;
 		VK_CHECK_RESULT(vkQueueSubmit(graphicQueue, 1, &submitInfo, VK_NULL_HANDLE));
@@ -476,12 +476,12 @@ public:
 
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// Binding 0 : Particle position storage buffer
-			vks::initializers::descriptorSetLayoutBinding(
+			vks::initializers::GenDescriptorSetLayoutBinding(
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
 				0),
 			// Binding 1 : Uniform buffer
-			vks::initializers::descriptorSetLayoutBinding(
+			vks::initializers::GenDescriptorSetLayoutBinding(
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
 				1),
@@ -522,10 +522,10 @@ public:
 		VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &compute.commandPool));
 
 		// Create a command buffer for compute operations
-		compute.commandBuffer = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, compute.commandPool);
+		compute.commandBuffer = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, compute.commandPool);
 
 		// Semaphore for compute & graphics sync
-		VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
+		VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::GenSemaphoreCreateInfo();
 		VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &compute.semaphore));
 
 		// Build a single command buffer containing the compute dispatch commands
@@ -536,7 +536,7 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Compute shader uniform buffer block
-		vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &compute.uniformBuffer, sizeof(Compute::UniformData));
+		vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &compute.uniformBuffer, sizeof(Compute::UniformData));
 		// Map for host access
 		VK_CHECK_RESULT(compute.uniformBuffer.map());
 
@@ -568,7 +568,7 @@ public:
 		VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 
 		// Submit compute commands
-		VkSubmitInfo computeSubmitInfo = vks::initializers::submitInfo();
+		VkSubmitInfo computeSubmitInfo = vks::initializers::GenSubmitInfo();
 		computeSubmitInfo.commandBufferCount = 1;
 		computeSubmitInfo.pCommandBuffers = &compute.commandBuffer;
 		computeSubmitInfo.waitSemaphoreCount = 1;

@@ -81,10 +81,10 @@ public:
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width, height,	0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width, height,	0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
@@ -110,7 +110,7 @@ public:
 
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),		// Binding 0: Vertex shader uniform buffer
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),		// Binding 0: Vertex shader uniform buffer
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -163,7 +163,7 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Vertex shader uniform buffer block
-		vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(UniformData));
+		vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(UniformData));
 		VK_CHECK_RESULT(uniformBuffer.map());
 	}
 
@@ -172,7 +172,7 @@ public:
 		uniformData.projection = camera.matrices.perspective;
 		uniformData.view = camera.matrices.view;
 		uniformData.model = glm::mat4(1.0f);
-		uniformBuffer.copyTo(&uniformData, sizeof(UniformData));
+		uniformBuffer.copyFromData(&uniformData, sizeof(UniformData));
 	}
 
 	// Take a screenshot from the current swapchain image
@@ -205,7 +205,7 @@ public:
 		VkImage srcImage = swapChain.images[currentCmdBufferIndex];
 
 		// Create the linear tiled destination image to copy to and to read the memory from
-		VkImageCreateInfo imageCreateCI(vks::initializers::imageCreateInfo());
+		VkImageCreateInfo imageCreateCI(vks::initializers::GenImageCreateInfo());
 		imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
 		// Note that vkCmdBlitImage (if supported) will also do format conversions if the swapchain color format would differ
 		imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
@@ -223,17 +223,17 @@ public:
 		VK_CHECK_RESULT(vkCreateImage(device, &imageCreateCI, nullptr, &dstImage));
 		// Create memory to back up the image
 		VkMemoryRequirements memRequirements;
-		VkMemoryAllocateInfo memAllocInfo(vks::initializers::memoryAllocateInfo());
+		VkMemoryAllocateInfo memAllocInfo(vks::initializers::GenMemoryAllocateInfo());
 		VkDeviceMemory dstImageMemory;
 		vkGetImageMemoryRequirements(device, dstImage, &memRequirements);
 		memAllocInfo.allocationSize = memRequirements.size;
 		// Memory must be host visible to copy from
-		memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &dstImageMemory));
 		VK_CHECK_RESULT(vkBindImageMemory(device, dstImage, dstImageMemory, 0));
 
 		// Do the actual blit from the swapchain image to our host visible destination image
-		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
 		// Transition destination image to transfer destination layout
 		vks::tools::insertImageMemoryBarrier(
@@ -329,7 +329,7 @@ public:
 			VK_PIPELINE_STAGE_TRANSFER_BIT,
 			VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
+		vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue);
 
 		// Get layout of the image (including row pitch)
 		VkImageSubresource subResource { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0 };

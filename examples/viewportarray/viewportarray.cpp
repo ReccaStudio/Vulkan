@@ -106,8 +106,8 @@ public:
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 2, viewports);
 
 			VkRect2D scissorRects[2] = {
-				vks::initializers::rect2D(width/2, height, width / 2, 0),
-				vks::initializers::rect2D(width/2, height, 0, 0),
+				vks::initializers::GenRect2D(width/2, height, width / 2, 0),
+				vks::initializers::GenRect2D(width/2, height, 0, 0),
 			};
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 2, scissorRects);
 
@@ -141,7 +141,7 @@ public:
 
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT, 0)	// Binding 1: Geometry shader ubo
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT, 0)	// Binding 1: Geometry shader ubo
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -200,7 +200,7 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Geometry shader uniform buffer block
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBufferGS, sizeof(UniformDataGS)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBufferGS, sizeof(UniformDataGS)));
 		// Map persistent
 		VK_CHECK_RESULT(uniformBufferGS.map());
 	}

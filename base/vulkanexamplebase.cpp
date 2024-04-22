@@ -8,7 +8,7 @@
 
 #define FORCE_VALIDATION true
 
-#include "vulkanexamplebase.h"
+#include "VulkanExampleBase.h"
 
 #if (defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_EXAMPLE_XCODE_GENERATED))
 #include <Cocoa/Cocoa.h>
@@ -37,26 +37,33 @@ void VulkanExampleBase::handleMouseMove(int32_t x, int32_t y)
 
 	bool handled = false;
 
-	if (settings.overlay) {
+	if (settings.overlay)
+	{
 		ImGuiIO& io = ImGui::GetIO();
 		handled = io.WantCaptureMouse && uiOverlay.visible;
 	}
 	mouseMoved((float)x, (float)y, handled);
 
-	if (handled) {
+	if (handled)
+	{
 		mouseState.position = glm::vec2((float)x, (float)y);
 		return;
 	}
 
-	if (mouseState.buttons.left) {
+	if (mouseState.buttons.left)
+	{
 		camera.rotate(glm::vec3(dy * camera.rotationSpeed, -dx * camera.rotationSpeed, 0.0f));
 		viewUpdated = true;
 	}
-	if (mouseState.buttons.right) {
+
+	if (mouseState.buttons.right)
+	{
 		camera.translate(glm::vec3(-0.0f, 0.0f, dy * .005f));
 		viewUpdated = true;
 	}
-	if (mouseState.buttons.middle) {
+
+	if (mouseState.buttons.middle)
+	{
 		camera.translate(glm::vec3(-dx * 0.005f, -dy * 0.005f, 0.0f));
 		viewUpdated = true;
 	}
@@ -117,7 +124,9 @@ void VulkanExampleBase::nextFrame()
 void VulkanExampleBase::updateOverlay()
 {
 	if (!settings.overlay)
+	{
 		return;
+	}
 
 	ImGuiIO& io = ImGui::GetIO();
 
@@ -183,15 +192,15 @@ void VulkanExampleBase::createCommandPool()
 
 void VulkanExampleBase::createSynchronizationPrimitives()
 {
-	// Wait fences to sync command buffer access
-	VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
+	VkFenceCreateInfo fenceCreateInfo = vks::initializers::GenFenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 	waitFences.resize(drawCmdBuffers.size());
-	for (auto& fence : waitFences) {
+	for (auto& fence:waitFences)
+	{
 		VK_CHECK_RESULT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence));
 	}
 }
 
-void VulkanExampleBase::initSwapchainSurface()
+void VulkanExampleBase::initSwapChainSurface()
 {
 #if defined(_WIN32)
 	swapChain.initSurface(windowInstance, window);
@@ -222,13 +231,10 @@ void VulkanExampleBase::createCommandBuffers()
 	// Create one command buffer for each swap chain image and reuse for rendering
 	drawCmdBuffers.resize(swapChain.imageCount);
 
-	VkCommandBufferAllocateInfo cmdBufAllocateInfo =
-		vks::initializers::commandBufferAllocateInfo(
-			cmdPool,
-			VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-			static_cast<uint32_t>(drawCmdBuffers.size()));
+	VkCommandBufferAllocateInfo cmdBufferAllocateInfo = vks::initializers::GenCommandBufferAllocateInfo(
+		cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, static_cast<uint32_t>(drawCmdBuffers.size()));
 
-	VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, drawCmdBuffers.data()));
+	VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufferAllocateInfo, drawCmdBuffers.data()));
 }
 
 void VulkanExampleBase::destroyCommandBuffers()
@@ -553,7 +559,7 @@ bool VulkanExampleBase::initVulkanSetting()
 	// Derived examples can enable extensions based on the list of supported extensions read from the physical device
 	getEnabledExtensions();
 
-	VkResult res = vulkanDevice->createLogicalDevice(curEnabledDeviceFeatures, enabledDeviceExtensions, pDeviceCreateNextChain);
+	VkResult res = vulkanDevice->CreateLogicalDevice(curEnabledDeviceFeatures, enabledDeviceExtensions, pDeviceCreateNextChain);
 	if (res != VK_SUCCESS)
     {
 		vks::tools::exitFatal("Could not create Vulkan device: \n" + vks::tools::errorString(res), res);
@@ -580,7 +586,7 @@ bool VulkanExampleBase::initVulkanSetting()
 	swapChain.connect(instance, physicalDevice, device);
 
 	// Create synchronization objects
-	VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
+	VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::GenSemaphoreCreateInfo();
 	
 	// Create a semaphore used to synchronize image presentation
 	// Ensures that the image is displayed before we start submitting new commands to the queue
@@ -593,7 +599,7 @@ bool VulkanExampleBase::initVulkanSetting()
 	// Set up submit info structure
 	// Semaphores will stay the same during application lifetime
 	// Command buffer submission info is set by each example
-	submitInfo = vks::initializers::submitInfo();
+	submitInfo = vks::initializers::GenSubmitInfo();
 	submitInfo.pWaitDstStageMask = &submitPipelineStages;
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = &semaphores.presentComplete;
@@ -2653,7 +2659,7 @@ void VulkanExampleBase::setupDepthStencil()
 	VkMemoryAllocateInfo memAlloc{};
 	memAlloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	memAlloc.allocationSize = memReqs.size;
-	memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &depthStencil.deviceMemory));
 	VK_CHECK_RESULT(vkBindImageMemory(device, depthStencil.image, depthStencil.deviceMemory, 0));
 
@@ -2712,7 +2718,7 @@ void VulkanExampleBase::setupRenderPass()
 	attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//jingz todo 为什么不保持stencil
 	attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	attachments[0].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	// Depth attachment
@@ -2783,7 +2789,7 @@ void VulkanExampleBase::getEnabledExtensions() {}
 
 void VulkanExampleBase::prepareForRendering()
 {
-	initSwapchainSurface();
+	initSwapChainSurface();
 	createCommandPool();
 	setupSwapChain();
 	createCommandBuffers();
@@ -3016,7 +3022,7 @@ void VulkanExampleBase::renderLoop()
 			const float deadZone = 0.0015f;
 			// todo : check if gamepad is present
 			// todo : time based and relative axis positions
-			if (camera.cameraType != Camera::CameraType::firstperson)
+			if (camera.type != Camera::CameraType::firstperson)
 			{
 				// Rotate
 				if (std::abs(gamePadState.axisLeft.x) > deadZone)
@@ -3273,10 +3279,12 @@ void VulkanExampleBase::renderLoop()
 
 void VulkanExampleBase::drawUI(const VkCommandBuffer commandBuffer)
 {
-	if (settings.overlay && uiOverlay.visible) {
-		const VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-		const VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+	if (settings.overlay && uiOverlay.visible)
+	{
+		const VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+		const VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 		uiOverlay.draw(commandBuffer);
@@ -3285,7 +3293,7 @@ void VulkanExampleBase::drawUI(const VkCommandBuffer commandBuffer)
 
 void VulkanExampleBase::prepareFrame()
 {
-	// Acquire the next image from the swap chain
+	//Acquire the next image from the swap chain 并置位已完成上一帧绘制结果的present切换的信号量
 	VkResult result = swapChain.acquireNextImage(semaphores.presentComplete, &currentCmdBufferIndex);
 
 	//Recreate the swap chain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
@@ -3305,7 +3313,7 @@ void VulkanExampleBase::prepareFrame()
 void VulkanExampleBase::submitFrame()
 {
 	VkResult result = swapChain.queuePresent(graphicQueue, currentCmdBufferIndex, semaphores.renderComplete);
-	// Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
+    // Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
 	
     if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
     {

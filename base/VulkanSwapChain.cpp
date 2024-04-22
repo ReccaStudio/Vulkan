@@ -208,6 +208,17 @@ void VulkanSwapChain::connect(VkInstance instance, VkPhysicalDevice physicalDevi
 	this->instance = instance;
 	this->physicalDevice = physicalDevice;
 	this->device = device;
+
+	fpGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
+	fpGetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
+	fpGetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR"));
+	fpGetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModesKHR"));
+
+	fpCreateSwapchainKHR = reinterpret_cast<PFN_vkCreateSwapchainKHR>(vkGetDeviceProcAddr(device, "vkCreateSwapchainKHR"));
+	fpDestroySwapchainKHR = reinterpret_cast<PFN_vkDestroySwapchainKHR>(vkGetDeviceProcAddr(device, "vkDestroySwapchainKHR"));
+	fpGetSwapchainImagesKHR = reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(vkGetDeviceProcAddr(device, "vkGetSwapchainImagesKHR"));
+	fpAcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(vkGetDeviceProcAddr(device, "vkAcquireNextImageKHR"));
+	fpQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(vkGetDeviceProcAddr(device, "vkQueuePresentKHR"));
 }
 
 /** 
@@ -309,17 +320,21 @@ void VulkanSwapChain::create(uint32_t *width, uint32_t *height, bool vsync, bool
 	// Find a supported composite alpha format (not all devices support alpha opaque)
 	VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	// Simply select the first composite alpha format available
-	std::vector<VkCompositeAlphaFlagBitsKHR> compositeAlphaFlags = {
+	std::vector<VkCompositeAlphaFlagBitsKHR> compositeAlphaFlags =
+	{
 		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 		VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
 		VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
 		VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
 	};
-	for (auto& compositeAlphaFlag : compositeAlphaFlags) {
-		if (surfCaps.supportedCompositeAlpha & compositeAlphaFlag) {
-			compositeAlpha = compositeAlphaFlag;
+
+	for (auto& tempCompositeAlphaFlag:compositeAlphaFlags)
+	{
+		if (surfCaps.supportedCompositeAlpha & tempCompositeAlphaFlag)
+		{
+			compositeAlpha = tempCompositeAlphaFlag;
 			break;
-		};
+		}
 	}
 
 	VkSwapchainCreateInfoKHR swapchainCI = {};
@@ -341,13 +356,15 @@ void VulkanSwapChain::create(uint32_t *width, uint32_t *height, bool vsync, bool
 	swapchainCI.clipped = VK_TRUE;
 	swapchainCI.compositeAlpha = compositeAlpha;
 
-	// Enable transfer source on swap chain images if supported
-	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
+	//Enable transfer source on swap chain images if supported
+	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+	{
 		swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	}
 
-	// Enable transfer destination on swap chain images if supported
-	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) {
+	//Enable transfer destination on swap chain images if supported
+	if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+	{
 		swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}
 
@@ -377,11 +394,12 @@ void VulkanSwapChain::create(uint32_t *width, uint32_t *height, bool vsync, bool
 		colorAttachmentView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		colorAttachmentView.pNext = NULL;
 		colorAttachmentView.format = colorFormat;
-		colorAttachmentView.components = {
+		colorAttachmentView.components = 
+		{
 			VK_COMPONENT_SWIZZLE_R,
 			VK_COMPONENT_SWIZZLE_G,
 			VK_COMPONENT_SWIZZLE_B,
-			VK_COMPONENT_SWIZZLE_A
+			VK_COMPONENT_SWIZZLE_A,
 		};
 		colorAttachmentView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		colorAttachmentView.subresourceRange.baseMipLevel = 0;
@@ -390,13 +408,13 @@ void VulkanSwapChain::create(uint32_t *width, uint32_t *height, bool vsync, bool
 		colorAttachmentView.subresourceRange.layerCount = 1;
 		colorAttachmentView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		colorAttachmentView.flags = 0;
+		colorAttachmentView.image = images[i];
 
 		buffers[i].image = images[i];
 
-		colorAttachmentView.image = buffers[i].image;
-
 		VK_CHECK_RESULT(vkCreateImageView(device, &colorAttachmentView, nullptr, &buffers[i].view));
-	}
+	}//for
+
 }
 
 /** 

@@ -38,7 +38,7 @@ bool VirtualTexturePage::allocate(VkDevice device, uint32_t memoryTypeIndex)
 
 	imageMemoryBind = {};
 
-	VkMemoryAllocateInfo allocInfo = vks::initializers::memoryAllocateInfo();
+	VkMemoryAllocateInfo allocInfo = vks::initializers::GenMemoryAllocateInfo();
 	allocInfo.allocationSize = size;
 	allocInfo.memoryTypeIndex = memoryTypeIndex;
 	VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &imageMemoryBind.memory));
@@ -233,7 +233,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	}
 
 	// Create sparse image
-	VkImageCreateInfo sparseImageCreateInfo = vks::initializers::imageCreateInfo();
+	VkImageCreateInfo sparseImageCreateInfo = vks::initializers::GenImageCreateInfo();
 	sparseImageCreateInfo.imageType = imageType;
 	sparseImageCreateInfo.format = texture.format;
 	sparseImageCreateInfo.mipLevels = texture.mipLevels;
@@ -247,9 +247,9 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	sparseImageCreateInfo.flags = VK_IMAGE_CREATE_SPARSE_BINDING_BIT | VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT;
 	VK_CHECK_RESULT(vkCreateImage(device, &sparseImageCreateInfo, nullptr, &texture.image));
 
-	VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	vks::tools::setImageLayout(copyCmd, texture.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, texture.subRange);
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue);
 
 	// Get memory requirements
 	VkMemoryRequirements sparseImageMemoryReqs;
@@ -314,7 +314,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	// @todo: proper comment
 	// Calculate number of required sparse memory bindings by alignment
 	assert((sparseImageMemoryReqs.size % sparseImageMemoryReqs.alignment) == 0);
-	texture.memoryTypeIndex = vulkanDevice->getMemoryType(sparseImageMemoryReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	texture.memoryTypeIndex = vulkanDevice->GetMemoryType(sparseImageMemoryReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	texture.sparseImageMemoryRequirements = sparseMemoryReq;
 
 	// The mip tail contains all mip levels > sparseMemoryReq.imageMipTailFirstLod
@@ -382,7 +382,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 		if ((!texture.mipTailInfo.singleMipTail) && (sparseMemoryReq.imageMipTailFirstLod < texture.mipLevels))
 		{
 			// Allocate memory for the mip tail
-			VkMemoryAllocateInfo allocInfo = vks::initializers::memoryAllocateInfo();
+			VkMemoryAllocateInfo allocInfo = vks::initializers::GenMemoryAllocateInfo();
 			allocInfo.allocationSize = sparseMemoryReq.imageMipTailSize;
 			allocInfo.memoryTypeIndex = texture.memoryTypeIndex;
 
@@ -407,7 +407,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	if ((sparseMemoryReq.formatProperties.flags & VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT) && (sparseMemoryReq.imageMipTailFirstLod < texture.mipLevels))
 	{
 		// Allocate memory for the mip tail
-		VkMemoryAllocateInfo allocInfo = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo allocInfo = vks::initializers::GenMemoryAllocateInfo();
 		allocInfo.allocationSize = sparseMemoryReq.imageMipTailSize;
 		allocInfo.memoryTypeIndex = texture.memoryTypeIndex;
 
@@ -424,7 +424,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	}
 
 	// Create signal semaphore for sparse binding
-	VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
+	VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::GenSemaphoreCreateInfo();
 	VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &bindSparseSemaphore));
 
 	// Prepare bind sparse info for reuse in queue submission
@@ -437,7 +437,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	vkQueueWaitIdle(graphicQueue);
 
 	// Create sampler
-	VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
+	VkSamplerCreateInfo sampler = vks::initializers::GenSamplerCreateInfo();
 	sampler.magFilter = VK_FILTER_LINEAR;
 	sampler.minFilter = VK_FILTER_LINEAR;
 	sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
@@ -454,7 +454,7 @@ void VulkanExample::prepareSparseTexture(uint32_t width, uint32_t height, uint32
 	VK_CHECK_RESULT(vkCreateSampler(device, &sampler, nullptr, &texture.sampler));
 
 	// Create image view
-	VkImageViewCreateInfo view = vks::initializers::imageViewCreateInfo();
+	VkImageViewCreateInfo view = vks::initializers::GenImageViewCreateInfo();
 	view.image = VK_NULL_HANDLE;
 	view.viewType = VK_IMAGE_VIEW_TYPE_2D;
 	view.format = format;
@@ -506,10 +506,10 @@ void VulkanExample::buildCommandBuffersForMainRendering()
 
 		vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+		VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 		vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-		VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+		VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 		vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 		vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
@@ -543,12 +543,12 @@ void VulkanExample::setupDescriptors()
 	// Layout
 	std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 		// Binding 0 : Vertex shader uniform buffer
-		vks::initializers::descriptorSetLayoutBinding(
+		vks::initializers::GenDescriptorSetLayoutBinding(
 			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 			VK_SHADER_STAGE_VERTEX_BIT,
 			0),
 		// Binding 1 : Fragment shader image sampler
-		vks::initializers::descriptorSetLayoutBinding(
+		vks::initializers::GenDescriptorSetLayoutBinding(
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			VK_SHADER_STAGE_FRAGMENT_BIT,
 			1)
@@ -608,7 +608,7 @@ void VulkanExample::preparePipelines()
 void VulkanExample::prepareUniformBuffers()
 {
 	// Vertex shader uniform buffer block
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(UniformData), &uniformData));
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(UniformData), &uniformData));
 	updateUniformBuffers();
 }
 
@@ -685,7 +685,7 @@ void VulkanExample::uploadContent(VirtualTexturePage page, VkImage image)
 	const size_t bufferSize = 4 * page.extent.width * page.extent.height;
 
 	vks::Buffer imageBuffer;
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&imageBuffer,
@@ -695,7 +695,7 @@ void VulkanExample::uploadContent(VirtualTexturePage page, VkImage image)
 	uint8_t* data = (uint8_t*)imageBuffer.mappedData;
 	randomPattern(data, page.extent.height, page.extent.width);
 
-	VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, texture.subRange, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 	VkBufferImageCopy region{};
 	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -705,7 +705,7 @@ void VulkanExample::uploadContent(VirtualTexturePage page, VkImage image)
 	region.imageExtent = page.extent;
 	vkCmdCopyBufferToImage(copyCmd, imageBuffer.buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 	vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, texture.subRange, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue);
 
 	imageBuffer.destroy();
 }
@@ -732,7 +732,7 @@ void VulkanExample::fillRandomPages()
 
 	// Update sparse queue binding
 	texture.updateSparseBindInfo(bindingChangedPages);
-	VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
+	VkFenceCreateInfo fenceInfo = vks::initializers::GenFenceCreateInfo(VK_FLAGS_NONE);
 	VkFence fence;
 	VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &fence));
 	vkQueueBindSparse(graphicQueue, 1, &texture.bindSparseInfo, fence);
@@ -757,7 +757,7 @@ void VulkanExample::fillMipTail()
 	// Stride between memory bindings for each mip level if not single mip tail (VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT not set)
 	VkDeviceSize imageMipTailStride = texture.sparseImageMemoryRequirements.imageMipTailStride;
 
-	VkMemoryAllocateInfo allocInfo = vks::initializers::memoryAllocateInfo();
+	VkMemoryAllocateInfo allocInfo = vks::initializers::GenMemoryAllocateInfo();
 	allocInfo.allocationSize = imageMipTailSize;
 	allocInfo.memoryTypeIndex = texture.memoryTypeIndex;
 	VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &texture.mipTailimageMemoryBind.memory));
@@ -776,7 +776,7 @@ void VulkanExample::fillMipTail()
 		const size_t bufferSize = 4 * width * height;
 
 		vks::Buffer imageBuffer;
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&imageBuffer,
@@ -790,7 +790,7 @@ void VulkanExample::fillMipTail()
 		uint8_t* data = (uint8_t*)imageBuffer.mappedData;
 		randomPattern(data, width, height);
 
-		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 		vks::tools::setImageLayout(copyCmd, texture.image, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, texture.subRange, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
 		VkBufferImageCopy region{};
 		region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -800,7 +800,7 @@ void VulkanExample::fillMipTail()
 		region.imageExtent = { width, height, 1 };
 		vkCmdCopyBufferToImage(copyCmd, imageBuffer.buffer, texture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 		vks::tools::setImageLayout(copyCmd, texture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, texture.subRange, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-		vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue);
+		vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue);
 
 		imageBuffer.destroy();
 	}
@@ -828,7 +828,7 @@ void VulkanExample::flushRandomPages()
 
 	// Update sparse queue binding
 	texture.updateSparseBindInfo(bindingChangedPages, true);
-	VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
+	VkFenceCreateInfo fenceInfo = vks::initializers::GenFenceCreateInfo(VK_FLAGS_NONE);
 	VkFence fence;
 	VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &fence));
 	vkQueueBindSparse(graphicQueue, 1, &texture.bindSparseInfo, fence);

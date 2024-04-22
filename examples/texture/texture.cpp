@@ -154,7 +154,7 @@ public:
 			useStaging = !(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 		}
 
-		VkMemoryAllocateInfo memAllocInfo = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAllocInfo = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs = {};
 
 		if (useStaging) {
@@ -166,7 +166,7 @@ public:
 			VkBuffer stagingBuffer;
 			VkDeviceMemory stagingMemory;
 
-			VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo();
+			VkBufferCreateInfo bufferCreateInfo = vks::initializers::GenBufferCreateInfo();
 			bufferCreateInfo.size = ktxTextureSize;
 			// This buffer is used as a transfer source for the buffer copy
 			bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
@@ -177,7 +177,7 @@ public:
 			vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
 			memAllocInfo.allocationSize = memReqs.size;
 			// Get memory type index for a host visible buffer
-			memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &stagingMemory));
 			VK_CHECK_RESULT(vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0));
 
@@ -210,7 +210,7 @@ public:
 			}
 
 			// Create optimal tiled target image on the device
-			VkImageCreateInfo imageCreateInfo = vks::initializers::imageCreateInfo();
+			VkImageCreateInfo imageCreateInfo = vks::initializers::GenImageCreateInfo();
 			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 			imageCreateInfo.format = format;
 			imageCreateInfo.mipLevels = texture.mipLevels;
@@ -226,11 +226,11 @@ public:
 
 			vkGetImageMemoryRequirements(device, texture.image, &memReqs);
 			memAllocInfo.allocationSize = memReqs.size;
-			memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &texture.deviceMemory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, texture.image, texture.deviceMemory, 0));
 
-			VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
 			// Image memory barriers for the texture image
 
@@ -296,7 +296,7 @@ public:
 			// Store current layout for later reuse
 			texture.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-			vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+			vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 			// Clean up staging resources
 			vkFreeMemory(device, stagingMemory, nullptr);
@@ -308,7 +308,7 @@ public:
 			VkDeviceMemory mappableMemory;
 
 			// Load mip map level 0 to linear tiling image
-			VkImageCreateInfo imageCreateInfo = vks::initializers::imageCreateInfo();
+			VkImageCreateInfo imageCreateInfo = vks::initializers::GenImageCreateInfo();
 			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 			imageCreateInfo.format = format;
 			imageCreateInfo.mipLevels = 1;
@@ -326,7 +326,7 @@ public:
 			// Set memory allocation size to required memory size
 			memAllocInfo.allocationSize = memReqs.size;
 			// Get memory type that can be mapped to host memory
-			memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &mappableMemory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, mappableImage, mappableMemory, 0));
 
@@ -343,7 +343,7 @@ public:
 			texture.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 			// Setup image memory barrier transfer image to shader read layout
-			VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
 			// The sub resource range describes the regions of the image we will be transition
 			VkImageSubresourceRange subresourceRange = {};
@@ -373,7 +373,7 @@ public:
 				0, nullptr,
 				1, &imageMemoryBarrier);
 
-			vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+			vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 		}
 
 		ktxTexture_Destroy(ktxTexture);
@@ -382,7 +382,7 @@ public:
 		// In Vulkan textures are accessed by samplers
 		// This separates all the sampling information from the texture data. This means you could have multiple sampler objects for the same texture with different settings
 		// Note: Similar to the samplers available with OpenGL 3.3
-		VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo sampler = vks::initializers::GenSamplerCreateInfo();
 		sampler.magFilter = VK_FILTER_LINEAR;
 		sampler.minFilter = VK_FILTER_LINEAR;
 		sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -412,7 +412,7 @@ public:
 		// Textures are not directly accessed by the shaders and
 		// are abstracted by image views containing additional
 		// information and sub resource ranges
-		VkImageViewCreateInfo view = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo view = vks::initializers::GenImageViewCreateInfo();
 		view.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		view.format = format;
 		// The subresource range describes the set of mip levels (and array layers) that can be accessed through this image view
@@ -464,10 +464,10 @@ public:
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
@@ -511,16 +511,16 @@ public:
 		} stagingBuffers;
 
 		// Host visible source buffers (staging)
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffers.vertices, vertices.size() * sizeof(Vertex), vertices.data()));
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffers.indices, indices.size() * sizeof(uint32_t), indices.data()));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffers.vertices, vertices.size() * sizeof(Vertex), vertices.data()));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffers.indices, indices.size() * sizeof(uint32_t), indices.data()));
 
 		// Device local destination buffers
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vertexBuffer, vertices.size() * sizeof(Vertex)));
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &indexBuffer, indices.size() * sizeof(uint32_t)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vertexBuffer, vertices.size() * sizeof(Vertex)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &indexBuffer, indices.size() * sizeof(uint32_t)));
 
 		// Copy from host do device
-		vulkanDevice->copyBuffer(&stagingBuffers.vertices, &vertexBuffer, graphicQueue);
-		vulkanDevice->copyBuffer(&stagingBuffers.indices, &indexBuffer, graphicQueue);
+		vulkanDevice->CopyBuffer(&stagingBuffers.vertices, &vertexBuffer, graphicQueue);
+		vulkanDevice->CopyBuffer(&stagingBuffers.indices, &indexBuffer, graphicQueue);
 
 		// Clean up
 		stagingBuffers.vertices.destroy();
@@ -541,9 +541,9 @@ public:
 		// Layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 			// Binding 0 : Vertex shader uniform buffer
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
 			// Binding 1 : Fragment shader image sampler
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -629,7 +629,7 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Vertex shader uniform buffer block
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uniformData), &uniformData));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uniformData), &uniformData));
 		VK_CHECK_RESULT(uniformBuffer.map());
 	}
 

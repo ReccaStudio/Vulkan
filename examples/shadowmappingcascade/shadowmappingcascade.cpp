@@ -211,7 +211,7 @@ public:
 	*/
 	void prepareDepthPass()
 	{
-		VkFormat depthFormat = vulkanDevice->getSupportedDepthFormat(true);
+		VkFormat depthFormat = vulkanDevice->GetSupportedDepthFormat(true);
 
 		/*
 			Depth map renderpass
@@ -269,7 +269,7 @@ public:
 			Layered depth image and views
 		*/
 
-		VkImageCreateInfo imageInfo = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo imageInfo = vks::initializers::GenImageCreateInfo();
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
 		imageInfo.extent.width = SHADOWMAP_DIM;
 		imageInfo.extent.height = SHADOWMAP_DIM;
@@ -281,15 +281,15 @@ public:
 		imageInfo.format = depthFormat;
 		imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		VK_CHECK_RESULT(vkCreateImage(device, &imageInfo, nullptr, &depth.image));
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 		vkGetImageMemoryRequirements(device, depth.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &depth.mem));
 		VK_CHECK_RESULT(vkBindImageMemory(device, depth.image, depth.mem, 0));
 		// Full depth map view (all layers)
-		VkImageViewCreateInfo viewInfo = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo viewInfo = vks::initializers::GenImageViewCreateInfo();
 		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 		viewInfo.format = depthFormat;
 		viewInfo.subresourceRange = {};
@@ -305,7 +305,7 @@ public:
 		for (uint32_t i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++) {
 			// Image view for this cascade's layer (inside the depth map)
 			// This view is used to render to that specific depth image layer
-			VkImageViewCreateInfo viewInfo = vks::initializers::imageViewCreateInfo();
+			VkImageViewCreateInfo viewInfo = vks::initializers::GenImageViewCreateInfo();
 			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			viewInfo.format = depthFormat;
 			viewInfo.subresourceRange = {};
@@ -317,7 +317,7 @@ public:
 			viewInfo.image = depth.image;
 			VK_CHECK_RESULT(vkCreateImageView(device, &viewInfo, nullptr, &cascades[i].view));
 			// Framebuffer
-			VkFramebufferCreateInfo framebufferInfo = vks::initializers::framebufferCreateInfo();
+			VkFramebufferCreateInfo framebufferInfo = vks::initializers::GenFramebufferCreateInfo();
 			framebufferInfo.renderPass = depthPass.renderPass;
 			framebufferInfo.attachmentCount = 1;
 			framebufferInfo.pAttachments = &cascades[i].view;
@@ -328,7 +328,7 @@ public:
 		}
 
 		// Shared sampler for cascade depth reads
-		VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo sampler = vks::initializers::GenSamplerCreateInfo();
 		sampler.magFilter = VK_FILTER_LINEAR;
 		sampler.minFilter = VK_FILTER_LINEAR;
 		sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -370,10 +370,10 @@ public:
 				renderPassBeginInfo.clearValueCount = 1;
 				renderPassBeginInfo.pClearValues = clearValues;
 
-				VkViewport viewport = vks::initializers::viewport((float)SHADOWMAP_DIM, (float)SHADOWMAP_DIM, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)SHADOWMAP_DIM, (float)SHADOWMAP_DIM, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(SHADOWMAP_DIM, SHADOWMAP_DIM, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(SHADOWMAP_DIM, SHADOWMAP_DIM, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				// One pass per cascade
@@ -412,10 +412,10 @@ public:
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				// Visualize shadow map cascade
@@ -467,9 +467,9 @@ public:
 
 		// Shared matrices and samplers
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout =
 			vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
@@ -600,19 +600,19 @@ public:
 	void prepareUniformBuffers()
 	{
 		// Shadow map generation buffer blocks
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&depthPass.uniformBuffer,
 			sizeof(depthPass.ubo)));
 
 		// Scene uniform buffer blocks
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffers.VS,
 			sizeof(uboVS)));
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffers.FS,

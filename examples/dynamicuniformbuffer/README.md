@@ -69,7 +69,7 @@ Now that we know the actual alignment required we can create our host memory for
 Creating the buffer is the same as creating any other uniform buffer object:
 
 ```cpp
-vulkanDevice->createBuffer(
+vulkanDevice->CreateBuffer(
   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &uniformBuffers.dynamic, bufferSize);
 ```      
 

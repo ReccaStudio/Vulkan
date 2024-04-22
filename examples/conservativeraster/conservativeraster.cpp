@@ -146,7 +146,7 @@ public:
 		assert(validDepthFormat);
 
 		// Color attachment
-		VkImageCreateInfo image = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo image = vks::initializers::GenImageCreateInfo();
 		image.imageType = VK_IMAGE_TYPE_2D;
 		image.format = fbColorFormat;
 		image.extent.width = offscreenPass.width;
@@ -159,17 +159,17 @@ public:
 		// We will sample directly from the color attachment
 		image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 
 		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.color.image));
 		vkGetImageMemoryRequirements(device, offscreenPass.color.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.color.mem));
 		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.color.image, offscreenPass.color.mem, 0));
 
-		VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo colorImageView = vks::initializers::GenImageViewCreateInfo();
 		colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		colorImageView.format = fbColorFormat;
 		colorImageView.subresourceRange = {};
@@ -182,7 +182,7 @@ public:
 		VK_CHECK_RESULT(vkCreateImageView(device, &colorImageView, nullptr, &offscreenPass.color.view));
 
 		// Create sampler to sample from the attachment in the fragment shader
-		VkSamplerCreateInfo samplerInfo = vks::initializers::samplerCreateInfo();
+		VkSamplerCreateInfo samplerInfo = vks::initializers::GenSamplerCreateInfo();
 		samplerInfo.magFilter = VK_FILTER_NEAREST;
 		samplerInfo.minFilter = VK_FILTER_NEAREST;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -203,11 +203,11 @@ public:
 		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.depth.image));
 		vkGetImageMemoryRequirements(device, offscreenPass.depth.image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.depth.mem));
 		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.depth.image, offscreenPass.depth.mem, 0));
 
-		VkImageViewCreateInfo depthStencilView = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo depthStencilView = vks::initializers::GenImageViewCreateInfo();
 		depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		depthStencilView.format = fbDepthFormat;
 		depthStencilView.flags = 0;
@@ -286,7 +286,7 @@ public:
 		attachments[0] = offscreenPass.color.view;
 		attachments[1] = offscreenPass.depth.view;
 
-		VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::framebufferCreateInfo();
+		VkFramebufferCreateInfo fbufCreateInfo = vks::initializers::GenFramebufferCreateInfo();
 		fbufCreateInfo.renderPass = offscreenPass.renderPass;
 		fbufCreateInfo.attachmentCount = 2;
 		fbufCreateInfo.pAttachments = attachments;
@@ -325,10 +325,10 @@ public:
 				renderPassBeginInfo.clearValueCount = 2;
 				renderPassBeginInfo.pClearValues = clearValues;
 
-				VkViewport viewport = vks::initializers::viewport((float)offscreenPass.width, (float)offscreenPass.height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)offscreenPass.width, (float)offscreenPass.height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(offscreenPass.width, offscreenPass.height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(offscreenPass.width, offscreenPass.height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -368,9 +368,9 @@ public:
 				renderPassBeginInfo.pClearValues = clearValues;
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-				VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
-				VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				// Low-res triangle from offscreen framebuffer
@@ -419,13 +419,13 @@ public:
 		} stagingBuffers;
 
 		// Host visible source buffers (staging)
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffers.vertices,
 			vertexBufferSize,
 			vertexBuffer.data()));
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffers.indices,
@@ -433,20 +433,20 @@ public:
 			indexBuffer.data()));
 
 		// Device local destination buffers
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&triangle.vertices,
 			vertexBufferSize));
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&triangle.indices,
 			indexBufferSize));
 
 		// Copy from host do device
-		vulkanDevice->copyBuffer(&stagingBuffers.vertices, &triangle.vertices, graphicQueue);
-		vulkanDevice->copyBuffer(&stagingBuffers.indices, &triangle.indices, graphicQueue);
+		vulkanDevice->CopyBuffer(&stagingBuffers.vertices, &triangle.vertices, graphicQueue);
+		vulkanDevice->CopyBuffer(&stagingBuffers.indices, &triangle.indices, graphicQueue);
 
 		// Clean up
 		stagingBuffers.vertices.destroy();
@@ -470,14 +470,14 @@ public:
 
 		// Scene rendering
 		setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),			// Binding 0: Vertex shader uniform buffer
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),			// Binding 0: Vertex shader uniform buffer
 		};
 		descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings.data(), static_cast<uint32_t>(setLayoutBindings.size()));
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayouts.scene));
 
 		// Fullscreen pass
 		setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0)	// Binding 0: Fragment shader image sampler
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0)	// Binding 0: Fragment shader image sampler
 		};
 		descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings.data(), static_cast<uint32_t>(setLayoutBindings.size()));
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayouts.fullscreen));
@@ -617,7 +617,7 @@ public:
 	// Prepare and initialize uniform buffer containing shader uniforms
 	void prepareUniformBuffers()
 	{
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffer,

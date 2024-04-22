@@ -29,9 +29,7 @@ namespace vks
 		VkPhysicalDeviceProperties properties;
 		/** @brief Features of the physical device that an application can use to check if a feature is supported */
 		VkPhysicalDeviceFeatures features;
-		/** @brief Features that have been enabled for use on the physical device */
-		VkPhysicalDeviceFeatures curEnabledDeviceFeatures;
-		/** @brief Memory types and heaps of the physical device */
+		VkPhysicalDeviceFeatures m_enabledDeviceFeatures;
 		VkPhysicalDeviceMemoryProperties memoryProperties;
 		/** @brief Queue family properties of the physical device */
 		std::vector<VkQueueFamilyProperties> queueFamilyProperties;
@@ -44,26 +42,44 @@ namespace vks
 		{
 			uint32_t graphicIndex;
 			uint32_t computeIndex;
-			uint32_t transfer;
-		} queueFamilyIndices;
+			uint32_t transferIndex;
+		}	queueFamilyIndices;
+
 		operator VkDevice() const
 		{
 			return logicalDevice;
-		};
+		}
+
 		explicit VulkanDevice(VkPhysicalDevice physicalDevice);
+
 		~VulkanDevice();
-		uint32_t        getMemoryType(uint32_t typeBits, VkMemoryPropertyFlags properties, VkBool32 *memTypeFound = nullptr) const;
-		uint32_t        getQueueFamilyIndex(VkQueueFlags queueFlags) const;
-		VkResult        createLogicalDevice(VkPhysicalDeviceFeatures enabledFeatures, std::vector<const char *> enabledExtensions, void *pNextChain, bool useSwapChain = true, VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
-		VkResult        createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer *buffer, VkDeviceMemory *memory, void *data = nullptr);
-		VkResult        createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, vks::Buffer *buffer, VkDeviceSize size, void *data = nullptr);
-		void            copyBuffer(vks::Buffer *src, vks::Buffer *dst, VkQueue queue, VkBufferCopy *copyRegion = nullptr);
-		VkCommandPool   createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-		VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin = false);
-		VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, bool begin = false);
-		void            flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free = true);
-		void            flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free = true);
-		bool            extensionSupported(std::string extension);
-		VkFormat        getSupportedDepthFormat(bool checkSamplingSupport);
-	};
-}        // namespace vks
+
+		uint32_t GetMemoryType(uint32_t typeBits, VkMemoryPropertyFlags propertyFlags, VkBool32 *memTypeFound = nullptr)const;
+
+		uint32_t GetQueueFamilyIndex(VkQueueFlagBits queueFlags)const;
+
+		VkResult CreateLogicalDevice(VkPhysicalDeviceFeatures enabledDeviceFeatures, std::vector<const char*>enabledExtensions,
+			void *pNextChain, bool useSwapChain = true, VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
+
+		VkResult CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer *buffer, VkDeviceMemory *memory, void * data = nullptr);
+
+		VkResult CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, vks::Buffer* buffer, VkDeviceSize size, void* data = nullptr);
+
+		void CopyBuffer(vks::Buffer * src, vks::Buffer * dst, VkQueue queue, VkBufferCopy * copyRegion = nullptr);
+
+		VkCommandPool CreateCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		VkCommandBuffer CreateCommandBuffer(VkCommandBufferLevel	level, VkCommandPool curCommandPool, bool begin = false);
+
+		VkCommandBuffer CreateCommandBuffer(VkCommandBufferLevel level, bool begin = false);
+
+		void FlushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free = true);
+
+		void FlushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free = true);
+
+		bool IsExtensionSupported(std::string extension);
+
+		VkFormat GetSupportedDepthFormat(bool checkSamplingSupport);
+
+	};//VulkanDevice
+}

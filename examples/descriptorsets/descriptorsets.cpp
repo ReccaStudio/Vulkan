@@ -90,10 +90,10 @@ public:
 
 			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
-			VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+			VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 			vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+			VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			model.bindBuffers(drawCmdBuffers[i]);
@@ -308,7 +308,7 @@ public:
 	{
 		// Vertex shader matrix uniform buffer block
 		for (auto& cube : cubes) {
-			VK_CHECK_RESULT(vulkanDevice->createBuffer(
+			VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 				&cube.uniformBuffer,

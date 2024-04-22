@@ -173,10 +173,10 @@ public:
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				VkViewport viewport = vks::initializers::viewport((float)offscreen.width, (float)offscreen.height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)offscreen.width, (float)offscreen.height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(offscreen.width, offscreen.height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(offscreen.width, offscreen.height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				VkDeviceSize offsets[1] = { 0 };
@@ -220,10 +220,10 @@ public:
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				VkViewport viewport = vks::initializers::viewport((float)filterPass.width, (float)filterPass.height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)filterPass.width, (float)filterPass.height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(filterPass.width, filterPass.height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(filterPass.width, filterPass.height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.bloomFilter, 0, 1, &descriptorSets.bloomFilter, 0, NULL);
@@ -257,10 +257,10 @@ public:
 
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 
-				VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 				vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.composition, 0, 1, &descriptorSets.composition, 0, NULL);
@@ -306,7 +306,7 @@ public:
 
 		assert(aspectMask > 0);
 
-		VkImageCreateInfo image = vks::initializers::imageCreateInfo();
+		VkImageCreateInfo image = vks::initializers::GenImageCreateInfo();
 		image.imageType = VK_IMAGE_TYPE_2D;
 		image.format = format;
 		image.extent.width = offscreen.width;
@@ -318,17 +318,17 @@ public:
 		image.tiling = VK_IMAGE_TILING_OPTIMAL;
 		image.usage = usage | VK_IMAGE_USAGE_SAMPLED_BIT;
 
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		VkMemoryRequirements memReqs;
 
 		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &attachment->image));
 		vkGetImageMemoryRequirements(device, attachment->image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
-		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		memAlloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &attachment->mem));
 		VK_CHECK_RESULT(vkBindImageMemory(device, attachment->image, attachment->mem, 0));
 
-		VkImageViewCreateInfo imageView = vks::initializers::imageViewCreateInfo();
+		VkImageViewCreateInfo imageView = vks::initializers::GenImageViewCreateInfo();
 		imageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		imageView.format = format;
 		imageView.subresourceRange = {};
@@ -445,7 +445,7 @@ public:
 			VK_CHECK_RESULT(vkCreateFramebuffer(device, &fbufCreateInfo, nullptr, &offscreen.frameBuffer));
 
 			// Create sampler to sample from the color attachments
-			VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
+			VkSamplerCreateInfo sampler = vks::initializers::GenSamplerCreateInfo();
 			sampler.magFilter = VK_FILTER_NEAREST;
 			sampler.minFilter = VK_FILTER_NEAREST;
 			sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -536,7 +536,7 @@ public:
 			VK_CHECK_RESULT(vkCreateFramebuffer(device, &fbufCreateInfo, nullptr, &filterPass.frameBuffer));
 
 			// Create sampler to sample from the color attachments
-			VkSamplerCreateInfo sampler = vks::initializers::samplerCreateInfo();
+			VkSamplerCreateInfo sampler = vks::initializers::GenSamplerCreateInfo();
 			sampler.magFilter = VK_FILTER_NEAREST;
 			sampler.minFilter = VK_FILTER_NEAREST;
 			sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -580,16 +580,16 @@ public:
 
 		// Layouts
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayoutInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings.data(), static_cast<uint32_t>(setLayoutBindings.size()));
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutInfo, nullptr, &descriptorSetLayouts.models));
 
 		// Bloom filter
 		setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 		};
 
 		descriptorLayoutInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings.data(), static_cast<uint32_t>(setLayoutBindings.size()));
@@ -598,8 +598,8 @@ public:
 
 		// G-Buffer composition
 		setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
 		};
 
 		descriptorLayoutInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings.data(), static_cast<uint32_t>(setLayoutBindings.size()));
@@ -768,7 +768,7 @@ public:
 	// Prepare and initialize uniform buffer containing shader uniforms
 	void prepareUniformBuffers()
 	{
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uniformData)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(uniformData)));
 		// Map persistent
 		VK_CHECK_RESULT(uniformBuffer.map());
 	}

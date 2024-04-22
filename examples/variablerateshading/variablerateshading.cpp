@@ -236,8 +236,8 @@ void VulkanExample::buildCommandBuffersForMainRendering()
 	renderPassBeginInfo.clearValueCount = 3;
 	renderPassBeginInfo.pClearValues = clearValues;
 
-	const VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-	const VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+	const VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
+	const VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 
 	for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
 	{
@@ -297,7 +297,7 @@ void VulkanExample::setupDescriptors()
 
 	// Descriptor set layout
 	const std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-		vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+		vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 	};
 	VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -369,7 +369,7 @@ void VulkanExample::prepareShadingRateImage()
 	VkMemoryAllocateInfo memAllloc{};
 	memAllloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	memAllloc.allocationSize = memReqs.size;
-	memAllloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	memAllloc.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	VK_CHECK_RESULT(vkAllocateMemory(device, &memAllloc, nullptr, &shadingRateImage.memory));
 	VK_CHECK_RESULT(vkBindImageMemory(device, shadingRateImage.image, shadingRateImage.memory, 0));
 
@@ -453,7 +453,7 @@ void VulkanExample::prepareShadingRateImage()
 	memReqs = {};
 	vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
 	memAllocInfo.allocationSize = memReqs.size;
-	memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &stagingMemory));
 	VK_CHECK_RESULT(vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0));
 
@@ -465,7 +465,7 @@ void VulkanExample::prepareShadingRateImage()
 	delete[] shadingRatePatternData;
 
 	// Upload
-	VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	VkCommandBuffer copyCmd = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	VkImageSubresourceRange subresourceRange = {};
 	subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	subresourceRange.levelCount = 1;
@@ -499,7 +499,7 @@ void VulkanExample::prepareShadingRateImage()
 		imageMemoryBarrier.subresourceRange = subresourceRange;
 		vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 	}
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 	vkFreeMemory(device, stagingMemory, nullptr);
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
@@ -555,7 +555,7 @@ void VulkanExample::preparePipelines()
 
 void VulkanExample::prepareUniformBuffers()
 {
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&shaderData.buffer,

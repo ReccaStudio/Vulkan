@@ -40,6 +40,18 @@ private:
 	VkDevice device;
 	VkPhysicalDevice physicalDevice;
 	VkSurfaceKHR surface;
+
+	// Function pointers
+	PFN_vkGetPhysicalDeviceSurfaceSupportKHR fpGetPhysicalDeviceSurfaceSupportKHR;
+	PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR fpGetPhysicalDeviceSurfaceCapabilitiesKHR;
+	PFN_vkGetPhysicalDeviceSurfaceFormatsKHR fpGetPhysicalDeviceSurfaceFormatsKHR;
+	PFN_vkGetPhysicalDeviceSurfacePresentModesKHR fpGetPhysicalDeviceSurfacePresentModesKHR;
+	PFN_vkCreateSwapchainKHR fpCreateSwapchainKHR;
+	PFN_vkDestroySwapchainKHR fpDestroySwapchainKHR;
+	PFN_vkGetSwapchainImagesKHR fpGetSwapchainImagesKHR;
+	PFN_vkAcquireNextImageKHR fpAcquireNextImageKHR;
+	PFN_vkQueuePresentKHR fpQueuePresentKHR;
+
 public:
 	VkFormat colorFormat;
 	VkColorSpaceKHR colorSpace;

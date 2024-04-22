@@ -6,6 +6,8 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
+#pragma once
+
 #include <vector>
 #include <thread>
 #include <queue>
@@ -14,8 +16,8 @@
 #include <functional>
 
 // make_unique is not available in C++11
-// Taken from Herb Sutter's blog (https://herbsutter.com/gotw/_102/)
-template<typename T, typename ...Args>
+// Taken from Herb Sutter's blog(https://herbsutter.com/gotw/_102/)
+template<typename T,typename ...Args>
 std::unique_ptr<T> make_unique(Args&& ...args)
 {
 	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
@@ -27,6 +29,7 @@ namespace vks
 	{
 	private:
 		bool destroying = false;
+
 		std::thread worker;
 		std::queue<std::function<void()>> jobQueue;
 		std::mutex queueMutex;
@@ -37,7 +40,7 @@ namespace vks
 		{
 			while (true)
 			{
-				std::function<void()> job;
+				std::function<void()>job;
 				{
 					std::unique_lock<std::mutex> lock(queueMutex);
 					condition.wait(lock, [this] { return !jobQueue.empty() || destroying; });
@@ -48,14 +51,14 @@ namespace vks
 					job = jobQueue.front();
 				}
 
-				job();
+				job();//Ö´ÐÐµ÷ÓÃ
 
 				{
 					std::lock_guard<std::mutex> lock(queueMutex);
 					jobQueue.pop();
 					condition.notify_one();
 				}
-			}
+			}//while
 		}
 
 	public:
@@ -92,7 +95,7 @@ namespace vks
 			condition.wait(lock, [this]() { return jobQueue.empty(); });
 		}
 	};
-	
+
 	class ThreadPool
 	{
 	public:
@@ -111,11 +114,14 @@ namespace vks
 		// Wait until all threads have finished their work items
 		void wait()
 		{
-			for (auto &thread : threads)
+			for (auto & thread : threads)
 			{
 				thread->wait();
 			}
-		}
+		}//wait
+
+	private:
+
 	};
 
 }

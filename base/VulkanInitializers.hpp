@@ -18,7 +18,7 @@ namespace vks
 	namespace initializers
 	{
 
-		inline VkMemoryAllocateInfo memoryAllocateInfo()
+		inline VkMemoryAllocateInfo GenMemoryAllocateInfo()
 		{
 			VkMemoryAllocateInfo memAllocInfo {};
 			memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -32,7 +32,7 @@ namespace vks
 			return mappedMemoryRange;
 		}
 
-		inline VkCommandBufferAllocateInfo commandBufferAllocateInfo(
+		inline VkCommandBufferAllocateInfo GenCommandBufferAllocateInfo(
 			VkCommandPool commandPool, 
 			VkCommandBufferLevel level, 
 			uint32_t bufferCount)
@@ -45,7 +45,7 @@ namespace vks
 			return commandBufferAllocateInfo;
 		}
 
-		inline VkCommandPoolCreateInfo commandPoolCreateInfo()
+		inline VkCommandPoolCreateInfo GenCommandPoolCreateInfo()
 		{
 			VkCommandPoolCreateInfo cmdPoolCreateInfo {};
 			cmdPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -107,14 +107,14 @@ namespace vks
 			return memoryBarrier;
 		}
 
-		inline VkImageCreateInfo imageCreateInfo()
+		inline VkImageCreateInfo GenImageCreateInfo()
 		{
 			VkImageCreateInfo imageCreateInfo {};
 			imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			return imageCreateInfo;
 		}
 
-		inline VkSamplerCreateInfo samplerCreateInfo()
+		inline VkSamplerCreateInfo GenSamplerCreateInfo()
 		{
 			VkSamplerCreateInfo samplerCreateInfo {};
 			samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -122,28 +122,28 @@ namespace vks
 			return samplerCreateInfo;
 		}
 
-		inline VkImageViewCreateInfo imageViewCreateInfo()
+		inline VkImageViewCreateInfo GenImageViewCreateInfo()
 		{
 			VkImageViewCreateInfo imageViewCreateInfo {};
 			imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			return imageViewCreateInfo;
 		}
 
-		inline VkFramebufferCreateInfo framebufferCreateInfo()
+		inline VkFramebufferCreateInfo GenFramebufferCreateInfo()
 		{
 			VkFramebufferCreateInfo framebufferCreateInfo {};
 			framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			return framebufferCreateInfo;
 		}
 
-		inline VkSemaphoreCreateInfo semaphoreCreateInfo()
+		inline VkSemaphoreCreateInfo GenSemaphoreCreateInfo()
 		{
 			VkSemaphoreCreateInfo semaphoreCreateInfo {};
 			semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			return semaphoreCreateInfo;
 		}
 
-		inline VkFenceCreateInfo fenceCreateInfo(VkFenceCreateFlags flags = 0)
+		inline VkFenceCreateInfo GenFenceCreateInfo(VkFenceCreateFlags flags = 0)
 		{
 			VkFenceCreateInfo fenceCreateInfo {};
 			fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -158,14 +158,14 @@ namespace vks
 			return eventCreateInfo;
 		}
 
-		inline VkSubmitInfo submitInfo()
+		inline VkSubmitInfo GenSubmitInfo()
 		{
 			VkSubmitInfo submitInfo {};
 			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			return submitInfo;
 		}
 
-		inline VkViewport viewport(
+		inline VkViewport GenViewport(
 			float width,
 			float height,
 			float minDepth,
@@ -179,7 +179,7 @@ namespace vks
 			return viewport;
 		}
 
-		inline VkRect2D rect2D(
+		inline VkRect2D GenRect2D(
 			int32_t width,
 			int32_t height,
 			int32_t offsetX,
@@ -194,14 +194,14 @@ namespace vks
 			return rect2D;
 		}
 
-		inline VkBufferCreateInfo bufferCreateInfo()
+		inline VkBufferCreateInfo GenBufferCreateInfo()
 		{
 			VkBufferCreateInfo bufCreateInfo {};
 			bufCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 			return bufCreateInfo;
 		}
 
-		inline VkBufferCreateInfo bufferCreateInfo(
+		inline VkBufferCreateInfo GenBufferCreateInfo(
 			VkBufferUsageFlags usage,
 			VkDeviceSize size)
 		{
@@ -247,7 +247,7 @@ namespace vks
 			return descriptorPoolSize;
 		}
 
-		inline VkDescriptorSetLayoutBinding descriptorSetLayoutBinding(
+		inline VkDescriptorSetLayoutBinding GenDescriptorSetLayoutBinding(
 			VkDescriptorType type,
 			VkShaderStageFlags stageFlags,
 			uint32_t binding,

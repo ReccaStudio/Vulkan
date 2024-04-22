@@ -201,7 +201,7 @@ void VulkanglTFModel::loadSkins(tinygltf::Model &input)
 
 			// Store inverse bind matrices for this skin in a shader storage buffer object
 			// To keep this sample simple, we create a host visible shader storage buffer
-			VK_CHECK_RESULT(vulkanDevice->createBuffer(
+			VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 			    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 			    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			    &skins[i].ssbo,
@@ -505,7 +505,7 @@ void VulkanglTFModel::updateJoints(VulkanglTFModel::Node *node)
 			jointMatrices[i] = inverseTransform * jointMatrices[i];
 		}
 		// Update ssbo
-		skin.ssbo.copyTo(jointMatrices.data(), jointMatrices.size() * sizeof(glm::mat4));
+		skin.ssbo.copyFromData(jointMatrices.data(), jointMatrices.size() * sizeof(glm::mat4));
 	}
 
 	for (auto &child : node->children)
@@ -690,8 +690,8 @@ void VulkanExample::buildCommandBuffersForMainRendering()
 	renderPassBeginInfo.clearValueCount          = 2;
 	renderPassBeginInfo.pClearValues             = clearValues;
 
-	const VkViewport viewport = vks::initializers::viewport((float) width, (float) height, 0.0f, 1.0f);
-	const VkRect2D   scissor  = vks::initializers::rect2D(width, height, 0, 0);
+	const VkViewport viewport = vks::initializers::GenViewport((float) width, (float) height, 0.0f, 1.0f);
+	const VkRect2D   scissor  = vks::initializers::GenRect2D(width, height, 0, 0);
 
 	for (int32_t i = 0; i < drawCmdBuffers.size(); ++i)
 	{
@@ -769,7 +769,7 @@ void VulkanExample::loadglTFFile(std::string filename)
 	} vertexStaging, indexStaging;
 
 	// Create host visible staging buffers (source)
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 	    VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 	    vertexBufferSize,
@@ -777,7 +777,7 @@ void VulkanExample::loadglTFFile(std::string filename)
 	    &vertexStaging.memory,
 	    vertexBuffer.data()));
 	// Index data
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 	    VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 	    indexBufferSize,
@@ -786,13 +786,13 @@ void VulkanExample::loadglTFFile(std::string filename)
 	    indexBuffer.data()));
 
 	// Create device local buffers (target)
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 	    VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 	    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 	    vertexBufferSize,
 	    &glTFModel.vertices.buffer,
 	    &glTFModel.vertices.memory));
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
 	    VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 	    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 	    indexBufferSize,
@@ -800,13 +800,13 @@ void VulkanExample::loadglTFFile(std::string filename)
 	    &glTFModel.indices.memory));
 
 	// Copy data from staging buffers (host) do device local buffer (gpu)
-	VkCommandBuffer copyCmd    = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+	VkCommandBuffer copyCmd    = vulkanDevice->CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 	VkBufferCopy    copyRegion = {};
 	copyRegion.size            = vertexBufferSize;
 	vkCmdCopyBuffer(copyCmd, vertexStaging.buffer, glTFModel.vertices.buffer, 1, &copyRegion);
 	copyRegion.size = indexBufferSize;
 	vkCmdCopyBuffer(copyCmd, indexStaging.buffer, glTFModel.indices.buffer, 1, &copyRegion);
-	vulkanDevice->flushCommandBuffer(copyCmd, graphicQueue, true);
+	vulkanDevice->FlushCommandBuffer(copyCmd, graphicQueue, true);
 
 	// Free staging resources
 	vkDestroyBuffer(device, vertexStaging.buffer, nullptr);
@@ -838,15 +838,15 @@ void VulkanExample::setupDescriptors()
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(&setLayoutBinding, 1);
 
 	// Descriptor set layout for passing matrices
-	setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
+	setLayoutBinding = vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.matrices));
 
 	// Descriptor set layout for passing material textures
-	setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+	setLayoutBinding = vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.textures));
 
 	// Descriptor set layout for passing skin joint matrices
-	setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
+	setLayoutBinding = vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.jointMatrices));
 
 	// Descriptor set for scene matrices
@@ -954,7 +954,7 @@ void VulkanExample::preparePipelines()
 
 void VulkanExample::prepareUniformBuffers()
 {
-	VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &shaderData.buffer, sizeof(shaderData.values)));
+	VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &shaderData.buffer, sizeof(shaderData.values)));
 	VK_CHECK_RESULT(shaderData.buffer.map());
 	updateUniformBuffers();
 }

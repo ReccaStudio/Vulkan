@@ -111,16 +111,16 @@ public:
 		return 0;
 	}
 
-	VkResult createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer *buffer, VkDeviceMemory *memory, VkDeviceSize size, void *data = nullptr)
+	VkResult CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer *buffer, VkDeviceMemory *memory, VkDeviceSize size, void *data = nullptr)
 	{
 		// Create the buffer handle
-		VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo(usageFlags, size);
+		VkBufferCreateInfo bufferCreateInfo = vks::initializers::GenBufferCreateInfo(usageFlags, size);
 		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		VK_CHECK_RESULT(vkCreateBuffer(device, &bufferCreateInfo, nullptr, buffer));
 
 		// Create the memory backing up the buffer handle
 		VkMemoryRequirements memReqs;
-		VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+		VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 		vkGetBufferMemoryRequirements(device, *buffer, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
 		memAlloc.memoryTypeIndex = getMemoryTypeIndex(memReqs.memoryTypeBits, memoryPropertyFlags);
@@ -143,10 +143,10 @@ public:
 	*/
 	void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue)
 	{
-		VkSubmitInfo submitInfo = vks::initializers::submitInfo();
+		VkSubmitInfo submitInfo = vks::initializers::GenSubmitInfo();
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &cmdBuffer;
-		VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo();
+		VkFenceCreateInfo fenceInfo = vks::initializers::GenFenceCreateInfo();
 		VkFence fence;
 		VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &fence));
 		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
@@ -346,7 +346,7 @@ public:
 			VkDeviceMemory stagingMemory;
 
 			// Command buffer for copy commands (reused)
-			VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+			VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::GenCommandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 			VkCommandBuffer copyCmd;
 			VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, &copyCmd));
 			VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
@@ -354,7 +354,7 @@ public:
 			// Copy input data to VRAM using a staging buffer
 			{
 				// Vertices
-				createBuffer(
+				CreateBuffer(
 					VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 					&stagingBuffer,
@@ -362,7 +362,7 @@ public:
 					vertexBufferSize,
 					vertices.data());
 
-				createBuffer(
+				CreateBuffer(
 					VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 					VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 					&vertexBuffer,
@@ -381,7 +381,7 @@ public:
 				vkFreeMemory(device, stagingMemory, nullptr);
 
 				// Indices
-				createBuffer(
+				CreateBuffer(
 					VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 					&stagingBuffer,
@@ -389,7 +389,7 @@ public:
 					indexBufferSize,
 					indices.data());
 
-				createBuffer(
+				CreateBuffer(
 					VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 					VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 					&indexBuffer,
@@ -418,7 +418,7 @@ public:
 		vks::tools::getSupportedDepthFormat(physicalDevice, &depthFormat);
 		{
 			// Color attachment
-			VkImageCreateInfo image = vks::initializers::imageCreateInfo();
+			VkImageCreateInfo image = vks::initializers::GenImageCreateInfo();
 			image.imageType = VK_IMAGE_TYPE_2D;
 			image.format = colorFormat;
 			image.extent.width = width;
@@ -430,7 +430,7 @@ public:
 			image.tiling = VK_IMAGE_TILING_OPTIMAL;
 			image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
-			VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+			VkMemoryAllocateInfo memAlloc = vks::initializers::GenMemoryAllocateInfo();
 			VkMemoryRequirements memReqs;
 
 			VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &colorAttachment.image));
@@ -440,7 +440,7 @@ public:
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &colorAttachment.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, colorAttachment.image, colorAttachment.memory, 0));
 
-			VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+			VkImageViewCreateInfo colorImageView = vks::initializers::GenImageViewCreateInfo();
 			colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			colorImageView.format = colorFormat;
 			colorImageView.subresourceRange = {};
@@ -463,7 +463,7 @@ public:
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &depthAttachment.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, depthAttachment.image, depthAttachment.memory, 0));
 
-			VkImageViewCreateInfo depthStencilView = vks::initializers::imageViewCreateInfo();
+			VkImageViewCreateInfo depthStencilView = vks::initializers::GenImageViewCreateInfo();
 			depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			depthStencilView.format = depthFormat;
 			depthStencilView.flags = 0;
@@ -546,7 +546,7 @@ public:
 			attachments[0] = colorAttachment.view;
 			attachments[1] = depthAttachment.view;
 
-			VkFramebufferCreateInfo framebufferCreateInfo = vks::initializers::framebufferCreateInfo();
+			VkFramebufferCreateInfo framebufferCreateInfo = vks::initializers::GenFramebufferCreateInfo();
 			framebufferCreateInfo.renderPass = renderPass;
 			framebufferCreateInfo.attachmentCount = 2;
 			framebufferCreateInfo.pAttachments = attachments;
@@ -672,7 +672,7 @@ public:
 		{
 			VkCommandBuffer commandBuffer;
 			VkCommandBufferAllocateInfo cmdBufAllocateInfo =
-				vks::initializers::commandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+				vks::initializers::GenCommandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 			VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, &commandBuffer));
 
 			VkCommandBufferBeginInfo cmdBufInfo =
@@ -742,7 +742,7 @@ public:
 		const char* imagedata;
 		{
 			// Create the linear tiled destination image to copy to and to read the memory from
-			VkImageCreateInfo imgCreateInfo(vks::initializers::imageCreateInfo());
+			VkImageCreateInfo imgCreateInfo(vks::initializers::GenImageCreateInfo());
 			imgCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 			imgCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
 			imgCreateInfo.extent.width = width;
@@ -759,7 +759,7 @@ public:
 			VK_CHECK_RESULT(vkCreateImage(device, &imgCreateInfo, nullptr, &dstImage));
 			// Create memory to back up the image
 			VkMemoryRequirements memRequirements;
-			VkMemoryAllocateInfo memAllocInfo(vks::initializers::memoryAllocateInfo());
+			VkMemoryAllocateInfo memAllocInfo(vks::initializers::GenMemoryAllocateInfo());
 			VkDeviceMemory dstImageMemory;
 			vkGetImageMemoryRequirements(device, dstImage, &memRequirements);
 			memAllocInfo.allocationSize = memRequirements.size;
@@ -769,7 +769,7 @@ public:
 			VK_CHECK_RESULT(vkBindImageMemory(device, dstImage, dstImageMemory, 0));
 
 			// Do the actual blit from the offscreen image to our host visible destination image
-			VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+			VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::GenCommandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 			VkCommandBuffer copyCmd;
 			VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, &copyCmd));
 			VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();

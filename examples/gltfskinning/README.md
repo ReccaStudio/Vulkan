@@ -196,7 +196,7 @@ void VulkanglTFModel::loadSkins(tinygltf::Model &input)
 			skins[i].inverseBindMatrices.resize(accessor.count);
 			memcpy(skins[i].inverseBindMatrices.data(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(glm::mat4));
 
-			vulkanDevice->createBuffer(
+			vulkanDevice->CreateBuffer(
 			    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 			    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			    &skins[i].ssbo,

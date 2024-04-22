@@ -115,7 +115,7 @@ public:
 			Layered depth/stencil framebuffer
 		*/
 		{
-			VkImageCreateInfo imageCI= vks::initializers::imageCreateInfo();
+			VkImageCreateInfo imageCI= vks::initializers::GenImageCreateInfo();
 			imageCI.imageType = VK_IMAGE_TYPE_2D;
 			imageCI.format = depthFormat;
 			imageCI.extent = { width, height, 1 };
@@ -153,7 +153,7 @@ public:
 			depthStencilView.image = multiviewPass.depth.image;
 
 			memAllocInfo.allocationSize = memReqs.size;
-			memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			memAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memAllocInfo, nullptr, &multiviewPass.depth.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, multiviewPass.depth.image, multiviewPass.depth.memory, 0));
 			VK_CHECK_RESULT(vkCreateImageView(device, &depthStencilView, nullptr, &multiviewPass.depth.view));
@@ -163,7 +163,7 @@ public:
 			Layered color attachment
 		*/
 		{
-			VkImageCreateInfo imageCI = vks::initializers::imageCreateInfo();
+			VkImageCreateInfo imageCI = vks::initializers::GenImageCreateInfo();
 			imageCI.imageType = VK_IMAGE_TYPE_2D;
 			imageCI.format = swapChain.colorFormat;
 			imageCI.extent = { width, height, 1 };
@@ -177,13 +177,13 @@ public:
 			VkMemoryRequirements memReqs;
 			vkGetImageMemoryRequirements(device, multiviewPass.color.image, &memReqs);
 
-			VkMemoryAllocateInfo memoryAllocInfo = vks::initializers::memoryAllocateInfo();
+			VkMemoryAllocateInfo memoryAllocInfo = vks::initializers::GenMemoryAllocateInfo();
 			memoryAllocInfo.allocationSize = memReqs.size;
-			memoryAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			memoryAllocInfo.memoryTypeIndex = vulkanDevice->GetMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VK_CHECK_RESULT(vkAllocateMemory(device, &memoryAllocInfo, nullptr, &multiviewPass.color.memory));
 			VK_CHECK_RESULT(vkBindImageMemory(device, multiviewPass.color.image, multiviewPass.color.memory, 0));
 
-			VkImageViewCreateInfo imageViewCI = vks::initializers::imageViewCreateInfo();
+			VkImageViewCreateInfo imageViewCI = vks::initializers::GenImageViewCreateInfo();
 			imageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 			imageViewCI.format = swapChain.colorFormat;
 			imageViewCI.flags = 0;
@@ -197,7 +197,7 @@ public:
 			VK_CHECK_RESULT(vkCreateImageView(device, &imageViewCI, nullptr, &multiviewPass.color.view));
 
 			// Create sampler to sample from the attachment in the fragment shader
-			VkSamplerCreateInfo samplerCI = vks::initializers::samplerCreateInfo();
+			VkSamplerCreateInfo samplerCI = vks::initializers::GenSamplerCreateInfo();
 			samplerCI.magFilter = VK_FILTER_NEAREST;
 			samplerCI.minFilter = VK_FILTER_NEAREST;
 			samplerCI.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -319,7 +319,7 @@ public:
 			attachments[0] = multiviewPass.color.view;
 			attachments[1] = multiviewPass.depth.view;
 
-			VkFramebufferCreateInfo framebufferCI = vks::initializers::framebufferCreateInfo();
+			VkFramebufferCreateInfo framebufferCI = vks::initializers::GenFramebufferCreateInfo();
 			framebufferCI.renderPass = multiviewPass.renderPass;
 			framebufferCI.attachmentCount = 2;
 			framebufferCI.pAttachments = attachments;
@@ -359,8 +359,8 @@ public:
 
 				VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
 				vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-				VkViewport viewport = vks::initializers::viewport((float)width / 2.0f, (float)height, 0.0f, 1.0f);
-				VkRect2D scissor = vks::initializers::rect2D(width / 2, height, 0, 0);
+				VkViewport viewport = vks::initializers::GenViewport((float)width / 2.0f, (float)height, 0.0f, 1.0f);
+				VkRect2D scissor = vks::initializers::GenRect2D(width / 2, height, 0, 0);
 				vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
 				vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
@@ -411,9 +411,9 @@ public:
 
 				VK_CHECK_RESULT(vkBeginCommandBuffer(multiviewPass.commandBuffers[i], &cmdBufInfo));
 				vkCmdBeginRenderPass(multiviewPass.commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-				VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+				VkViewport viewport = vks::initializers::GenViewport((float)width, (float)height, 0.0f, 1.0f);
 				vkCmdSetViewport(multiviewPass.commandBuffers[i], 0, 1, &viewport);
-				VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+				VkRect2D scissor = vks::initializers::GenRect2D(width, height, 0, 0);
 				vkCmdSetScissor(multiviewPass.commandBuffers[i], 0, 1, &scissor);
 
 				vkCmdBindDescriptorSets(multiviewPass.commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
@@ -447,8 +447,8 @@ public:
 			Layouts
 		*/
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::GenDescriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -475,7 +475,7 @@ public:
 	void preparePipelines()
 	{
 
-		VkSemaphoreCreateInfo semaphoreCI = vks::initializers::semaphoreCreateInfo();
+		VkSemaphoreCreateInfo semaphoreCI = vks::initializers::GenSemaphoreCreateInfo();
 		VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCI, nullptr, &multiviewPass.semaphore));
 
 		/*
@@ -577,7 +577,7 @@ public:
 	// Prepare and initialize uniform buffer containing shader uniforms
 	void prepareUniformBuffers()
 	{
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(UniformData)));
+		VK_CHECK_RESULT(vulkanDevice->CreateBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &uniformBuffer, sizeof(UniformData)));
 		VK_CHECK_RESULT(uniformBuffer.map());
 	}
 
@@ -638,13 +638,13 @@ public:
 		prepareDescriptors();
 		preparePipelines();
 		
-		VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, static_cast<uint32_t>(drawCmdBuffers.size()));
+		VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::GenCommandBufferAllocateInfo(cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, static_cast<uint32_t>(drawCmdBuffers.size()));
 		multiviewPass.commandBuffers.resize(drawCmdBuffers.size());
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, multiviewPass.commandBuffers.data()));
 
 		buildCommandBuffersForMainRendering();
 
-		VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
+		VkFenceCreateInfo fenceCreateInfo = vks::initializers::GenFenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 		multiviewPass.waitFences.resize(multiviewPass.commandBuffers.size());
 		for (auto& fence : multiviewPass.waitFences) {
 			VK_CHECK_RESULT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence));
@@ -673,7 +673,7 @@ public:
 		// SRS - Recreate Multiview command buffers in case number of swapchain images has changed on resize
 		vkFreeCommandBuffers(device, cmdPool, static_cast<uint32_t>(multiviewPass.commandBuffers.size()), multiviewPass.commandBuffers.data());
 
-		VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, static_cast<uint32_t>(drawCmdBuffers.size()));
+		VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::GenCommandBufferAllocateInfo(cmdPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, static_cast<uint32_t>(drawCmdBuffers.size()));
 		multiviewPass.commandBuffers.resize(drawCmdBuffers.size());
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, multiviewPass.commandBuffers.data()));
 
@@ -685,7 +685,7 @@ public:
 			vkDestroyFence(device, fence, nullptr);
 		}
 		
-		VkFenceCreateInfo fenceCreateInfo = vks::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
+		VkFenceCreateInfo fenceCreateInfo = vks::initializers::GenFenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
 		multiviewPass.waitFences.resize(multiviewPass.commandBuffers.size());
 		for (auto& fence : multiviewPass.waitFences) {
 			VK_CHECK_RESULT(vkCreateFence(device, &fenceCreateInfo, nullptr, &fence));

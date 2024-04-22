@@ -49,6 +49,7 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -86,7 +87,7 @@ private:
 	void createPipelineCache();
 	void createCommandPool();
 	void createSynchronizationPrimitives();
-	void initSwapchainSurface();
+	void initSwapChainSurface();
 	void setupSwapChain();
 	void createCommandBuffers();
 	void destroyCommandBuffers();
@@ -106,18 +107,18 @@ protected:
 	VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };
 	// Stores physical device properties (for e.g. checking device limits)
 	VkPhysicalDeviceProperties deviceProperties{};
-	// Stores the features available on the selected physical device (for e.g. checking if a feature is available)
+	// Stores the features available on the selected physical device (for e.g checking if a feature is available)
 	VkPhysicalDeviceFeatures deviceFeatures{};
-	// Stores all available memory (type) properties for the physical device
+	//Stores all available memory(type) properties for the physical device
 	VkPhysicalDeviceMemoryProperties deviceMemoryProperties{};
-	/** @brief Set of physical device features to be enabled for this example (must be set in the derived constructor) */
+    /** @brief Set of physical device features to be enabled for this example (must be set in the derived constructor) */
 	VkPhysicalDeviceFeatures curEnabledDeviceFeatures{};
-	/** @brief Set of device extensions to be enabled for this example (must be set in the derived constructor) */
+    /** @brief Set of device extensions to be enabled for this example (must be set in the derived constructor) */
 	std::vector<const char*> enabledDeviceExtensions;
 	std::vector<const char*> enabledInstanceExtensions;
-	/** @brief Optional pNext structure for passing extension structures to device creation */
+/** @brief Optional pNext structure for passing extension structures to device creation */
 	void* pDeviceCreateNextChain = nullptr;
-	/** @brief Logical device, application's view of the physical device (GPU) */
+/** @brief Logical device, application's view of the physical device (GPU) */
 	VkDevice device{ VK_NULL_HANDLE };
 	// Handle to the device graphics queue that command buffers are submitted to
 	VkQueue graphicQueue{ VK_NULL_HANDLE };
@@ -145,13 +146,15 @@ protected:
 	VkPipelineCache pipelineCache{ VK_NULL_HANDLE };
 	// Wraps the swap chain to present images (framebuffers) to the windowing system
 	VulkanSwapChain swapChain;
-	// Synchronization semaphores
-	struct {
-		// Swap chain image presentation
+
+	//Synchronization semaphores
+	struct  
+	{
 		VkSemaphore presentComplete;
 		// Command buffer submission and execution
 		VkSemaphore renderComplete;
 	} semaphores;
+
 	std::vector<VkFence> waitFences;
 	bool requiresStencil{ false };
 public:
@@ -173,7 +176,8 @@ public:
 	vks::VulkanDevice *vulkanDevice;
 
 	/** @brief Example settings that can be changed e.g. by command line arguments */
-	struct Settings {
+	struct Settings
+    {
 		/** @brief Activates validation layers (and message output) when set to true */
 		bool validation = false;
 		/** @brief Set to true if fullscreen mode has been requested via command line */

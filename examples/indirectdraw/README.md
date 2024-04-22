@@ -62,7 +62,7 @@ Which will result in 2048 instances of the index data starting at index 960 (usi
 Once we have filled that vector we need to create the buffer that the GPU uses to read the indirect commands from:
 
 ```cpp
-VK_CHECK_RESULT(vulkanDevice->createBuffer(
+VK_CHECK_RESULT(vulkanDevice->CreateBuffer(
   VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
   &indirectCommandsBuffer,

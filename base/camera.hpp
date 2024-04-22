@@ -5,12 +5,14 @@
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
+#pragma once
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 class Camera
 {
@@ -30,7 +32,8 @@ private:
 		rotM = glm::rotate(rotM, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		glm::vec3 translation = position;
-		if (flipY) {
+		if (flipY)
+        {
 			translation.y *= -1.0f;
 		}
 		transM = glm::translate(glm::mat4(1.0f), translation);
@@ -51,7 +54,7 @@ private:
 		}
 	};
 public:
-	enum CameraType { lookat, firstperson };
+	enum CameraType {lookat,firstperson};
 	CameraType cameraType = CameraType::lookat;
 
 	glm::vec3 rotation = glm::vec3();
@@ -61,47 +64,51 @@ public:
 	float rotationSpeed = 1.0f;
 	float movementSpeed = 1.0f;
 
-	bool updated = true;
+	bool updated = false;
 	bool flipY = false;
 
-	struct
+	struct  
 	{
 		glm::mat4 perspective;
 		glm::mat4 view;
-	} matrices;
+	}matrices;
 
-	struct
+	struct  
 	{
 		bool left = false;
 		bool right = false;
 		bool up = false;
 		bool down = false;
-	} keys;
+	}keys;
 
 	bool moving()
 	{
 		return keys.left || keys.right || keys.up || keys.down;
 	}
 
-	float getNearClip() { 
+	float getNearClip()
+	{
 		return znear;
 	}
 
-	float getFarClip() {
+	float getFarClip()
+	{
 		return zfar;
 	}
 
-	void setPerspective(float fov, float aspect, float znear, float zfar)
+	void setPerspective(float fov, float aspect,float znear,float zfar)
 	{
 		glm::mat4 currentMatrix = matrices.perspective;
 		this->fov = fov;
 		this->znear = znear;
 		this->zfar = zfar;
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		if (flipY) {
+		if (flipY)
+		{
 			matrices.perspective[1][1] *= -1.0f;
 		}
-		if (matrices.view != currentMatrix) {
+		if (matrices.view != currentMatrix)
+        {
 			updated = true;
 		}
 	};
@@ -110,10 +117,12 @@ public:
 	{
 		glm::mat4 currentMatrix = matrices.perspective;
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		if (flipY) {
+		if (flipY)
+		{
 			matrices.perspective[1][1] *= -1.0f;
 		}
-		if (matrices.view != currentMatrix) {
+		if (matrices.view != currentMatrix)
+        {
 			updated = true;
 		}
 	}
@@ -140,7 +149,7 @@ public:
 	{
 		this->position = translation;
 		updateViewMatrix();
-	};
+	}
 
 	void translate(glm::vec3 delta)
 	{
@@ -163,63 +172,73 @@ public:
 		updated = false;
 		if (cameraType == CameraType::firstperson)
 		{
-			if (moving())
-			{
-				glm::vec3 camFront;
-				camFront.x = -cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y));
-				camFront.y = sin(glm::radians(rotation.x));
-				camFront.z = cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
-				camFront = glm::normalize(camFront);
+			 if (moving())
+			 {
+				 glm::vec3 camFront;
+				 camFront.x = -cos(glm::radians(rotation.x))*sin(glm::radians(rotation.y));
+				 camFront.y = sin(glm::radians(rotation.x));
+				 camFront.z = cos(glm::radians(rotation.x))*cos(glm::radians(rotation.y));
+				 camFront = glm::normalize(camFront);
 
-				float moveSpeed = deltaTime * movementSpeed;
+				 float moveSpeed = deltaTime * movementSpeed;
 
-				if (keys.up)
-					position += camFront * moveSpeed;
-				if (keys.down)
-					position -= camFront * moveSpeed;
-				if (keys.left)
-					position -= glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) * moveSpeed;
-				if (keys.right)
-					position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) * moveSpeed;
-			}
+				 if (keys.up)
+				 {
+					 position += camFront * moveSpeed;
+				 }
+				 if (keys.down)
+				 {
+					 position -= camFront * moveSpeed;
+				 }
+				 if (keys.left)
+				 {
+					 position -= glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f)))*moveSpeed;
+				 }
+				 if (keys.right)
+				 {
+					 position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f)))*moveSpeed;
+				 }
+
+				 updateViewMatrix();
+			 }
 		}
-		updateViewMatrix();
-	};
+	}
 
-	// Update camera passing separate axis data (gamepad)
-	// Returns true if view or position has been changed
+	// Update camera passing separate axis data(gamepad)
+	// Return true if view or position has been changed
 	bool updatePad(glm::vec2 axisLeft, glm::vec2 axisRight, float deltaTime)
 	{
 		bool retVal = false;
 
 		if (cameraType == CameraType::firstperson)
 		{
-			// Use the common console thumbstick layout		
-			// Left = view, right = move
+			//Use the common console thumbstick layout
+			// Left = view,right = move
 
 			const float deadZone = 0.0015f;
 			const float range = 1.0f - deadZone;
 
 			glm::vec3 camFront;
-			camFront.x = -cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y));
+			camFront.x = -cos(glm::radians(rotation.x))*sin(glm::radians(rotation.y));
 			camFront.y = sin(glm::radians(rotation.x));
-			camFront.z = cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
+			camFront.z = cos(glm::radians(rotation.x))*cos(glm::radians(rotation.y));
 			camFront = glm::normalize(camFront);
 
-			float moveSpeed = deltaTime * movementSpeed * 2.0f;
-			float rotSpeed = deltaTime * rotationSpeed * 50.0f;
-			 
-			// Move
+			float moveSpeed = deltaTime * movementSpeed*2.0f;
+			float rotSpeed = deltaTime * rotationSpeed*50.0f;
+
+			//Move
 			if (fabsf(axisLeft.y) > deadZone)
 			{
 				float pos = (fabsf(axisLeft.y) - deadZone) / range;
-				position -= camFront * pos * ((axisLeft.y < 0.0f) ? -1.0f : 1.0f) * moveSpeed;
+				position -= camFront * pos*((axisLeft.y < 0.0f) ? -1.0f : 1.0f)*moveSpeed;
 				retVal = true;
 			}
-			if (fabsf(axisLeft.x) > deadZone)
+
+			if (fabsf(axisLeft.x)>deadZone)
 			{
 				float pos = (fabsf(axisLeft.x) - deadZone) / range;
-				position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) * pos * ((axisLeft.x < 0.0f) ? -1.0f : 1.0f) * moveSpeed;
+				position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) *pos*((axisLeft.x < 0.0f) ? -1.0f : 1.0f)*moveSpeed;
 				retVal = true;
 			}
 
@@ -230,10 +249,10 @@ public:
 				rotation.y += pos * ((axisRight.x < 0.0f) ? -1.0f : 1.0f) * rotSpeed;
 				retVal = true;
 			}
-			if (fabsf(axisRight.y) > deadZone)
+			if (fabsf(axisRight.y)>deadZone)
 			{
 				float pos = (fabsf(axisRight.y) - deadZone) / range;
-				rotation.x -= pos * ((axisRight.y < 0.0f) ? -1.0f : 1.0f) * rotSpeed;
+				rotation.x -= pos * ((axisRight.y < 0.0f) ? -1.0f : 1.0f)*rotSpeed;
 				retVal = true;
 			}
 		}
